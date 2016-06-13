@@ -1,5 +1,5 @@
 import htmc
-from HMpTy import stat
+
 import numpy
 from sys import stdout
 
@@ -566,6 +566,7 @@ class HTM(htmc.HTMC):
 
 
         """
+        from HMpTy import stat
 
         if htmid2 is None:
             stdout.write("Generating HTM ids\n")

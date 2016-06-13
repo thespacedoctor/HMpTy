@@ -1,14 +1,5 @@
-"""
-
-Please consult the docs for the main htm package.  For example, in IPython:
-
->>> import esutil
->>> esutil.htm?
-
-
-"""
 import htmc
-from HMpTy import stat
+
 import numpy
 from sys import stdout
 
@@ -23,15 +14,8 @@ class HTM(htmc.HTMC):
 
     def area(self):
         """
-
         *Get the mean area of triangles at the current depth. The units are
-        square degrees.
-
-        >>> import esutil
-        >>> h=esutil.htm.HTM(10)
-        >>> h.area()
-        0.0049177362024091812*
-
+        square degrees.*
         """
         pi = numpy.pi
         area0 = 4.0 * pi / 8.0
@@ -82,7 +66,7 @@ class HTM(htmc.HTMC):
         This method is a simple wrapper around the Matcher class
 
         If you need to match against the same points many times, use
-        a htm.Matcher object.  don't use the old htmrev2 method.
+        a htm.Matcher object.
 
         parameters
         ----------
@@ -215,27 +199,6 @@ class HTM(htmc.HTMC):
                                maxid,
                                maxmatch,
                                file)
-
-    def match_prepare(self, ra, dec, verbose=False):
-        """
-        *deprecated.  Use an htm.Matcher instead*
-        """
-
-        print 'deprecated: use a htm.Matcher instead'
-
-        if verbose:
-            stdout.write("looking up ids\n")
-
-        htmid = self.lookup_id(ra, dec)
-        minid = htmid.min()
-        maxid = htmid.max()
-
-        if verbose:
-            stdout.write("Getting reverse indices\n")
-            stdout.flush()
-        hist, htmrev = stat.histogram(htmid - minid, rev=True)
-
-        return htmrev, minid, maxid
 
     def cylmatch(self, ra1, dec1, z1, ra2, dec2, z2,
                  radius, dz,
@@ -603,6 +566,7 @@ class HTM(htmc.HTMC):
 
 
         """
+        from HMpTy import stat
 
         if htmid2 is None:
             stdout.write("Generating HTM ids\n")
@@ -749,8 +713,8 @@ def read_pairs(filename, verbose=False):
         data = esutil.htm.read_pairs('some-path')*
     """
 
-    import HMpTy as eu
-    from HMpTy.recfile import Recfile
+    import esutil as eu
+    from esutil.recfile import Recfile
 
     dtype = [('i1', 'i8'), ('i2', 'i8'), ('d12', 'f8')]
 
