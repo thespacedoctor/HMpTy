@@ -92,6 +92,7 @@ setup(name='HMpTy',
       author_email='davidrobertyoung@gmail.com',
       license='MIT',
       packages=packages,
+      include_package_data=True,
       install_requires=[
           'pyyaml',
           'numpy'

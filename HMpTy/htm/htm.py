@@ -8,14 +8,14 @@ class HTM(htmc.HTMC):
 
     def get_depth(self):
         """
-        get the depth of the HTM tree
+        *get the depth of the HTM tree*
         """
         return super(HTM, self).depth()
 
     def area(self):
         """
-        Get the mean area of triangles at the current depth. The units are
-        square degrees.
+        *Get the mean area of triangles at the current depth. The units are
+        square degrees.*
         """
         pi = numpy.pi
         area0 = 4.0 * pi / 8.0
@@ -26,7 +26,7 @@ class HTM(htmc.HTMC):
 
     def intersect(self, ra, dec, radius, inclusive=True):
         """
-        look up all triangles that are contained within or intersect a circle
+        *look up all triangles that are contained within or intersect a circle
         centered on the input point.
 
         parameters
@@ -39,7 +39,7 @@ class HTM(htmc.HTMC):
             radius of circle in degrees
         inclusive: bool, optional
             If False, only include triangles fully enclosed within the circle.
-            If True, include those that intersect as well.  Default True.
+            If True, include those that intersect as well.  Default True.*
         """
         if inclusive:
             inc = 1
@@ -57,7 +57,8 @@ class HTM(htmc.HTMC):
               file=None,
               verbose=False):
         """
-        Match two sets of ra/dec points using the Hierarchical Triangular
+
+        *Match two sets of ra/dec points using the Hierarchical Triangular
         Mesh code.
 
         This is very efficient for large search angles and large lists.
@@ -143,7 +144,7 @@ class HTM(htmc.HTMC):
         2 1 0.00013888984367
         2 2 0.00018333285694
         2 0 0.000416666032158
-        3 3 0.000322221232243
+        3 3 0.000322221232243*
 
         """
 
@@ -399,7 +400,7 @@ class HTM(htmc.HTMC):
 
     def read(self, filename, verbose=False):
         """
-        read pair info from a file written by match()
+        *read pair info from a file written by match()
 
         parameters
         ----------
@@ -418,7 +419,7 @@ class HTM(htmc.HTMC):
                 in degrees.
 
         These are equivalent to m1,m2,d12 returned by the
-            match() program when no file is sent.
+            match() program when no file is sent.*
         """
 
         return read_pairs(filename, verbose=verbose)
@@ -431,7 +432,9 @@ class HTM(htmc.HTMC):
                  maxid=None,
                  getbins=True):
         """
-        Class:
+
+
+        *Class:
             HTM
 
         Method Name:
@@ -559,7 +562,7 @@ class HTM(htmc.HTMC):
                                               scale=DA)
 
          MODIFICATION HISTORY:
-             Created:  2010-03-31, Erin Sheldon, BNL
+             Created:  2010-03-31, Erin Sheldon, BNL*
 
 
         """
@@ -591,7 +594,7 @@ class HTM(htmc.HTMC):
 class Matcher(htmc.Matcher):
 
     """
-    Object to match arrays of ra,dec
+    *Object to match arrays of ra,dec
 
     The object is initialized with a set of ra,dec and can
     then be matched to other sets
@@ -603,7 +606,7 @@ class Matcher(htmc.Matcher):
     ra: scalar or array
         right ascension in degrees
     dec: scalar or array
-        declination in degrees
+        declination in degrees*
     """
 
     def __init__(self, depth, ra, dec):
@@ -619,14 +622,14 @@ class Matcher(htmc.Matcher):
 
     def get_depth(self):
         """
-        get the depth of the HTM tree
+        *get the depth of the HTM tree*
         """
         return super(Matcher, self).get_depth()
     depth = get_depth
 
     def match(self, ra, dec, radius, maxmatch=1, file=None):
         """
-        match to the input set of ra,dec points
+        *match to the input set of ra,dec points
 
         ra: scalar or array
             right ascension in degrees to match against
@@ -659,7 +662,7 @@ class Matcher(htmc.Matcher):
             d:
                 Distance between the pairs in degrees
 
-        if file= is sent then then number of matches is returned.
+        if file= is sent then then number of matches is returned.*
         """
 
         ra = numpy.array(ra, dtype='f8', ndmin=1, copy=False)
@@ -680,7 +683,7 @@ class Matcher(htmc.Matcher):
 
 def read_pairs(filename, verbose=False):
     """
-    Read the pair info written by the match code
+    *Read the pair info written by the match code
 
     parameters
     -----------
@@ -706,7 +709,7 @@ def read_pairs(filename, verbose=False):
 
         h.match(ra1,dec1,ra2,dec2,radius,filename='some-path')
 
-        data = esutil.htm.read_pairs('some-path')
+        data = esutil.htm.read_pairs('some-path')*
     """
 
     import esutil as eu

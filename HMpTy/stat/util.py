@@ -81,7 +81,8 @@ except:
 class Binner(dict):
 
     """
-    Bin data and calculate statistics of the bins.
+
+    *Bin data and calculate statistics of the bins.
 
     b = Binner(x, y=None, weights=None)
 
@@ -116,7 +117,7 @@ class Binner(dict):
         # reverse indices are always calculated when
         # y is sent, so we have the mean values for x,y
         b['xmean'], b['xstd'], b['xerr'], b['xerr2']
-        b['ymean'], b['ystd'], b['yerr'], b['yerr2']
+        b['ymean'], b['ystd'], b['yerr'], b['yerr2']*
 
     """
 
@@ -141,8 +142,8 @@ class Binner(dict):
 
     def dohist(self, binsize=None, nbin=None, nperbin=None, min=None, max=None, rev=False, mergelast=True):
         """
-        Perform the basic histogram, optionally getting reverse indices. Note
-        if weights were sent, reverse indices will always be calculated
+        *Perform the basic histogram, optionally getting reverse indices. Note
+        if weights were sent, reverse indices will always be calculated*
         """
 
         # this method inherited from dict
@@ -275,8 +276,8 @@ class Binner(dict):
 
     def _get_minmax_and_indices(self, min=None, max=None):
         """
-        Get sort index, min/max, and w, the sorted indices in the specified
-        min/max range.
+        *Get sort index, min/max, and w, the sorted indices in the specified
+        min/max range.*
         """
         self._get_sort_index()
         s = self['sort_index']
@@ -448,7 +449,7 @@ def histogram(data, weights=None, binsize=1., nbin=None,
               min=None, max=None,
               rev=False, more=False, **keys):
     """
-    Calculate the histogram of the input data.  
+    *Calculate the histogram of the input data.  
 
     Similar to IDL histogram.  The reverse indices are also optionally
     calculated.  This routine uses the Binner class in this module for the
@@ -512,7 +513,7 @@ def histogram(data, weights=None, binsize=1., nbin=None,
                     sqrt(1/sum(weights))
                 'werr2': The weighted error calculated from the
                     weighted variance: 
-                      sqrt( (w**2 * (arr-mean)**2).sum() )/weights.sum()
+                      sqrt( (w***2 * (arr-mean)**2).sum() )/weights.sum()
 
 
     Using Reverse Indices:
@@ -550,7 +551,7 @@ def histogram(data, weights=None, binsize=1., nbin=None,
 
 def _dohist(data, dmin, s, binsize, hist, revind=None):
     """
-    This is the slower python-only implementation
+    *This is the slower python-only implementation*
     """
 
     dorev = False
@@ -594,10 +595,11 @@ def _dohist(data, dmin, s, binsize, hist, revind=None):
 
 def testhist(doplot=False):
     """
-    testhist(doplot=False)
+
+    *testhist(doplot=False)
 
     Run some tests on the histogram function.  If doplot=True is sent, you must
-    have the biggles plotting program installed.
+    have the biggles plotting program installed.*
 
     """
     import esutil
@@ -654,8 +656,8 @@ def histogram2d(x, y,
                 ymax=None,
                 rev=False,
                 more=False):
-    """
-    Histogram two-dimensional data.
+    """ 
+    *Histogram two-dimensional data.
 
     res=histogram2d(x, y, z=None,
                     nx=None, 
@@ -705,7 +707,7 @@ def histogram2d(x, y,
         If True, return a dictionary with the histogram in the 'hist' key, as
         well as xlow,xhigh,xcenter and other bin information.
 
-        If z is sent, more is implied. 
+        If z is sent, more is implied.* 
     """
 
     x = numpy.array(x, ndmin=1, copy=False)
@@ -832,14 +834,14 @@ def histogram2d(x, y,
 
 def boxcar_average(x, N):
     """
-    convolve the data with a boxcar window of the specified length
+    *convolve the data with a boxcar window of the specified length
 
     parameters
     ----------
     data: array
         The data
     N: integer
-        Size of the window
+        Size of the window*
     """
     from numpy import convolve, ones
     kernel = ones((N,)) / N
@@ -848,7 +850,8 @@ def boxcar_average(x, N):
 
 def wmom(arrin, weights_in, inputmean=None, calcerr=False, sdev=False):
     """
-    NAME:
+
+   *NAME:
       wmom()
 
     PURPOSE:
@@ -869,7 +872,7 @@ def wmom(arrin, weights_in, inputmean=None, calcerr=False, sdev=False):
       calcerr=False: 
           Calculate the weighted error.  By default the error is calculated as
           1/sqrt( weights.sum() ).  If calcerr=True it is calculated as sqrt(
-          (w**2 * (arr-mean)**2).sum() )/weights.sum()
+          (w***2 * (arr-mean)**2).sum() )/weights.sum()
       sdev=False: 
           If True, also return the weighted standard deviation as a third
           element in the tuple.
@@ -916,9 +919,9 @@ def wmom(arrin, weights_in, inputmean=None, calcerr=False, sdev=False):
 
 def wmedian(arr_in, weights_in):
     """
-    Calculate the weighted median.  The routine is from
+    *Calculate the weighted median.  The routine is from
 
-    http://stackoverflow.com/questions/9794558/weighted-median-computation
+    http://stackoverflow.com/questions/9794558/weighted-median-computation*
     """
     # no copy made if they are already arrays
     arr = numpy.array(arr_in, ndmin=1, copy=False)
@@ -945,7 +948,7 @@ def wmedian(arr_in, weights_in):
 def sigma_clip(arrin, weights=None, niter=4, nsig=4, get_err=False, get_indices=False, extra={},
                verbose=False, silent=False):
     """
-    Calculate the mean/stdev of an array with sigma clipping.
+    *Calculate the mean/stdev of an array with sigma clipping.
 
     Iterate niter times, removing elements that are outside nsig, and
     recalculating mean/stdev.
@@ -975,7 +978,7 @@ def sigma_clip(arrin, weights=None, niter=4, nsig=4, get_err=False, get_indices=
       Converted from IDL: 2006-10-23. Erin Sheldon, NYU
       Minor bug fix to error messaging: 2010-05-28. Brian Gerke, SLAC
       Added silent keyword, to shut off error messages.  BFG 2010-09-13
-      Added weights option
+      Added weights option*
     """
     arr = numpy.array(arrin, ndmin=1, copy=False)
     if weights is not None:
@@ -1041,7 +1044,7 @@ def _print_sigma_clip_stats(iter, nuse, mean, stdev):
 
 def interplin(vin, xin, uin):
     """
-    NAME:
+    *NAME:
       interplin()
 
     PURPOSE:
@@ -1059,7 +1062,7 @@ def interplin(vin, xin, uin):
       u: The x-values to which will be interpolated.
 
     REVISION HISTORY:
-      Created: 2006-10-24, Erin Sheldon, NYU
+      Created: 2006-10-24, Erin Sheldon, NYU*
     """
     # Make sure inputs are arrays.  Copy only made if they are not.
     v = numpy.array(vin, ndmin=1, copy=False)
@@ -1086,7 +1089,7 @@ def interplin(vin, xin, uin):
 
 def cor2cov(cor, diagerr):
     """
-    Convert a correlation matrix and diagonal errors to a covariance matrix.
+    *Convert a correlation matrix and diagonal errors to a covariance matrix.
 
     parameters
     ----------
@@ -1098,7 +1101,7 @@ def cor2cov(cor, diagerr):
     outputs
     -------
     cov: square array
-        The NxN covariance matrix
+        The NxN covariance matrix*
     """
     if len(diagerr.shape) != 1:
         raise ValueError("expected 1-d diag errors, got %s" % diagerr.shape)
@@ -1122,7 +1125,7 @@ def cor2cov(cor, diagerr):
 
 def cov2cor(cov):
     """
-    Convert the input covariance matrix to a correlation matrix
+    *Convert the input covariance matrix to a correlation matrix
 
     corr[i,j] = cov[i,j]/sqrt(cov[i,i]*cov[j,j])
 
@@ -1134,7 +1137,7 @@ def cov2cor(cov):
     outputs
     -------
     cor: square array
-        The NxN correlation matrix
+        The NxN correlation matrix*
     """
     cor = zeros(cov.shape)
 
