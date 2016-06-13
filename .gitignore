@@ -21,7 +21,6 @@ html_test_coverage_report/
 /*.egg-info
 /*.egg
 
-README.rst
 
 ## Apache logs
 logs/*.log
