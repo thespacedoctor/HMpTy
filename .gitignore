@@ -21,7 +21,7 @@ html_test_coverage_report/
 /*.egg-info
 /*.egg
 build/
-
+logger.log
 
 ## Apache logs
 logs/*.log
