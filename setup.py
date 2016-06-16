@@ -96,7 +96,8 @@ setup(name="HMpTy",
       # include_package_data=True,
       install_requires=[
           'pyyaml',
-          'HMpTy'
+          'HMpTy',
+          'fundamentals'
       ],
       test_suite='nose.collector',
       tests_require=['nose', 'nose-cover3'],
