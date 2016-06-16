@@ -13,7 +13,9 @@ if version_info >= (2, 6, 0):
         try:
             fp, pathname, description = imp.find_module(
                 '_htmc', [dirname(__file__)])
-        except ImportError:
+            print "====================== HERE ======================="
+        except ImportError, e:
+            print str(e)
             import _htmc
             return _htmc
         if fp is not None:
