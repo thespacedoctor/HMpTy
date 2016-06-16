@@ -344,11 +344,14 @@ def generateAutosummaryIndex():
     for sp in allSubpackages:
         for name, obj in inspect.getmembers(__import__(sp, fromlist=[''])):
             if inspect.ismodule(obj):
+                if name in ["numpy"]:
+                    continue
                 thisMod = sp + "." + name
                 if thisMod not in allSubpackages and len(name) and name[0] != "_" and name[-5:] != "tests":
                     allModules.append(sp + "." + name)
 
     for spm in allSubpackages + allModules:
+
         for name, obj in inspect.getmembers(__import__(spm, fromlist=[''])):
             if inspect.isclass(obj):
                 thisClass = spm + "." + name
