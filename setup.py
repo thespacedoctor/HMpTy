@@ -93,7 +93,7 @@ setup(name="HMpTy",
       author_email='davidrobertyoung@gmail.com',
       license='MIT',
       packages=find_packages(),
-      include_package_data=True,
+      # include_package_data=True,
       install_requires=[
           'pyyaml',
           'HMpTy'
