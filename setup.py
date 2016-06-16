@@ -4,15 +4,15 @@ import time
 from sys import stdout, stderr
 from glob import glob
 import platform
-
-from setuptools import setup, Extension
-
+from setuptools import setup, Extension, find_packages
 import distutils.sysconfig
-import os
+
+moduleDirectory = os.path.dirname(os.path.realpath(__file__))
+exec(open(moduleDirectory + "/HMpTy/__version__.py").read())
 
 
 def readme():
-    with open('README.rst') as f:
+    with open(moduleDirectory + '/README.rst') as f:
         return f.read()
 
 main_libdir = distutils.sysconfig.get_python_lib()
@@ -75,10 +75,9 @@ if have_numpy:
     ext_modules.append(htm_module)
     packages.append('HMpTy.htm')
 
-# data_files copies the ups/HMpTy.table into prefix/ups
-setup(name='HMpTy',
-      version='0.1',
-      description='',
+setup(name="HMpTy",
+      version=__version__,
+      description="Tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTMIDs, crossmatch sky-coordinates via angular separation and more",
       long_description=readme(),
       classifiers=[
           'Development Status :: 4 - Beta',
@@ -86,22 +85,24 @@ setup(name='HMpTy',
           'Programming Language :: Python :: 2.7',
           'Topic :: Utilities',
       ],
-      keywords='utilities dryx',
+      keywords=['astronomy, coordinates, tools'],
       url='https://github.com/thespacedoctor/HMpTy',
-      author='thespacedoctor',
+      download_url='https://github.com/thespacedoctor/HMpTy/archive/v%(__version__)s.zip' % locals(
+      ),
+      author='David Young',
       author_email='davidrobertyoung@gmail.com',
       license='MIT',
-      packages=packages,
+      packages=find_packages(),
       include_package_data=True,
       install_requires=[
           'pyyaml',
-          'numpy'
+          'HMpTy'
       ],
       test_suite='nose.collector',
       tests_require=['nose', 'nose-cover3'],
       ext_modules=ext_modules,
-      entry_points={
-          'console_scripts': ['funniest-joke=funniest.cmd:main'],
-      },
+      # entry_points={
+      #     'console_scripts': ['HMpTy=HMpTy.cl_utils:main'],
+      # },
       zip_safe=False,
       include_dirs=include_dirs)
