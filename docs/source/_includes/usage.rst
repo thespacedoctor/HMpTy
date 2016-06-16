@@ -1,6 +1,10 @@
 Usage
-========
+======
 
-.. todo::
+.. code-block:: bash 
+   
+    HMpTy [-s <pathToSettingsFile>]
 
-    - add usage
+    -h, --help            show this help message
+    -s, --settings        the settings file
+    
