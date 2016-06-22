@@ -4,8 +4,26 @@
 Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org/en/stable
 
 Usage:
-    HMpTy [-s <pathToSettingsFile>]
+    hmpty table <tableName> <primaryIdCol> <raCol> <decCol> -s <pathToSettingsFile>
+    hmpty table --host=<host> --user=<user> --passwd=<passwd> --dbName=<dbName> <tableName> <primaryIdCol> <raCol> <decCol> [-s <pathToSettingsFile>]
 
+    COMMANDS
+    ========
+    table                 add HTMids to database table
+
+    ARGUMENTS
+    =========
+    tableName             name of the table to add the HTMids to
+    primaryIdCol          the name of the unique primary ID column of the database table
+    raCol                 name of the talbe column containing the right ascension
+    decCol                name of the talbe column containing the declination
+    host                  database host address
+    user                  database username
+    passwd                database password
+    dbName                database name
+
+    FLAGS
+    =====
     -h, --help            show this help message
     -s, --settings        the settings file
 """
@@ -18,6 +36,7 @@ import glob
 import pickle
 from docopt import docopt
 from fundamentals import tools, times
+from HMpTy.mysql import add_htm_ids_to_mysql_database_table
 # from ..__init__ import *
 
 
@@ -95,6 +114,15 @@ def main(arguments=None):
         pickle.dump(pickleMe, open(pathToPickleFile, "wb"))
 
     # CALL FUNCTIONS/OBJECTS
+    if table:
+        add_htm_ids_to_mysql_database_table(
+            raColName=raCol,
+            declColName=decCol,
+            tableName=tableName,
+            dbConn=dbConn,
+            log=log,
+            primaryIdColumnName=primaryIdCol
+        )
 
     if "dbConn" in locals() and dbConn:
         dbConn.commit()
