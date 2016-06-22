@@ -98,13 +98,14 @@ setup(name="HMpTy",
           'pyyaml',
           'HMpTy',
           'fundamentals',
-          'numpy'
+          'numpy',
+          'docopt'
       ],
       test_suite='nose.collector',
       tests_require=['nose', 'nose-cover3'],
       ext_modules=ext_modules,
-      # entry_points={
-      #     'console_scripts': ['HMpTy=HMpTy.cl_utils:main'],
-      # },
+      entry_points={
+          'console_scripts': ['hmpty=HMpTy.cl_utils:main'],
+      },
       zip_safe=False,
       include_dirs=include_dirs)
