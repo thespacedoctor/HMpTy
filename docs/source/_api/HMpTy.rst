@@ -13,8 +13,8 @@ Subpackages
 
     HMpTy.commonutils
     HMpTy.htm
+    HMpTy.mysql
     HMpTy.stat
-    HMpTy.tests
 
 Submodules
 ----------
