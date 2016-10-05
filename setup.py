@@ -50,7 +50,15 @@ else:
     extra_link_args = []
 
 # HTM
-include_dirs += ['HMpTy/htm', 'HMpTy/htm/htm_src']
+try:
+    import numpy
+except:
+    import pip
+    pip.main(['install', 'numpy'])
+
+import numpy
+include_dirs = [numpy.get_include(), 'HMpTy/include',
+                'HMpTy/htm', 'HMpTy/htm/htm_src']
 htm_sources = glob('HMpTy/htm/htm_src/*.cpp')
 htm_sources += ['HMpTy/htm/htmc.cc', 'HMpTy/htm/htmc_wrap.cc']
 htm_module = Extension('HMpTy.htm._htmc',
