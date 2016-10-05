@@ -85,7 +85,8 @@ setup(name="HMpTy",
           'pyyaml',
           'HMpTy',
           'fundamentals',
-          'docopt'
+          'docopt',
+          'astrocalc'
       ],
       test_suite='nose.collector',
       tests_require=['nose', 'nose-cover3'],

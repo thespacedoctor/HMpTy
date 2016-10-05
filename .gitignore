@@ -29,3 +29,4 @@ transients_cache/
 test_database.sql
 /logs/log.html
 build
+example_settings.yaml
