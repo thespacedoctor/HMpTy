@@ -41,18 +41,6 @@ tablefile.close()
 # can we build recfile?
 packages = ['HMpTy']
 ext_modules = []
-try:
-    import numpy
-    include_dirs = [numpy.get_include()]
-    include_dirs += ['HMpTy/include']
-    have_numpy = True
-except:
-    have_numpy = False
-    ext_modules = []
-    include_dirs = []
-
-    stdout.write('Numpy not found:  Not building C extensions\n')
-    time.sleep(5)
 
 if platform.system() == 'Darwin':
     extra_compile_args = ['-arch', 'i386', '-arch', 'x86_64']
@@ -61,19 +49,17 @@ else:
     extra_compile_args = []
     extra_link_args = []
 
+# HTM
+include_dirs += ['HMpTy/htm', 'HMpTy/htm/htm_src']
+htm_sources = glob('HMpTy/htm/htm_src/*.cpp')
+htm_sources += ['HMpTy/htm/htmc.cc', 'HMpTy/htm/htmc_wrap.cc']
+htm_module = Extension('HMpTy.htm._htmc',
+                       extra_compile_args=extra_compile_args,
+                       extra_link_args=extra_link_args,
+                       sources=htm_sources)
 
-if have_numpy:
-    # HTM
-    include_dirs += ['HMpTy/htm', 'HMpTy/htm/htm_src']
-    htm_sources = glob('HMpTy/htm/htm_src/*.cpp')
-    htm_sources += ['HMpTy/htm/htmc.cc', 'HMpTy/htm/htmc_wrap.cc']
-    htm_module = Extension('HMpTy.htm._htmc',
-                           extra_compile_args=extra_compile_args,
-                           extra_link_args=extra_link_args,
-                           sources=htm_sources)
-
-    ext_modules.append(htm_module)
-    packages.append('HMpTy.htm')
+ext_modules.append(htm_module)
+packages.append('HMpTy.htm')
 
 setup(name="HMpTy",
       version=__version__,
@@ -95,10 +81,10 @@ setup(name="HMpTy",
       packages=find_packages(),
       # include_package_data=True,
       install_requires=[
+          'numpy',
           'pyyaml',
           'HMpTy',
           'fundamentals',
-          'numpy',
           'docopt'
       ],
       test_suite='nose.collector',
