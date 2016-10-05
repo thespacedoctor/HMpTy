@@ -280,14 +280,16 @@ def updateUsageRST():
 
     if not "Usage:" in usage or "todo:" in usage:
         return None
-    usage = usage.split("Usage:")[-1].strip()
+    usageString = ""
+    for l in usage.split("\n"):
+        usageString += "    " + l + "\n"
+
     usage = """Usage
 ======
 
 .. code-block:: bash 
    
-    %(usage)s
-    """ % locals()
+%(usageString)s""" % locals()
 
     moduleDirectory = os.path.dirname(__file__)
     uFile = moduleDirectory + "/_includes/usage.rst"
@@ -299,6 +301,7 @@ def updateUsageRST():
         writeFile.close()
 
     return None
+
 
 updateUsageRST()
 
