@@ -7,28 +7,31 @@ HTMIDs, crossmatch sky-coordinates via angular separation and more*.
 Usage
 =====
 
-    hmpty table <tableName> <primaryIdCol> <raCol> <decCol> -s <pathToSettingsFile>
-    hmpty table --host=<host> --user=<user> --passwd=<passwd> --dbName=<dbName> <tableName> <primaryIdCol> <raCol> <decCol> [-s <pathToSettingsFile>]
+    Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org/en/stable
 
-    COMMANDS
-    ========
-    table                 add HTMids to database table
+    Usage:
+        hmpty table <tableName> <primaryIdCol> <raCol> <decCol> -s <pathToSettingsFile>
+        hmpty table --host=<host> --user=<user> --passwd=<passwd> --dbName=<dbName> <tableName> <primaryIdCol> <raCol> <decCol> [-s <pathToSettingsFile>]
 
-    ARGUMENTS
-    =========
-    tableName             name of the table to add the HTMids to
-    primaryIdCol          the name of the unique primary ID column of the database table
-    raCol                 name of the talbe column containing the right ascension
-    decCol                name of the talbe column containing the declination
-    host                  database host address
-    user                  database username
-    passwd                database password
-    dbName                database name
+        COMMANDS
+        ========
+        table                 add HTMids to database table
 
-    FLAGS
-    =====
-    -h, --help            show this help message
-    -s, --settings        the settings file
+        ARGUMENTS
+        =========
+        tableName             name of the table to add the HTMids to
+        primaryIdCol          the name of the unique primary ID column of the database table
+        raCol                 name of the talbe column containing the right ascension
+        decCol                name of the talbe column containing the declination
+        host                  database host address
+        user                  database username
+        passwd                database password
+        dbName                database name
+
+        FLAGS
+        =====
+        -h, --help            show this help message
+        -s, --settings        the settings file
 
 Documentation
 =============

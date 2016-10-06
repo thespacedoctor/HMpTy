@@ -14,21 +14,22 @@ HMpTy.htm.htm.HTM (*class*)
    .. autosummary::
    
       ~HTM.__init__
-      ~HTM.area
-      ~HTM.bincount
       ~HTM.cbincount
       ~HTM.cmatch
-      ~HTM.cylmatch
-      ~HTM.depth
-      ~HTM.get_depth
       ~HTM.init
       ~HTM.intersect
       ~HTM.lookup_id
       ~HTM.match
-      ~HTM.read
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~HTM.area
+      ~HTM.depth
    
    

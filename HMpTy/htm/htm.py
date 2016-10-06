@@ -1,159 +1,181 @@
-import htmc
+#!/usr/local/bin/python
+# encoding: utf-8
+"""
+*Tools for working with Hierarchical Triangular Meshes, including coordinate crossmatching*
 
+:Author:
+    David Young (originally forked from Erin Sheldon's esutil - esheldon)
+
+:Date Created:
+    October  6, 2016
+"""
+################# GLOBAL IMPORTS ####################
+import sys
+import os
+os.environ['TERM'] = 'vt100'
+from fundamentals import tools
+from astrocalc.coords import unit_conversion
+import htmc
 import numpy
 from sys import stdout
 
 
 class HTM(htmc.HTMC):
+    """
+    *A Hierarchical Triangular Mesh object*
 
-    def get_depth(self):
-        """
-        *get the depth of the HTM tree*
+    **Key Arguments:**
+        - ``depth`` -- the depth of the mesh you wish to create. Default *16*
+
+    **Usage:**
+
+        To generate a mesh object:
+
+        .. code-block:: python 
+
+            from HMpTy.htm import HTM
+            mesh16 = HTM(
+                depth=16
+            )
+    """
+
+    @property
+    def depth(
+            self):
+        """*the depth of the HTM tree*
+
+        **Usage:**
+
+            .. code-block:: python 
+
+                mesh.depth 
         """
         return super(HTM, self).depth()
 
-    def area(self):
-        """
-        *Get the mean area of triangles at the current depth. The units are
-        square degrees.*
+    @property
+    def area(
+            self):
+        """*Tthe mean area of triangles in this mesh in units of square degrees.*
+
+        **Usage:**
+
+            .. code-block:: python 
+
+                mesh.area
         """
         pi = numpy.pi
         area0 = 4.0 * pi / 8.0
-
-        areadiv = 4.0 ** self.get_depth()
+        areadiv = 4.0 ** self.depth
         area = area0 / areadiv * (180.0 / pi) ** 2
         return area
 
     def intersect(self, ra, dec, radius, inclusive=True):
-        """
-        *look up all triangles that are contained within or intersect a circle
-        centered on the input point.
+        """*return IDs of all triangles contained within and/or intersecting a circle centered on a given ra and dec*
 
-        parameters
-        ----------
-        ra: float
-            RA of central point in degrees
-        dec: float
-            DEC of central point in degrees
-        radius: float
-            radius of circle in degrees
-        inclusive: bool, optional
-            If False, only include triangles fully enclosed within the circle.
-            If True, include those that intersect as well.  Default True.*
+        **Key Arguments:**
+            - ``ra`` -- RA of central point in decimal degrees or sexagesimal
+            - ``dec`` -- DEC of central point in decimal degrees or sexagesimal
+            - ``radius`` -- radius of circle in degrees
+            - ``inclusive`` -- include IDs of triangles that intersect the circle as well as those completely inclosed by the circle. Default *True*
+
+        **Return:**
+            - ``trixelArray`` -- a numpy array of the match trixel IDs
+
+        **Usage:**
+
+            To return the trixels overlapping a circle with a 10 arcsec radius centred at 23:25:53.56, +26:54:23.9
+
+            .. code-block:: python 
+
+                overlappingTrixels = mesh16.intersect(
+                    ra="23:25:53.56",
+                    dec="+26:54:23.9",
+                    radius=10 / (60 * 60),
+                    inclusive=True
+                )
+
+            Or to return the trixels completing enclosed by a circle with a 1 degree radius centred at 23:25:53.56, +26:54:23.9
+
+            .. code-block:: python 
+
+                overlappingTrixels = mesh16.intersect(
+                    ra="23:25:53.56",
+                    dec="+26:54:23.9",
+                    radius=1,
+                    inclusive=False
+                )
         """
+        # CONVERT RA AND DEC DECIMAL DEGREES
+        converter = unit_conversion(
+            log=self.log
+        )
+        ra = converter.ra_sexegesimal_to_decimal(
+            ra=ra
+        )
+        dec = converter.dec_sexegesimal_to_decimal(
+            dec=dec
+        )
+
         if inclusive:
             inc = 1
         else:
             inc = 0
-
         return super(HTM, self).intersect(ra, dec, radius, inc)
 
-    def match(self, ra1, dec1, ra2, dec2, radius,
-              maxmatch=1,
-              htmid2=None,
-              htmrev2=None,
-              minid=None,
-              maxid=None,
-              file=None,
-              verbose=False):
+    def match(self, ra1, dec1, ra2, dec2, radius, maxmatch=1):
+        """*Crossmatch two lists of ra/dec points*
+
+        This is very efficient for large search angles and large lists. Note, if you need to match against the same points many times, you should use a `Matcher` object
+
+        **Key Arguments:**
+            - ``ra1`` -- list, numpy array or single ra value (first coordinate set)
+            - ``dec1`` -- list, numpy array or single dec value (first coordinate set - must match ra1 array length)
+            - ``ra2`` -- list, numpy array or single ra value (second coordinate set)
+            - ``dec2`` -- list, numpy array or single dec value (second coordinate set - must match ra2 array length)
+            - ``radius`` -- search radius in degrees. Can be list, numpy array or single value. If list or numpy array must be same length as ra1 array length)
+            - ``maxmatch`` -- maximum number of matches to return. Set to `0` to match all points. Default *1* (i.e. closest match)
+
+        **Return:**
+            - ``matchIndices1`` -- match indices for list1 (ra1, dec1)
+            - ``matchIndices2`` -- match indices for list2 (ra2, dec2)
+            - ``sepDeg`` -- separations between matched corrdinates in degrees. All returned arrays are the same size
+
+
+        **Usage:**
+
+            To match 2 lists of corrdinates try something like this:
+
+            .. code-block:: python 
+
+                twoArcsec = 2.0 / 3600.
+                raList1 = [200.0, 200.0, 200.0, 175.23, 21.36]
+                decList1 = [24.3,  24.3,  24.3,  -28.25, -15.32]
+                raList2 = [200.0, 200.0, 200.0, 175.23, 55.25]
+                decList2 = [24.3 + 0.75 * twoArcsec, 24.3 + 0.25 * twoArcsec,
+                            24.3 - 0.33 * twoArcsec, -28.25 + 0.58 * twoArcsec, 75.22]
+                matchIndices1, matchIndices2, seps = mesh.match(
+                    ra1=raList1,
+                    dec1=decList1,
+                    ra2=raList2,
+                    dec2=decList2,
+                    radius=twoArcsec,
+                    maxmatch=0
+                )
+
+                for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
+                    print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2] 
+
+            Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.  
         """
 
-        *Match two sets of ra/dec points using the Hierarchical Triangular
-        Mesh code.
-
-        This is very efficient for large search angles and large lists.
-
-        This method is a simple wrapper around the Matcher class
-
-        If you need to match against the same points many times, use
-        a htm.Matcher object.
-
-        parameters
-        ----------
-        ra1: array or scalar
-        dec1: array or scalar
-        ra2: array or scalar
-        dec2:  array or scalar
-            ra,dec in degrees.  Can be scalars or arrays but require
-            size(ra) == size(dec) in each set.
-
-        radius: 
-            The search radius in degrees.  May be a scalar or an array same
-            length as ra1,dec1.
-
-        maxmatch: integer, optional 
-            The maximum number of allowed matches per point. Defaults to return
-            the closest match, maxmatch=1.  Use maxmatch<=0 to return all
-            matches
-
-        file: string, optional
-            A file into which will be written the indices and distances.
-            When this keyword is sent, None,None,None is returned. This is
-            useful when the match data will not fit into memory.  
-
-            The file is in text format of the form
-                i1 i2 d12
-            Where i1,i2 are the match indices and d12 is the distance between
-            them in degrees
-
-            The file can be read using the read() method.
-
-        returns
-        -------
-            m1,m2,d12: 
-
-                A tuple of m1,m2,d12.  m1 and m2 are the match indices for
-                list1 and list2.  d12 is the distance between them in degrees.
-
-                You can subscript the arrays ra1,dec1 with the m1 array, and
-                ra2,dec2 with the m2 array.   If you do so the data "line-up"
-                so that points in list one and list two at the same index are
-                matches.
-
-                If you write the results to a file, the returned value is
-                simply the match count.
-
-        examples
-        --------
-
-        # try the matching two lists of ra/dec points
-        # Matching by ra/dec, expect 10 matches ordered by distance....
-
-        # match within two arcseconds
-        two = 2.0/3600.
-
-        # offset second list by fraction of 2 arcsec in dec
-        # but last one won't match anything
-        ra1 = [200.0, 200.0, 200.0, 175.23, 21.36]
-        dec1 = [24.3,  24.3,  24.3,  -28.25, -15.32]
-        ra2 = [200.0, 200.0, 200.0, 175.23, 55.25]
-        dec2 = [24.3+0.75*two, 24.3 + 0.25*two, 24.3 - 0.33*two, -28.25 + 0.58*two, 75.22]
-
-        m1,m2,d12 = h.match(ra1,dec1,ra2,dec2,two,maxmatch=0)
-
-        for i in xrange(m1.size):
-            print m1[i],m2[i],d12[i]
-
-        # this produces
-        0 1 0.00013888984367
-        0 2 0.00018333285694
-        0 0 0.000416666032158
-        1 1 0.00013888984367
-        1 2 0.00018333285694
-        1 0 0.000416666032158
-        2 1 0.00013888984367
-        2 2 0.00018333285694
-        2 0 0.000416666032158
-        3 3 0.000322221232243*
-
-        """
-
+        # CONVERT LISTS AND SINGLE VALUES TO ARRAYS OF FLOATS
         ra1 = numpy.array(ra1, dtype='f8', ndmin=1, copy=False)
         dec1 = numpy.array(dec1, dtype='f8', ndmin=1, copy=False)
         ra2 = numpy.array(ra2, dtype='f8', ndmin=1, copy=False)
         dec2 = numpy.array(dec2, dtype='f8', ndmin=1, copy=False)
         radius = numpy.array(radius, dtype='f8', ndmin=1, copy=False)
 
+        # CHECK ARRAY SIZES MATCH
         if (ra1.size != dec1.size
                 or ra2.size != ra2.size):
             stup = (ra1.size, dec1.size, ra2.size, dec2.size)
@@ -165,452 +187,111 @@ class HTM(htmc.HTMC):
             raise ValueError("radius size (%d) != 1 and"
                              " != ra2,dec2 size (%d)" % (radius.size, ra2.size))
 
-        file = check_filename(file)
-
-        if htmrev2 is None:
-            # new way using a Matcher
-            depth = self.get_depth()
-            matcher = Matcher(depth, ra2, dec2)
-            return matcher.match(ra1,
-                                 dec1,
-                                 radius,
-                                 maxmatch=maxmatch,
-                                 file=file)
-
-        else:
-            # deprecated way
-            stdout.write("you are using the old reverse indices style, "
-                         "this will work but is deprecated\n")
-
-            if minid is None:
-                minid = htmid2.min()
-            if maxid is None:
-                maxid = htmid2.max()
-            if verbose:
-                stdout.write("calling cmatch\n")
-                stdout.flush()
-            return self.cmatch(radius,
-                               ra1,
-                               dec1,
-                               ra2,
-                               dec2,
-                               htmrev2,
-                               minid,
-                               maxid,
-                               maxmatch,
-                               file)
-
-    def cylmatch(self, ra1, dec1, z1, ra2, dec2, z2,
-                 radius, dz,
-                 maxmatch=50,
-                 unique=False, nkeep=1,
-                 **kw):
-        '''
-        Class:
-           HTM
-
-        Method Name:
-           cylmatch
-
-        Purpose:
-
-            Perform cylindrical RA-Dec matching of two catalogs (called cat1
-            and cat2 in this document) by finding the nearest N neighbors
-            within a fixed search aperture and within a fixed window in some
-            arbitrary third parameter (called z for the purposes of this
-            document).  The M closest neighbors in the z direction are returned
-            (with M <= N)
-
-        Syntax:
-
-            matchind, adist, zdist = cylmatch(ra1, dec1, z1, ra2, dec2, z2,
-                                              radius., dz, 
-                                              maxmatch = 50, 
-                                              unique=False, nkeep=1, 
-                                              **kw)
-
-        Inputs:
-
-            ra1, dec1, z1: RA, Dec and z values for the first catalog
-            ra2, dec2, z2: As above for the second catalog.
-
-          radius: angular radius of search aperture in degrees.  
-                  Can either be a scalar or an array of values the 
-                  same length as cat1.
-
-          dz: half-length of the search cylinder.  Can either be a scalar or
-              an array of values the same length as cat1.
-
-
-        Keywords:
-
-            maxmatch: 
-                Maximum number of neighbors to find within the
-                search radius.  Note that this maximum is applied to
-                the *total* number of matches within the search
-                aperture, before applying the cut in the z parameter.
-                Therefore, one wants this to be something reasonably
-                large (much larger than nkeep) to ensure that matches
-                within the dz cut are included.  However, larger
-                values of magmatch may create memory issues for very
-                large catalogs.  Default value: 10.
-
-            nkeep: 
-                Number of matches to keep (and return) for each object in cat1
-                (M in the summary description above). If the number of matches
-                is less than nkeep then the rest of the  output arrays will be
-                filled with the bad value -999.  nkeep is automatically set to
-                1 and ignored if unique = True. Default value: 1.
-
-            radius: 
-                angular radius of search aperture in degrees.  Can either be a 
-                scalar or an array of values the same length as cat1.
-            dz: 
-                half-length of the search cylinder.  Can either be a scalar or
-                an array of values the same length as cat1.
-
-            unique: 
-                if this is True, the matching is done uniquely--i.e., members
-                of catalog 2 are excluded from future matching once they are
-                matched to something in catalog 1 (the matching proceeds by
-                stepping through catalog 1 in the order in which it is passed
-                to cylmatch).
-
-
-
-        **kw: keyword arguments passed through to htm.match. 
-
-
-        Returns:
-
-        matchind: 
-            An LIST of arrays containing indices of the matches in cat2 for
-            each element of cat1, with a maximum of nkeep matches returned per
-            element.
-
-        adist: 
-            angular distance to each of these matches
-
-        zdist: 
-            distance to each of these matches in the z dimension 
-            (catalog 1 minus catalog 2).  
-
-
-        Revision History:
-
-        Written by Brian F. Gerke at SLAC in May-June 2010.
-        Added to HTM class in July 2010.
-
-        '''
-
-        npts = numpy.size(ra1)
-        npts2 = numpy.size(ra2)
-        # check input
-        if ((numpy.size(dec1) != npts) | (numpy.size(dec2) != npts2) |
-                (numpy.size(z1) != npts) | (numpy.size(z2) != npts2)):
-            print npts, numpy.size(ra1), numpy.size(dec1), numpy.size(z1)
-            print npts2, numpy.size(ra2), numpy.size(dec2), numpy.size(z2)
-            raise ValueError('RA Dec and z input arrays to cylmatch must'
-                             ' have the same length for each catalog.')
-        if (numpy.size(dz) > 1) & (numpy.size(dz) < npts):
-            raise ValueError('dz must either be a scalar or have the '
-                             'same length as the input arrays in cylmatch.')
-
-        if unique:
-            nkeep = 1
-
-        # Match up catalogs on the sky.
-        m1, m2, d12 = self.match(ra1, dec1,
-                                 ra2, dec2, radius,
-                                 maxmatch=maxmatch, **kw)
-
-        # Now limit to matches that are within +/- dz of each object
-
-        if numpy.size(dz) == 1:
-
-            w, = numpy.where((z2[m2] > (z1[m1] - dz)) &
-                             (z2[m2] < (z1[m1] + dz)))
-
-        else:
-
-            w, = numpy.where((z2[m2] > (z1[m1] - dz[m1])) &
-                             (z2[m2] < (z1[m1] + dz[m1])))
-
-        m1 = m1[w]
-        m2 = m2[w]
-        d12 = d12[w]
-
-        # Now in the case of multiple matches, take the one with the minimum
-        # difference in z.
-
-        matchindex = []
-        angdist = []
-        zdist = []
-
-        # for ensuring unique matching
-        flag_matched = numpy.zeros(numpy.size(ra2), dtype='i4')
-
-        # j1 and j2 are the start and end indices for each unique value of m1
-        j1 = numpy.searchsorted(m1, numpy.arange(npts), 'left')
-        j2 = numpy.searchsorted(m1, numpy.arange(npts), 'right')
-
-        for i in range(npts):
-
-            if j1[i] == j2[i]:
-
-                # First, check to see if the ith object got a match at all...
-                # If so, check and see if the best match has already been used
-                if (j1[i] != i) or ((flag_matched[m2[j1[i]]] == 1) and unique):
-                    matchis = numpy.array([], dtype='i4')
-                    angdists = numpy.array([])
-                    zdiff = numpy.array([])
-                else:
-                    # if there's a good match, save it.
-                    matchis = numpy.array(m2[[j1[i]]])
-                    angdists = numpy.array(d12[[j1[i]]])
-                    zdiff = numpy.array([(z1[m1[j1[i]]] -
-                                          z2[m2[j1[i]]])])
-                    flag_matched[m2[j1[i]]] = 1
-            else:
-                # compute difference in z-direction for the different matches.
-                zdiff = z1[m1[j1[i]:j2[i]]] - \
-                    z2[m2[j1[i]:j2[i]]]
-
-                angdists = d12[j1[i]:j2[i]]
-                matchis = m2[j1[i]:j2[i]]
-
-                # Remove objects that have already been used
-                if unique:
-                    zdiff = zdiff[where(flag_matched[m2[j1[i]:j2[i]]] == 0)]
-
-                # If none remains, there's no match
-                if len(zdiff) > 0:
-                    # sort matches by absolute distance in z direction
-                    isort = (numpy.abs(zdiff)).argsort()
-                    angdists = angdists[isort]
-                    zdiff = zdiff[isort]
-                    matchis = matchis[isort]
-                    flag_matched[m2[j1[i] + isort[0]]] = 1
-
-            matchindex.append(matchis[0:nkeep])
-            angdist.append(angdists[0:nkeep])
-            zdist.append(zdiff[0:nkeep])
-
-        return(matchindex, angdist, zdist)
-
-    def read(self, filename, verbose=False):
-        """
-        *read pair info from a file written by match()
-
-        parameters
-        ----------
-        filename: string
-            the file name
-        verbose: bool, optional
-            print some info
-
-        returns
-        -------
-
-        A structured array with fields
-            'i1': The index of matches into list 1
-            'i2': The index of matches into list 2
-            'd12': The distance between the matched points
-                in degrees.
-
-        These are equivalent to m1,m2,d12 returned by the
-            match() program when no file is sent.*
-        """
-
-        return read_pairs(filename, verbose=verbose)
-
-    def bincount(self,
-                 rmin, rmax, nbin, ra1, dec1, ra2, dec2, scale=None,
-                 htmid2=None,
-                 htmrev2=None,
-                 minid=None,
-                 maxid=None,
-                 getbins=True):
-        """
-
-
-        *Class:
-            HTM
-
-        Method Name:
-            bincount 
-
-        Purpose:
-
-            Count number of pairs between two ra/dec lists as a function of
-            their separation.  The binning is equal spaced in the log10 of the
-            separation.  By default the bin sizes are in degrees, unless the
-            scale= keyword is sent, in which case the units are angle*scale
-            with angle in radians.
-
-            This code can be used to calculate correlation functions by
-            calling it on the data as well as random points.
-
-
-        Calling Sequence:
-            import esutil
-            depth = 10
-            h=esutil.htm.HTM(depth)
-            rlower, rupper, counts = h.bincount(
-                 rmin, rmax, nbin, ra1, dec1, ra2, dec2, 
-                 scale=None,
-                 htmid2=None, 
-                 htmrev2=None,
-                 minid=None,
-                 maxid=None,
-                 getbins=True)
-
-        Inputs:
-            rmin,rmax: Smallest and largest separations to consider.  This
-                is in degrees unless the scale= keyword is sent, in which
-                case the units are angle*scale with angle in radians.
-            nbin:  The number of bins to use.  Bins will be equally spaced
-                in the log10 of the separation.
-            ra1,dec1,ra2,dec2: 
-                ra,dec lists in degrees.  Can be scalars or arrays but require
-                len(ra) == len(dec) in each set.
-
-        Keyword Parameters:
-
-            scale:  
-                A scale to apply to the angular separations.  Must be the same
-                length as ra1/dec1 or a scalar.  This is useful for converting
-                angle to physical distance.  For example, scale could be the
-                angular diameter distance to cosmological objects in list 1.
-
-                If scale is sent, rmin,rmax must be in units of angle*scale
-                where angle is in *radians*, as opposed to degrees when scale
-                is not sent.
-
-            htmid2=None: 
-                the htm indexes for the second list.  If not sent they are
-                generated internally.  You can generate these with 
-
-                    htmid = h.lookup_id(ra, dec)
-
-            htmrev2=None: 
-                The result of
-                    import esutil
-                    htmid2 = h.lookup_id(ra, dec)
-                    minid=htmid2.min()
-                    hist2,htmrev2=\\
-                        esutil.stat.histogram(htmid2-minid,rev=True) 
-
-                If not sent it is calculated internally for fast lookups.  You
-                can save time on successive calls by generating these your
-                self.
-
-            getbins: 
-                If True, return a tuple 
-                    rlower,rupper,counts 
-
-                instead of just counts.  rlower,rupper are the lower and upper
-                limits of each bin.  getbins=True is the default.
-
-        Outputs:
-
-            if getbins=True:
-                rlower,rupper,counts:  rlower,rupper are the lower
-                and upper limits of each bin.  getbins=True is the default.
-            if getbins=False:
-                counts:  The pair counts in equally spaced logarithmic bins
-                    in separation.
-
-
-
-        Restrictions:
-            The C++ wrapper must be compiled.  This will happend automatically
-            during installation of esutil.
-
-
-         EXAMPLE:
-            import esutil
-
-            # simple angular counts, no scaling
-            # cross correlate with second catalog
-            h=esutil.htm.HTM()
-            rmin=10/3600. # degrees
-            rmax=1000/3600. # degrees
-            nbin=25
-            rlower,rupper,counts = h.bincount(rmin,rmax,nbin,
-                                              cat1['ra'],cat1['dec'],
-                                              cat2['ra'],cat2['dec'])
-
-
-
-            # counts using scaling of the angular separations with
-            # the angular diameter distance to get projected
-            # physical separations.
-            c=esutil.cosmology.Cosmo()
-
-            # get angular diameter distance to catalog 1 objects
-            DA=c.Da(0.0, cat1['z'])
-
-            # cross correlate with second catalog
-            h=esutil.htm.HTM()
-            rmin=0.025 # Mpc
-            rmax=30.0 # Mpc
-            nbin=25
-            rlower,rupper,counts = h.bincount(rmin,rmax,nbin,
-                                              cat1['ra'],cat1['dec'],
-                                              cat2['ra'],cat2['dec'],
-                                              scale=DA)
-
-         MODIFICATION HISTORY:
-             Created:  2010-03-31, Erin Sheldon, BNL*
-
-
-        """
-        from HMpTy import stat
-
-        if htmid2 is None:
-            stdout.write("Generating HTM ids\n")
-            htmid2 = self.lookup_id(ra2, dec2)
-            minid = htmid2.min()
-            maxid = htmid2.max()
-        else:
-            if minid is None:
-                minid = htmid2.min()
-            if maxid is None:
-                maxid = htmid2.max()
-
-        if htmrev2 is None:
-            stdout.write("Generating reverse indices\n")
-            hist2, htmrev2 = stat.histogram(htmid2 - minid, rev=True)
-
-        counts = self.cbincount(rmin, rmax, nbin, ra1, dec1, ra2, dec2,
-                                htmrev2, minid, maxid, scale)
-        if getbins:
-            lower, upper = log_bins(rmin, rmax, nbin)
-            return lower, upper, counts
-        else:
-            return counts
+        # new way using a Matcher
+        depth = self.depth
+        matcher = Matcher(
+            log=self.log,
+            depth=depth,
+            ra=ra2,
+            dec=dec2)
+        return matcher.match(
+            ra=ra1,
+            dec=dec1,
+            radius=radius,
+            maxmatch=maxmatch)
+
+
+class emptyLogger:
+
+    def info(self, argu):
+        pass
+
+    def error(self, argu):
+        pass
+
+    def debug(self, argu):
+        pass
+
+    def critical(self, argu):
+        pass
+
+    def warning(self, argu):
+        pass
 
 
 class Matcher(htmc.Matcher):
+    """*A matcher-array object to match other arrays of ra,dec against*
 
+    The Matcher object is initialized with a set of ra,dec coordinates and can then be used and reused to match against other sets of coordinates
+
+    **Key Arguments:**
+        - ``log`` -- logger
+        - ``depth`` -- the depth of the mesh generate the Matcher object at. Default *16*
+        - ``ra`` -- list, numpy array or single ra value
+        - ``dec`` -- --list, numpy array or single dec value (must match ra array length)
+
+
+    **Return:**
+        - None
+
+    **Usage:**
+
+        If we have a set of coordinates such that:
+\
+        .. code-block:: python 
+
+            raList1 = [200.0, 200.0, 200.0, 175.23, 21.36]
+            decList1 = [24.3,  24.3,  24.3,  -28.25, -15.32]
+
+        We can initialise a matcher object like so:
+
+        .. code-block:: python 
+
+            from HMpTy.htm import Matcher
+            coordinateSet = Matcher(
+                log=log,
+                ra=raList1,
+                dec=decList1,
+                depth=16
+            )
     """
-    *Object to match arrays of ra,dec
 
-    The object is initialized with a set of ra,dec and can
-    then be matched to other sets
+    def __init__(
+            self,
+            ra,
+            dec,
+            depth=16,
+            log=False):
 
-    parameters
-    ----------
-    depth: int
-        Depth for HTM tree.
-    ra: scalar or array
-        right ascension in degrees
-    dec: scalar or array
-        declination in degrees*
-    """
+        if log == False:
+            self.log = emptyLogger()
+        else:
+            self.log = log
 
-    def __init__(self, depth, ra, dec):
+        print dec
+        print ra
+
+        # ASTROCALC UNIT CONVERTER OBJECT
+        converter = unit_conversion(
+            log=self.log
+        )
+        # CONVERT RA AND DEC TO NUMPY ARRAYS
+        if isinstance(ra, str) or isinstance(ra, float):
+            ra = converter.ra_sexegesimal_to_decimal(ra=ra)
+        elif isinstance(ra, list):
+            raList = []
+            raList[:] = [converter.ra_sexegesimal_to_decimal(ra=r) for r in ra]
+            ra = raList
+        if isinstance(dec, str) or isinstance(dec, float):
+            self.dec = converter.dec_sexegesimal_to_decimal(dec=dec)
+        elif isinstance(dec, list):
+            decList = []
+            decList[:] = [
+                converter.dec_sexegesimal_to_decimal(dec=d) for d in dec]
+            dec = decList
+
+        print dec
+        print ra
 
         ra = numpy.array(ra, dtype='f8', ndmin=1, copy=False)
         dec = numpy.array(dec, dtype='f8', ndmin=1, copy=False)
@@ -621,50 +302,81 @@ class Matcher(htmc.Matcher):
 
         super(Matcher, self).__init__(depth, ra, dec)
 
-    def get_depth(self):
+    @property
+    def depth(
+            self):
+        """*the depth of the Matcher object*
+
+        **Usage:**
+
+            .. code-block:: python 
+
+                coordinateSet.depth
         """
-        *get the depth of the HTM tree*
+        return super(Matcher, self).depth
+
+    def match(self, ra, dec, radius, maxmatch=1):
+        """*match a corrdinate set against this Matcher object's coordinate set*
+
+        **Key Arguments:**
+            - ``ra`` -- list, numpy array or single ra value
+            - ``dec`` -- --list, numpy array or single dec value (must match ra array length)
+            - ``radius`` -- radius of circle in degrees
+            - ``maxmatch`` -- maximum number of matches to return. Set to `0` to match all points. Default *1* (i.e. closest match)
+
+        **Return:**
+            - None
+
+        **Usage:**
+
+            Once we have initialised a Matcher coordinateSet object we can match other coordinate sets against it:
+
+             .. code-block:: python 
+
+                twoArcsec = 2.0 / 3600.
+                raList2 = [200.0, 200.0, 200.0, 175.23, 55.25]
+                decList2 = [24.3 + 0.75 * twoArcsec, 24.3 + 0.25 * twoArcsec,
+                    24.3 - 0.33 * twoArcsec, -28.25 + 0.58 * twoArcsec, 75.22]
+
+                matchIndices1, matchIndices2, seps = coordinateSet.match(
+                    ra=raList2,
+                    dec=decList2,
+                    radius=twoArcsec,
+                    maxmatch=0
+                )
+
+                for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
+                    print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2]
+
+            Or to return just the nearest matches:
+
+                matchIndices1, matchIndices2, seps = coordinateSet.match(
+                    ra=raList2,
+                    dec=decList2,
+                    radius=twoArcsec,
+                    maxmatch=1
+                )
+
+            Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
         """
-        return super(Matcher, self).get_depth()
-    depth = get_depth
-
-    def match(self, ra, dec, radius, maxmatch=1, file=None):
-        """
-        *match to the input set of ra,dec points
-
-        ra: scalar or array
-            right ascension in degrees to match against
-        dec: scalar or array in degrees to match against
-            declination
-        radius: scalar or array
-            search radius in degrees.  Can be a scalar or an array the
-            same size as ra,dec
-        maxmatch: int, optional
-            Maximum number of matches to return per point, default 1.  Set
-            maxmatch <= 0 to return all matches
-        file: string, optional
-            If sent, write pairs to the file instead of returning the pair
-            data.  This can use much less memory for large match sets.
-            The file is in text format of the form
-                i1 i2 d12
-            Where i1,i2 are the match indices and d12 is the distance between
-            them in degrees
-
-            The file can be read using the read() method.
-
-        returns
-        -------
-        If file= is not sent, a tuple (m1, m2, d):
-            m1:
-                The match indices for the input ra,dec
-            m2:
-                The match indices for the internal ra,dec of
-                the Matcher object
-            d:
-                Distance between the pairs in degrees
-
-        if file= is sent then then number of matches is returned.*
-        """
+        # ASTROCALC UNIT CONVERTER OBJECT
+        converter = unit_conversion(
+            log=self.log
+        )
+        # CONVERT RA AND DEC TO NUMPY ARRAYS
+        if isinstance(ra, str) or isinstance(ra, float):
+            ra = converter.ra_sexegesimal_to_decimal(ra=ra)
+        elif isinstance(ra, list):
+            raList = []
+            raList[:] = [converter.ra_sexegesimal_to_decimal(ra=r) for r in ra]
+            ra = raList
+        if isinstance(dec, str) or isinstance(dec, float):
+            self.dec = converter.dec_sexegesimal_to_decimal(dec=dec)
+        elif isinstance(dec, list):
+            decList = []
+            decList[:] = [
+                converter.dec_sexegesimal_to_decimal(dec=d) for d in dec]
+            dec = decList
 
         ra = numpy.array(ra, dtype='f8', ndmin=1, copy=False)
         dec = numpy.array(dec, dtype='f8', ndmin=1, copy=False)
@@ -678,92 +390,4 @@ class Matcher(htmc.Matcher):
             raise ValueError("radius size (%d) != 1 and"
                              " != ra,dec size (%d)" % (radius.size, ra.size))
 
-        file = check_filename(file)
-        return super(Matcher, self).match(ra, dec, radius, maxmatch, file)
-
-
-def read_pairs(filename, verbose=False):
-    """
-    *Read the pair info written by the match code
-
-    parameters
-    -----------
-    filename: string
-        filename holding the pair data
-    verbose: bool, optional
-        print what is happening
-    returns
-    -------
-    Outputs:
-        A structured array with fields
-            'i1': The index of matches into list 1
-            'i2': The index of matches into list 2
-            'd12': The distance between the matched points
-                in degrees.
-
-        These are equivalent to m1,m2,d12 returned by the
-        match() program when no file is sent.
-
-    Example:
-        import esutil
-        h=esutil.htm.HTM(depth)
-
-        h.match(ra1,dec1,ra2,dec2,radius,filename='some-path')
-
-        data = esutil.htm.read_pairs('some-path')*
-    """
-
-    import esutil as eu
-    from esutil.recfile import Recfile
-
-    dtype = [('i1', 'i8'), ('i2', 'i8'), ('d12', 'f8')]
-
-    if verbose:
-        stdout.write("Reading pairs from file: %s\n" % filename)
-
-    filename = check_filename(filename)
-    with Recfile(filename, "r", dtype=dtype, delim=' ') as robj:
-        data = robj.read()
-
-    if verbose:
-        stdout.write("    read %d pairs\n" % data.size)
-
-    return data
-
-
-def gmean(r1, r2, dim):
-    e1 = dim + 1
-    e2 = dim
-
-    frac = (1.0 * e2) / e1
-    gm = frac * (r1 ** e1 - r2 ** e1) / (r1 ** e2 - r2 ** e2)
-    return gm
-
-
-def log_bins(rmin, rmax, nbin):
-    log_rmin = numpy.log10(rmin)
-    log_rmax = numpy.log10(rmax)
-    log_binsize = (log_rmax - log_rmin) / nbin
-
-    log_lower_edges = log_rmin + log_binsize * numpy.arange(nbin)
-    log_upper_edges = log_lower_edges + log_binsize
-    # print 'log_lower_edges:',log_lower_edges
-    # print 'log_upper_edges:',log_upper_edges
-
-    lower_edges = 10 ** log_lower_edges
-    upper_edges = 10 ** log_upper_edges
-    # print 'lower_edges:',lower_edges
-    # print 'upper_edges:',upper_edges
-
-    #gm = gmean(upper_edges, lower_edges, 2)
-    # print 'gmean: ',gm
-    return lower_edges, upper_edges
-
-
-def check_filename(filename):
-    if filename is not None:
-        if isinstance(filename, unicode):
-            print "htm: warning: filename is unicode, converting to string"
-            filename = str(filename)
-
-    return filename
+        return super(Matcher, self).match(ra, dec, radius, maxmatch, False)

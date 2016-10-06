@@ -33,11 +33,14 @@ Classes
    :toctree: _autosummary
    :nosignatures:
 
+   HMpTy.mysql.conesearch
    HMpTy.utKit.utKit
    HMpTy.htm.htm.HTM
    HMpTy.htm.htm.Matcher
+   HMpTy.htm.htm.emptyLogger
    HMpTy.htm.htmc.HTMC
    HMpTy.htm.htmc.Matcher
+   HMpTy.htm.htmc.emptyLogger
    HMpTy.stat.util.Binner 
 
 Functions
@@ -49,10 +52,6 @@ Functions
 
    HMpTy.mysql.add_htm_ids_to_mysql_database_table
    HMpTy.cl_utils.tab_complete
-   HMpTy.htm.htm.check_filename
-   HMpTy.htm.htm.gmean
-   HMpTy.htm.htm.log_bins
-   HMpTy.htm.htm.read_pairs
    HMpTy.stat.util.boxcar_average
    HMpTy.stat.util.cor2cov
    HMpTy.stat.util.cov2cor

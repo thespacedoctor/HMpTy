@@ -6,15 +6,6 @@ from HMpTy.utKit import utKit
 
 from fundamentals import tools
 
-su = tools(
-    arguments={"settingsFile": None},
-    docString=__doc__,
-    logLevel="DEBUG",
-    options_first=False,
-    projectName="HMpTy",
-    tunnel=False
-)
-arguments, settings, log, dbConn = su.setup()
 
 # # load settings
 # stream = file(
@@ -34,6 +25,17 @@ stream = file(
 settings = yaml.load(stream)
 stream.close()
 
+su = tools(
+    arguments={"settingsFile":
+               pathToInputDir + "/example_settings.yaml"},
+    docString=__doc__,
+    logLevel="DEBUG",
+    options_first=False,
+    projectName="HMpTy",
+    tunnel=False
+)
+arguments, settings, log, dbConn = su.setup()
+
 import shutil
 try:
     shutil.rmtree(pathToOutputDir)
@@ -52,28 +54,32 @@ class test_conesearch():
     def test_conesearch_function(self):
 
         from HMpTy.mysql import conesearch
-        this = conesearch(
+        cs = conesearch(
             log=log,
             dbConn=dbConn,
+            tableName="transientBucket",
             ra="23:25:53.56",
             dec="+26:54:23.9",
-            radiusArcsec=100,
+            idCol="primaryKeyId",
+            radiusArcsec=5,
             settings=settings
         )
-        this.get()
+        print cs.query
 
     def test_conesearch_function2(self):
 
         from HMpTy.mysql import conesearch
-        this = conesearch(
+        cs = conesearch(
             log=log,
             dbConn=dbConn,
+            tableName="transientBucket",
             ra=351.47321,
             dec=26.90664,
-            radiusArcsec=100,
+            idCol="primaryKeyId",
+            radiusArcsec=5,
             settings=settings
         )
-        this.get()
+        print cs.query
 
     def test_conesearch_function_exception(self):
 

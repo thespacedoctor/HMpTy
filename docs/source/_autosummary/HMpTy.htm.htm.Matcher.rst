@@ -14,12 +14,17 @@ HMpTy.htm.htm.Matcher (*class*)
    .. autosummary::
    
       ~Matcher.__init__
-      ~Matcher.depth
       ~Matcher.get_depth
       ~Matcher.match
    
    
 
    
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~Matcher.depth
    
    
