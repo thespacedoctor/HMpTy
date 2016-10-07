@@ -14,13 +14,13 @@ import sys
 import os
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
-from astrocalc.coords import unit_conversion
-import htmc
+from astrocalc.coords import unit_conversion, coordinates_to_array
+import _htmcCode
 import numpy
 from sys import stdout
 
 
-class HTM(htmc.HTMC):
+class HTM(_htmcCode.HTMC):
     """
     *A Hierarchical Triangular Mesh object*
 
@@ -31,7 +31,7 @@ class HTM(htmc.HTMC):
 
         To generate a mesh object:
 
-        .. code-block:: python 
+        .. code-block:: python
 
             from HMpTy.htm import HTM
             mesh16 = HTM(
@@ -46,20 +46,20 @@ class HTM(htmc.HTMC):
 
         **Usage:**
 
-            .. code-block:: python 
+            .. code-block:: python
 
-                mesh.depth 
+                mesh.depth
         """
         return super(HTM, self).depth()
 
     @property
     def area(
             self):
-        """*Tthe mean area of triangles in this mesh in units of square degrees.*
+        """*The mean area of triangles in this mesh in units of square degrees.*
 
         **Usage:**
 
-            .. code-block:: python 
+            .. code-block:: python
 
                 mesh.area
         """
@@ -68,6 +68,47 @@ class HTM(htmc.HTMC):
         areadiv = 4.0 ** self.depth
         area = area0 / areadiv * (180.0 / pi) ** 2
         return area
+
+    def lookup_id(
+            self,
+            ra,
+            dec):
+        """*Lookup the ID of HTM trixel that a coordinate or lists of coordinates lie on*
+
+        **Key Arguments:**
+            - ``ra`` -- list, numpy array or single ra value (first coordinate set)
+            - ``dec`` -- list, numpy array or single dec value (first coordinate set - must match ra1 array length)
+
+        **Return:**
+            - ``htmIds`` -- a list of HTM trixel ids the coordinates lie on
+
+        **Usage:**
+
+            To find the trixel IDs that a set of coordinate lie on:
+
+            .. code-block:: python
+
+                raList1 = ["13:20:00.00", 200.0, "13:20:00.00", 175.23, 21.36]
+                decList1 = ["+24:18:00.00",  24.3,  "+24:18:00.00",  -28.25, -15.32]
+
+                htmids = mesh.lookup_id(raList1, decList1)
+                for h, r, d in zip(htmids, raList1, decList1):
+                    print r, d, " --> ", h
+
+        """
+        self.log.info('starting the ``lookup_id`` method')
+
+        raArray, decArray = coordinates_to_array(
+            log=self.log,
+            ra=ra,
+            dec=dec
+        )
+
+        self.log.info('completed the ``lookup_id`` method')
+        return super(HTM, self).lookup_id(raArray, decArray)
+
+    # use the tab-trigger below for new method
+    # xt-class-method
 
     def intersect(self, ra, dec, radius, inclusive=True):
         """*return IDs of all triangles contained within and/or intersecting a circle centered on a given ra and dec*
@@ -85,7 +126,7 @@ class HTM(htmc.HTMC):
 
             To return the trixels overlapping a circle with a 10 arcsec radius centred at 23:25:53.56, +26:54:23.9
 
-            .. code-block:: python 
+            .. code-block:: python
 
                 overlappingTrixels = mesh16.intersect(
                     ra="23:25:53.56",
@@ -96,7 +137,7 @@ class HTM(htmc.HTMC):
 
             Or to return the trixels completing enclosed by a circle with a 1 degree radius centred at 23:25:53.56, +26:54:23.9
 
-            .. code-block:: python 
+            .. code-block:: python
 
                 overlappingTrixels = mesh16.intersect(
                     ra="23:25:53.56",
@@ -145,7 +186,7 @@ class HTM(htmc.HTMC):
 
             To match 2 lists of corrdinates try something like this:
 
-            .. code-block:: python 
+            .. code-block:: python
 
                 twoArcsec = 2.0 / 3600.
                 raList1 = [200.0, 200.0, 200.0, 175.23, 21.36]
@@ -163,9 +204,9 @@ class HTM(htmc.HTMC):
                 )
 
                 for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-                    print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2] 
+                    print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2]
 
-            Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.  
+            Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
         """
 
         # CONVERT LISTS AND SINGLE VALUES TO ARRAYS OF FLOATS
@@ -202,6 +243,9 @@ class HTM(htmc.HTMC):
 
 
 class emptyLogger:
+    """
+    A fake logger object so user can set ``log=False`` if required
+    """
 
     def info(self, argu):
         pass
@@ -219,7 +263,7 @@ class emptyLogger:
         pass
 
 
-class Matcher(htmc.Matcher):
+class Matcher(_htmcCode.Matcher):
     """*A matcher-array object to match other arrays of ra,dec against*
 
     The Matcher object is initialized with a set of ra,dec coordinates and can then be used and reused to match against other sets of coordinates
@@ -237,15 +281,15 @@ class Matcher(htmc.Matcher):
     **Usage:**
 
         If we have a set of coordinates such that:
-\
-        .. code-block:: python 
+
+        .. code-block:: python
 
             raList1 = [200.0, 200.0, 200.0, 175.23, 21.36]
             decList1 = [24.3,  24.3,  24.3,  -28.25, -15.32]
 
         We can initialise a matcher object like so:
 
-        .. code-block:: python 
+        .. code-block:: python
 
             from HMpTy.htm import Matcher
             coordinateSet = Matcher(
@@ -268,33 +312,11 @@ class Matcher(htmc.Matcher):
         else:
             self.log = log
 
-        print dec
-        print ra
-
-        # ASTROCALC UNIT CONVERTER OBJECT
-        converter = unit_conversion(
-            log=self.log
+        ra, dec = coordinates_to_array(
+            log=log,
+            ra=ra,
+            dec=dec
         )
-        # CONVERT RA AND DEC TO NUMPY ARRAYS
-        if isinstance(ra, str) or isinstance(ra, float):
-            ra = converter.ra_sexegesimal_to_decimal(ra=ra)
-        elif isinstance(ra, list):
-            raList = []
-            raList[:] = [converter.ra_sexegesimal_to_decimal(ra=r) for r in ra]
-            ra = raList
-        if isinstance(dec, str) or isinstance(dec, float):
-            self.dec = converter.dec_sexegesimal_to_decimal(dec=dec)
-        elif isinstance(dec, list):
-            decList = []
-            decList[:] = [
-                converter.dec_sexegesimal_to_decimal(dec=d) for d in dec]
-            dec = decList
-
-        print dec
-        print ra
-
-        ra = numpy.array(ra, dtype='f8', ndmin=1, copy=False)
-        dec = numpy.array(dec, dtype='f8', ndmin=1, copy=False)
 
         if ra.size != dec.size:
             raise ValueError("ra size (%d) != "
@@ -309,7 +331,7 @@ class Matcher(htmc.Matcher):
 
         **Usage:**
 
-            .. code-block:: python 
+            .. code-block:: python
 
                 coordinateSet.depth
         """
@@ -331,7 +353,7 @@ class Matcher(htmc.Matcher):
 
             Once we have initialised a Matcher coordinateSet object we can match other coordinate sets against it:
 
-             .. code-block:: python 
+            .. code-block:: python
 
                 twoArcsec = 2.0 / 3600.
                 raList2 = [200.0, 200.0, 200.0, 175.23, 55.25]
@@ -350,6 +372,8 @@ class Matcher(htmc.Matcher):
 
             Or to return just the nearest matches:
 
+            .. code-block:: python
+
                 matchIndices1, matchIndices2, seps = coordinateSet.match(
                     ra=raList2,
                     dec=decList2,
@@ -359,27 +383,13 @@ class Matcher(htmc.Matcher):
 
             Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
         """
-        # ASTROCALC UNIT CONVERTER OBJECT
-        converter = unit_conversion(
-            log=self.log
-        )
-        # CONVERT RA AND DEC TO NUMPY ARRAYS
-        if isinstance(ra, str) or isinstance(ra, float):
-            ra = converter.ra_sexegesimal_to_decimal(ra=ra)
-        elif isinstance(ra, list):
-            raList = []
-            raList[:] = [converter.ra_sexegesimal_to_decimal(ra=r) for r in ra]
-            ra = raList
-        if isinstance(dec, str) or isinstance(dec, float):
-            self.dec = converter.dec_sexegesimal_to_decimal(dec=dec)
-        elif isinstance(dec, list):
-            decList = []
-            decList[:] = [
-                converter.dec_sexegesimal_to_decimal(dec=d) for d in dec]
-            dec = decList
 
-        ra = numpy.array(ra, dtype='f8', ndmin=1, copy=False)
-        dec = numpy.array(dec, dtype='f8', ndmin=1, copy=False)
+        ra, dec = coordinates_to_array(
+            log=self.log,
+            ra=ra,
+            dec=dec
+        )
+
         radius = numpy.array(radius, dtype='f8', ndmin=1, copy=False)
 
         if ra.size != dec.size:

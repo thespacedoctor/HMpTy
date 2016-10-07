@@ -40,10 +40,6 @@ from HMpTy.mysql import add_htm_ids_to_mysql_database_table
 # from ..__init__ import *
 
 
-def tab_complete(text, state):
-    return (glob.glob(text + '*') + [None])[state]
-
-
 def main(arguments=None):
     """
     *The main function used when ``cl_utils.py`` is run as a single script from the cl, or when installed as a cl command*
@@ -84,34 +80,6 @@ def main(arguments=None):
     log.info(
         '--- STARTING TO RUN THE cl_utils.py AT %s' %
         (startTime,))
-
-    # set options interactively if user requests
-    if "interactiveFlag" in locals() and interactiveFlag:
-
-        # load previous settings
-        moduleDirectory = os.path.dirname(__file__) + "/resources"
-        pathToPickleFile = "%(moduleDirectory)s/previousSettings.p" % locals()
-        try:
-            with open(pathToPickleFile):
-                pass
-            previousSettingsExist = True
-        except:
-            previousSettingsExist = False
-        previousSettings = {}
-        if previousSettingsExist:
-            previousSettings = pickle.load(open(pathToPickleFile, "rb"))
-
-        # x-raw-input
-        # x-boolean-raw-input
-        # x-raw-input-with-default-value-from-previous-settings
-
-        # save the most recently used requests
-        pickleMeObjects = []
-        pickleMe = {}
-        theseLocals = locals()
-        for k in pickleMeObjects:
-            pickleMe[k] = theseLocals[k]
-        pickle.dump(pickleMe, open(pathToPickleFile, "wb"))
 
     # CALL FUNCTIONS/OBJECTS
     if table:

@@ -52,7 +52,7 @@ class test_htm():
 
     def test_htm_function(self):
 
-        from HMpTy.htm import HTM
+        from HMpTy import HTM
         mesh16 = HTM(
             depth=16,
             log=log
@@ -105,7 +105,7 @@ class test_htm():
         raList1 = ["13:20:00.00", 200.0, "13:20:00.00", 175.23, 21.36]
         decList1 = ["+24:18:00.00",  24.3,  "+24:18:00.00",  -28.25, -15.32]
 
-        from HMpTy.htm import Matcher
+        from HMpTy import Matcher
         coordinateSet = Matcher(
             log=log,
             ra=raList1,
@@ -137,6 +137,20 @@ class test_htm():
         )
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
             print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2]
+
+    def test_lookup(self):
+
+        raList1 = ["13:20:00.00", 200.0, "13:20:00.00", 175.23, 21.36]
+        decList1 = ["+24:18:00.00",  24.3,  "+24:18:00.00",  -28.25, -15.32]
+        from HMpTy import HTM
+        mesh16 = HTM(
+            depth=16,
+            log=log
+        )
+        print "LOOKUP"
+        htmids = mesh16.lookup_id(raList1, decList1)
+        for h, r, d in zip(htmids, raList1, decList1):
+            print r, d, " --> ", h
 
     def test_htm_function_exception(self):
 

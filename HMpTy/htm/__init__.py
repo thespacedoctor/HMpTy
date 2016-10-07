@@ -1,2 +1,4 @@
-from . import htm
+"""
+*The HTM and Matcher Objects*
+"""
 from .htm import HTM, Matcher
