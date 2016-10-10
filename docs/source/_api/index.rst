@@ -1,5 +1,5 @@
 .. HMpTy documentation master file, created by
-   sphinx-quickstart on Fri Oct  7 10:14:33 2016.
+   sphinx-quickstart on Mon Oct 10 16:01:50 2016.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 

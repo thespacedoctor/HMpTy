@@ -14,8 +14,7 @@ HMpTy.mysql.conesearch (*class*)
    .. autosummary::
    
       ~conesearch.__init__
-      ~conesearch.generate_the_sql_query
-      ~conesearch.get
+      ~conesearch.search
    
    
 

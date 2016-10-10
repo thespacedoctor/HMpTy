@@ -3,31 +3,35 @@
 """
 Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org/en/stable
 
+
 Usage:
-    hmpty table <tableName> <primaryIdCol> <raCol> <decCol> -s <pathToSettingsFile>
-    hmpty table --host=<host> --user=<user> --passwd=<passwd> --dbName=<dbName> <tableName> <primaryIdCol> <raCol> <decCol> [-s <pathToSettingsFile>]
+    hmpty index <tableName> <primaryIdCol> <raCol> <decCol> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>)
+    hmpty search <tableName> <raCol> <decCol> <ra> <dec> <radius> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>) [(-r <format>|-r mysql <resultsTable>)]
 
-    COMMANDS
-    ========
-    table                 add HTMids to database table
+Options:
+    index                 add HTMids to database table
+    search                perform a conesearch on a database table
 
-    ARGUMENTS
-    =========
-    tableName             name of the table to add the HTMids to
-    primaryIdCol          the name of the unique primary ID column of the database table
-    raCol                 name of the talbe column containing the right ascension
-    decCol                name of the talbe column containing the declination
-    host                  database host address
-    user                  database username
-    passwd                database password
-    dbName                database name
+    tableName                                                       name of the table to add the HTMids to
+    primaryIdCol                                                    the name of the unique primary ID column of the database table
+    raCol                                                           name of the table column containing the right ascension
+    decCol                                                          name of the table column containing the declination
+    ra                                                              the right ascension of the centre of the conesearch circle
+    dec                                                             the declination of the centre of the conesearch circle
+    radius                                                          the radius of the conesearch circle (arcsec)
+    -h, --help                                                      show this help message
+    -v, --version                                                   show version
+    -s <pathToSettingsFile>, --settings <pathToSettingsFile>        path to a settings file containing the database credentials
+    --host <host>                                                   database host address
+    --user <user>                                                   database username
+    --passwd <passwd>                                               database password 
+    --dbName <dbName>                                               database name
+    -r <format>, --render <format>                                  select a format to render your results in
 
-    FLAGS
-    =====
-    -h, --help            show this help message
-    -s, --settings        the settings file
 """
 ################# GLOBAL IMPORTS ####################
+
+
 import sys
 import os
 os.environ['TERM'] = 'vt100'
@@ -36,7 +40,7 @@ import glob
 import pickle
 from docopt import docopt
 from fundamentals import tools, times
-from HMpTy.mysql import add_htm_ids_to_mysql_database_table
+from HMpTy.mysql import add_htm_ids_to_mysql_database_table, conesearch
 # from ..__init__ import *
 
 
@@ -54,11 +58,6 @@ def main(arguments=None):
         tunnel=False
     )
     arguments, settings, log, dbConn = su.setup()
-
-    # tab completion for raw_input
-    readline.set_completer_delims(' \t\n;')
-    readline.parse_and_bind("tab: complete")
-    readline.set_completer(tab_complete)
 
     # unpack remaining cl arguments using `exec` to setup the variable names
     # automatically
@@ -82,7 +81,7 @@ def main(arguments=None):
         (startTime,))
 
     # CALL FUNCTIONS/OBJECTS
-    if table:
+    if index:
         add_htm_ids_to_mysql_database_table(
             raColName=raCol,
             declColName=decCol,
@@ -91,6 +90,35 @@ def main(arguments=None):
             log=log,
             primaryIdColumnName=primaryIdCol
         )
+
+    if search:
+        cs = conesearch(
+            log=log,
+            dbConn=dbConn,
+            tableName=tableName,
+            columns=False,
+            ra=ra,
+            dec=dec,
+            radiusArcsec=float(radius),
+            separations=True,
+            distinct=False,
+            sqlWhere=False
+        )
+        matchIndies, matches = cs.search()
+        if not renderFlag:
+            print matches.table()
+        elif renderFlag == "json":
+            print matches.json()
+        elif renderFlag == "csv":
+            print matches.csv()
+        elif renderFlag == "yaml":
+            print matches.yaml()
+        elif renderFlag == "md":
+            print matches.markdown()
+        elif renderFlag == "table":
+            print matches.markdown()
+        elif renderFlag == "mysql":
+            print matches.mysql(tableName=resultsTable)
 
     if "dbConn" in locals() and dbConn:
         dbConn.commit()

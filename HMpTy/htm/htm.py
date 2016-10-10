@@ -33,7 +33,7 @@ class HTM(_htmcCode.HTMC):
 
         .. code-block:: python
 
-            from HMpTy.htm import HTM
+            from HMpTy import HTM
             mesh16 = HTM(
                 depth=16
             )
@@ -291,7 +291,7 @@ class Matcher(_htmcCode.Matcher):
 
         .. code-block:: python
 
-            from HMpTy.htm import Matcher
+            from HMpTy import Matcher
             coordinateSet = Matcher(
                 log=log,
                 ra=raList1,

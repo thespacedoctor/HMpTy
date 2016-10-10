@@ -50,6 +50,52 @@ if not os.path.exists(pathToOutputDir):
 
 class test_htm():
 
+    def test_htm_area_function(self):
+
+        from HMpTy import HTM
+        mesh16 = HTM(
+            depth=16,
+            log=log
+        )
+        mesh15 = HTM(
+            depth=15,
+            log=log
+        )
+        mesh14 = HTM(
+            depth=14,
+            log=log
+        )
+        mesh13 = HTM(
+            depth=13,
+            log=log
+        )
+        mesh12 = HTM(
+            depth=12,
+            log=log
+        )
+        mesh11 = HTM(
+            depth=11,
+            log=log
+        )
+        mesh10 = HTM(
+            depth=10,
+            log=log
+        )
+        print "DEPTH16:", mesh16.depth
+        print "AREA16:", mesh16.area * 60 * 60 * 60 * 60, " arcsec^2"
+        print "DEPTH15:", mesh15.depth
+        print "AREA15:", mesh15.area * 60 * 60 * 60 * 60, " arcsec^2"
+        print "DEPTH14:", mesh14.depth
+        print "AREA14:", mesh14.area * 60 * 60 * 60 * 60, " arcsec^2"
+        print "DEPTH13:", mesh13.depth
+        print "AREA13:", mesh13.area * 60 * 60 * 60 * 60, " arcsec^2"
+        print "DEPTH12:", mesh12.depth
+        print "AREA12:", mesh12.area * 60 * 60, " arcmin^2"
+        print "DEPTH11:", mesh11.depth
+        print "AREA11:", mesh11.area * 60 * 60, " arcmin^2"
+        print "DEPTH10:", mesh10.depth
+        print "AREA10:", mesh10.area * 60 * 60, " arcmin^2"
+
     def test_htm_function(self):
 
         from HMpTy import HTM
