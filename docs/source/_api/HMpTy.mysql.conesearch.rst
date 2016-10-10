@@ -1,4 +1,4 @@
-.. automodule:: HMpTy.stat.util
+.. automodule:: HMpTy.mysql.conesearch
     :members:
     :undoc-members:
     :show-inheritance:

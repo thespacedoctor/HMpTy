@@ -1,2 +1,4 @@
-from . import htm
-from .htm import HTM, Matcher, read_pairs
+"""
+*The HTM and Matcher Objects*
+"""
+from .htm import HTM, Matcher

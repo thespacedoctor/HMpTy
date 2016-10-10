@@ -14,7 +14,6 @@ Subpackages
     HMpTy.commonutils
     HMpTy.htm
     HMpTy.mysql
-    HMpTy.stat
 
 Submodules
 ----------
