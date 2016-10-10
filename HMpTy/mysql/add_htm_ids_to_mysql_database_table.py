@@ -88,10 +88,8 @@ def add_htm_ids_to_mysql_database_table(
     # ACTION(S) ##
     htmCols = {
         'htm16ID': 'BIGINT(20)',
-        'htm20ID': 'BIGINT(20)',
-        'cx': 'DOUBLE',
-        'cy': 'DOUBLE',
-        'cz': 'DOUBLE',
+        'htm13ID': 'INT',
+        'htm10ID': 'INT'
     }
 
     # CHECK IF COLUMNS EXISTS YET - IF NOT CREATE FROM
@@ -130,7 +128,7 @@ def add_htm_ids_to_mysql_database_table(
             raise e
 
     # COUNT ROWS WHERE HTMIDs ARE NOT SET
-    sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and  ((htm16ID is NULL or htm16ID = 0))""" % locals(
+    sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0))""" % locals(
     )
     rowCount = readquery(
         log=log,
@@ -158,7 +156,7 @@ def add_htm_ids_to_mysql_database_table(
         print "%(count)s / %(totalCount)s htmIds added to %(tableName)s" % locals()
 
         # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-        sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and ((htm16ID is NULL or htm16ID = 0)) limit %s""" % (
+        sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0)) limit %s""" % (
             primaryIdColumnName, raColName, declColName, tableName, raColName, batchSize)
         batch = readquery(
             log=log,
@@ -175,30 +173,23 @@ def add_htm_ids_to_mysql_database_table(
 
         from HMpTy import htm
         mesh16 = htm.HTM(16)
-        mesh20 = htm.HTM(20)
+        mesh13 = htm.HTM(13)
+        mesh10 = htm.HTM(10)
 
         htm16Ids = mesh16.lookup_id(raList, decList)
-        htm20Ids = mesh20.lookup_id(raList, decList)
+        htm13Ids = mesh13.lookup_id(raList, decList)
+        htm10Ids = mesh10.lookup_id(raList, decList)
 
         sqlQuery = ""
-        for h16, h20, pid, r, d in zip(htm16Ids, htm20Ids, pIdList, raList, decList):
-            # CALCULATE CARTESIANS
-            raRad = math.radians(r)
-            decRad = math.radians(d)
-            cos_dec = math.cos(decRad)
-            cx = math.cos(raRad) * cos_dec
-            cy = math.sin(raRad) * cos_dec
-            cz = math.sin(decRad)
+        for h16, h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList):
 
             sqlQuery += \
-                """UPDATE %s SET htm16ID=%s, htm20ID=%s, cx=%s, cy=%s, cz=%s where %s = '%s';\n""" \
+                """UPDATE %s SET htm16ID=%s, htm13ID=%s, htm10ID=%s where %s = '%s';\n""" \
                 % (
                     tableName,
                     h16,
-                    h20,
-                    cx,
-                    cy,
-                    cz,
+                    h13,
+                    h10,
                     primaryIdColumnName,
                     pid
                 )
@@ -223,7 +214,8 @@ def add_htm_ids_to_mysql_database_table(
     # APPLY INDEXES IF NEEDED
     try:
         sqlQuery = u"""
-            ALTER TABLE %(tableName)s  ADD INDEX `idx_htm20ID` (`htm20ID` ASC);
+            ALTER TABLE %(tableName)s  ADD INDEX `idx_htm10ID` (`htm13ID` ASC);
+            ALTER TABLE %(tableName)s  ADD INDEX `idx_htm13ID` (`htm13ID` ASC);
             ALTER TABLE %(tableName)s  ADD INDEX `idx_htm16ID` (`htm16ID` ASC);
         """ % locals()
         writequery(
