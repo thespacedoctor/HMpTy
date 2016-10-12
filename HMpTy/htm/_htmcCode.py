@@ -80,24 +80,6 @@ except AttributeError:
     _newclass = 0
 
 
-class emptyLogger:
-
-    def info(self, argu):
-        pass
-
-    def error(self, argu):
-        pass
-
-    def debug(self, argu):
-        pass
-
-    def critical(self, argu):
-        pass
-
-    def warning(self, argu):
-        pass
-
-
 class HTMC(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(
@@ -108,7 +90,9 @@ class HTMC(_object):
 
     def __init__(self, depth=16, log=False):
         if log == False:
-            self.log = emptyLogger()
+            if log == False:
+                from fundamentals.logs import emptyLogger
+                self.log = emptyLogger()
         else:
             self.log = log
         this = _htmc.new_HTMC(depth)

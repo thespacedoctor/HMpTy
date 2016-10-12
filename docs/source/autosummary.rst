@@ -30,11 +30,11 @@ Classes
    :toctree: _autosummary
    :nosignatures:
 
+   HMpTy.htm.sets
    HMpTy.mysql.conesearch
    HMpTy.utKit.utKit
    HMpTy.htm.htm.HTM
-   HMpTy.htm.htm.Matcher
-   HMpTy.htm.htm.emptyLogger 
+   HMpTy.htm.htm.Matcher 
 
 Functions
 -----------

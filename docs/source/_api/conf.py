@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 #
 # HMpTy documentation build configuration file, created by
-# sphinx-quickstart on Mon Oct 10 16:11:55 2016.
+# sphinx-quickstart on Wed Oct 12 15:03:17 2016.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.

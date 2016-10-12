@@ -1,5 +1,5 @@
-Tutorial
-========
+Command-Line Tutorial
+=====================
 
 Indexing Database Tables with HTMids
 ------------------------------------

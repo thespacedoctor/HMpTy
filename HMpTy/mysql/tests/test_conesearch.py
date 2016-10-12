@@ -31,8 +31,7 @@ su = tools(
     docString=__doc__,
     logLevel="DEBUG",
     options_first=False,
-    projectName="HMpTy",
-    tunnel=False
+    projectName="HMpTy"
 )
 arguments, settings, log, dbConn = su.setup()
 

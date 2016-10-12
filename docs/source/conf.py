@@ -129,7 +129,7 @@ html_theme = 'sphinx_rtd_theme'
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_images/thespacedoctor_icon_white_circle.png"
+html_logo = "_images/hmpty-icon.png"
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
@@ -284,7 +284,7 @@ def updateUsageRST():
     for l in usage.split("\n"):
         usageString += "    " + l + "\n"
 
-    usage = """Usage
+    usage = """Command-Line Usage
 ======
 
 .. code-block:: bash 
@@ -343,6 +343,7 @@ def generateAutosummaryIndex():
     # INSPECT TO FIND ALL MODULES, CLASSES AND FUNCTIONS
     allModules = []
     allClasses = []
+
     allFunctions = []
     for sp in allSubpackages:
         for name, obj in inspect.getmembers(__import__(sp, fromlist=[''])):
@@ -414,6 +415,58 @@ Functions
     writeFile = codecs.open(
         moduleDirectory + "/autosummary.rst", encoding='utf-8', mode='w')
     writeFile.write(thisText)
+    writeFile.close()
+
+    import re
+    regex = re.compile(r'\n\s*.*?utKit\.utKit\n', re.I | re.S)
+    allClasses = regex.sub("\n", allClasses)
+
+    classAndFunctions = u"""
+**Classes**
+
+.. autosummary::
+   :nosignatures:
+
+   %(allClasses)s 
+
+**Functions**
+
+.. autosummary::
+   :nosignatures:
+
+   %(allFunctions)s 
+""" % locals()
+
+    moduleDirectory = os.path.dirname(__file__)
+    writeFile = codecs.open(
+        moduleDirectory + "/classes_and_functions.rst", encoding='utf-8', mode='w')
+    writeFile.write(classAndFunctions)
+    writeFile.close()
+
+    import re
+    regex = re.compile(r'\n\s*.*?utKit\.utKit\n', re.I | re.S)
+    allClasses = regex.sub("\n", allClasses)
+
+    classAndFunctions = u"""
+**Classes**
+
+.. autosummary::
+   :nosignatures:
+
+   %(allClasses)s 
+
+**Functions**
+
+.. autosummary::
+   :nosignatures:
+
+   %(allFunctions)s 
+""" % locals()
+
+    moduleDirectory = os.path.dirname(__file__)
+    writeFile = codecs.open(
+        moduleDirectory + "/classes_and_functions.rst", encoding='utf-8', mode='w')
+    writeFile.write(classAndFunctions)
     writeFile.close()
 
     return thisText
