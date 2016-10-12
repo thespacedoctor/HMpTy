@@ -242,27 +242,6 @@ class HTM(_htmcCode.HTMC):
             maxmatch=maxmatch)
 
 
-class emptyLogger:
-    """
-    A fake logger object so user can set ``log=False`` if required
-    """
-
-    def info(self, argu):
-        pass
-
-    def error(self, argu):
-        pass
-
-    def debug(self, argu):
-        pass
-
-    def critical(self, argu):
-        pass
-
-    def warning(self, argu):
-        pass
-
-
 class Matcher(_htmcCode.Matcher):
     """*A matcher-array object to match other arrays of ra,dec against*
 
@@ -308,7 +287,9 @@ class Matcher(_htmcCode.Matcher):
             log=False):
 
         if log == False:
-            self.log = emptyLogger()
+            if log == False:
+                from fundamentals.logs import emptyLogger
+                self.log = emptyLogger()
         else:
             self.log = log
 

@@ -12,4 +12,5 @@ Submodules
 .. toctree::
 
    HMpTy.htm.htm
+   HMpTy.htm.sets
 

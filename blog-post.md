@@ -1,10 +1,14 @@
 HMpTy
 =====
 
-*Tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTMIDs, crossmatch sky-coordinates via angular separation and more*.
+*A python package and command-line tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTMIDs, crossmatch sky-coordinates via angular separation and more*.
 
-Usage
-=====
+<img src="http://i.imgur.com/5GG4979.png" alt="image" width="600" />
+
+Here’s a summary of what’s included in the python package:
+
+Command-Line Usage
+======
 
 ``` sourceCode
 Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org/en/stable
@@ -63,8 +67,8 @@ Documentation
 
 Documentation for HMpTy is hosted by [Read the Docs](http://HMpTy.readthedocs.org/en/stable/) (last [stable version](http://HMpTy.readthedocs.org/en/stable/) and [latest version](http://HMpTy.readthedocs.org/en/latest/)).
 
-Tutorial
-========
+Command-Line Tutorial
+=====================
 
 Indexing Database Tables with HTMids
 ------------------------------------
