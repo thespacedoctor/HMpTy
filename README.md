@@ -9,7 +9,8 @@ sky-coordinates and more*.
 
 Here's a summary of what's included in the python package:
 
-Command-Line Usage ======
+Command-Line Usage
+==================
 
     Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org/en/stable
 
