@@ -38,6 +38,7 @@ class conesearch():
         - ``decCol`` -- the database table dec column name. Default *decDeg*
         - ``separations`` -- include the separations in the final output. Default *False*
         - ``distinct`` -- request distinct columns from the database table (i.e. *select DISTINCT ...*). Default *False*
+        - ``closest`` -- return the closest match only. Default *False*
 
     **Usage:**
 
@@ -179,7 +180,8 @@ class conesearch():
             raCol="raDeg",
             decCol="decDeg",
             separations=False,
-            distinct=False
+            distinct=False,
+            closest=False
     ):
         self.log = log
         log.debug("instansiating a new 'conesearch' object")
@@ -192,6 +194,7 @@ class conesearch():
         self.separations = separations
         self.distinct = distinct
         self.sqlWhere = sqlWhere
+        self.closest = closest
 
         if not self.columns:
             self.columns = "*"
@@ -257,12 +260,6 @@ class conesearch():
             log=self.log,
             listOfDictionaries=matches
         )
-        # csvData = dataSet.csv(filepath=None)
-        # tableData = dataSet.table(filepath=None)
-        # mysqlData = dataSet.mysql(tableName="mysql_table", filepath=None)
-        # jsonData = dataSet.json(filepath=None)
-        # yamlData = dataSet.yaml(filepath=None)
-        # markdownData = dataSet.markdown(filepath=None)
 
         self.log.info('completed the ``get`` method')
         return matchIndies, matches
@@ -404,13 +401,17 @@ class conesearch():
             log=self.log
         )
 
+        if self.closest:
+            maxmatch = 1
+        else:
+            maxmatch = 0
         matchIndices1, matchIndices2, seps = mesh.match(
             ra1=self.ra,
             dec1=self.dec,
             ra2=np.array(dbRas),
             dec2=np.array(dbDecs),
             radius=float(self.radius / (60. * 60.)),
-            maxmatch=0  # 1 = match closest 1, 0 = match all
+            maxmatch=maxmatch  # 1 = match closest 1, 0 = match all
         )
 
         matches = []
