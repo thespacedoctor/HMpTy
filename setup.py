@@ -71,7 +71,7 @@ packages.append('HMpTy.htm')
 
 setup(name="HMpTy",
       version=__version__,
-      description="Tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTMIDs, crossmatch sky-coordinates via angular separation and more",
+      description="Tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTM-ids, crossmatch sets of sky-coordinates and more",
       long_description=readme(),
       classifiers=[
           'Development Status :: 4 - Beta',

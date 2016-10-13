@@ -1,7 +1,7 @@
 HMpTy 
 =========================
 
-*A python package and command-line tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTMIDs, crossmatch sky-coordinates via angular separation and more*.
+*A python package and command-line tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTM-ids, crossmatch sets of sky-coordinates and more*.
 
 .. image:: http://i.imgur.com/5GG4979.png
     :width: 600 px

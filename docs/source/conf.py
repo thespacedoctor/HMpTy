@@ -249,7 +249,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', 'HMpTy', u'HMpTy Documentation',
-     u'Dave Young', 'HMpTy', 'Tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTMIDs, crossmatch sky-coordinates via angular separation and more',
+     u'Dave Young', 'HMpTy', 'Tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTM-ids, crossmatch sets of sky-coordinates and more',
      'Miscellaneous'),
 ]
 
