@@ -14,7 +14,6 @@ import sys
 import os
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
-from astrocalc.coords import unit_conversion, coordinates_to_array
 from HMpTy.htm import HTM
 import numpy as np
 from fundamentals.mysql import readquery
@@ -202,6 +201,7 @@ class conesearch():
         # xt-self-arg-tmpx
 
         # BULK COORDINATE INTO NUMPY ARRAY
+        from astrocalc.coords import coordinates_to_array
         self.ra, self.dec = coordinates_to_array(
             log=self.log,
             ra=ra,

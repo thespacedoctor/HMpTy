@@ -285,7 +285,7 @@ def updateUsageRST():
         usageString += "    " + l + "\n"
 
     usage = """Command-Line Usage
-======
+==================
 
 .. code-block:: bash 
    
@@ -418,7 +418,7 @@ Functions
     writeFile.close()
 
     import re
-    regex = re.compile(r'\n\s*.*?utKit\.utKit\n', re.I | re.S)
+    regex = re.compile(r'\n\s*.*?utKit\.utKit(\n|$)', re.I)
     allClasses = regex.sub("\n", allClasses)
 
     classAndFunctions = u"""
@@ -444,7 +444,7 @@ Functions
     writeFile.close()
 
     import re
-    regex = re.compile(r'\n\s*.*?utKit\.utKit\n', re.I | re.S)
+    regex = re.compile(r'\n\s*.*?utKit\.utKit(\n|$)', re.I)
     allClasses = regex.sub("\n", allClasses)
 
     classAndFunctions = u"""
