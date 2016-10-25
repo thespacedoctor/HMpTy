@@ -183,16 +183,16 @@ def add_htm_ids_to_mysql_database_table(
         sqlQuery = ""
         for h16, h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList):
 
-        sqlQuery += \
-            """UPDATE %s SET htm16ID=%s, htm13ID=%s, htm10ID=%s where %s = '%s';\n""" \
-            % (
-                tableName,
-                h16,
-                h13,
-                h10,
-                primaryIdColumnName,
-                pid
-            )
+            sqlQuery += \
+                """UPDATE %s SET htm16ID=%s, htm13ID=%s, htm10ID=%s where %s = '%s';\n""" \
+                % (
+                    tableName,
+                    h16,
+                    h13,
+                    h10,
+                    primaryIdColumnName,
+                    pid
+                )
 
         if len(sqlQuery):
             log.debug(
