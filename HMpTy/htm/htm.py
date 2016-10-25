@@ -14,7 +14,7 @@ import sys
 import os
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
-from astrocalc.coords import unit_conversion, coordinates_to_array
+from astrocalc.coords import unit_conversion
 import _htmcCode
 import numpy
 from sys import stdout
@@ -98,6 +98,7 @@ class HTM(_htmcCode.HTMC):
         """
         self.log.info('starting the ``lookup_id`` method')
 
+        from astrocalc.coords import coordinates_to_array
         raArray, decArray = coordinates_to_array(
             log=self.log,
             ra=ra,
@@ -293,6 +294,7 @@ class Matcher(_htmcCode.Matcher):
         else:
             self.log = log
 
+        from astrocalc.coords import coordinates_to_array
         ra, dec = coordinates_to_array(
             log=log,
             ra=ra,
@@ -365,6 +367,7 @@ class Matcher(_htmcCode.Matcher):
             Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
         """
 
+        from astrocalc.coords import coordinates_to_array
         ra, dec = coordinates_to_array(
             log=self.log,
             ra=ra,
