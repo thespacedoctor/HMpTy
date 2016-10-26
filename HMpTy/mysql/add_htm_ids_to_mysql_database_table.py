@@ -25,7 +25,8 @@ def add_htm_ids_to_mysql_database_table(
         tableName,
         dbConn,
         log,
-        primaryIdColumnName="primaryId"):
+        primaryIdColumnName="primaryId",
+        cartesian=False):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
     **Key Arguments:**
@@ -35,6 +36,7 @@ def add_htm_ids_to_mysql_database_table(
         - ``dbConn`` -- database hosting the above table
         - ``log`` -- logger
         - ``primaryIdColumnName`` -- the primary id for the table
+        - ``cartesian`` -- add cartesian columns. Default *False*
 
     **Return:**
         - None
@@ -85,12 +87,22 @@ def add_htm_ids_to_mysql_database_table(
         log.critical(message)
         raise IOError(message)
 
-    # ACTION(S) ##
-    htmCols = {
-        'htm16ID': 'BIGINT(20)',
-        'htm13ID': 'INT',
-        'htm10ID': 'INT'
-    }
+    if cartesian:
+        # ACTION(S) ##
+        htmCols = {
+            'htm16ID': 'BIGINT(20)',
+            'htm13ID': 'INT',
+            'htm10ID': 'INT',
+            'cx': 'DOUBLE',
+            'cy': 'DOUBLE',
+            'cz': 'DOUBLE'
+        }
+    else:
+        htmCols = {
+            'htm16ID': 'BIGINT(20)',
+            'htm13ID': 'INT',
+            'htm10ID': 'INT'
+        }
 
     # CHECK IF COLUMNS EXISTS YET - IF NOT CREATE FROM
     for key in htmCols.keys():
@@ -180,19 +192,49 @@ def add_htm_ids_to_mysql_database_table(
         htm13Ids = mesh13.lookup_id(raList, decList)
         htm10Ids = mesh10.lookup_id(raList, decList)
 
-        sqlQuery = ""
-        for h16, h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList):
+        if cartesian:
 
-            sqlQuery += \
-                """UPDATE %s SET htm16ID=%s, htm13ID=%s, htm10ID=%s where %s = '%s';\n""" \
-                % (
-                    tableName,
-                    h16,
-                    h13,
-                    h10,
-                    primaryIdColumnName,
-                    pid
-                )
+            cx = []
+            cy = []
+            cz = []
+            for r, d in zip(raList, decList):
+                r = math.radians(r)
+                d = math.radians(d)
+                cos_dec = math.cos(d)
+                cx.append(math.cos(r) * cos_dec)
+                cy.append(math.sin(r) * cos_dec)
+                cz.append(math.sin(d))
+
+            sqlQuery = ""
+            for h16, h13, h10, pid, cxx, cyy, czz in zip(htm16Ids, htm13Ids, htm10Ids, pIdList, cx, cy, cz):
+
+                sqlQuery += \
+                    """UPDATE %s SET htm16ID=%s, htm13ID=%s, htm10ID=%s, cx=%(cxx)s, cy=%(cyy)s, cz=%(czz)s where %s = '%s';\n""" \
+                    % (
+                        tableName,
+                        h16,
+                        h13,
+                        h10,
+                        cx,
+                        cy,
+                        cz,
+                        primaryIdColumnName,
+                        pid
+                    )
+        else:
+            sqlQuery = ""
+            for h16, h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList):
+
+                sqlQuery += \
+                    """UPDATE %s SET htm16ID=%s, htm13ID=%s, htm10ID=%s where %s = '%s';\n""" \
+                    % (
+                        tableName,
+                        h16,
+                        h13,
+                        h10,
+                        primaryIdColumnName,
+                        pid
+                    )
 
         if len(sqlQuery):
             log.debug(
