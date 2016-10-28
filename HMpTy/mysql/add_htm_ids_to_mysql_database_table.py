@@ -261,9 +261,9 @@ def add_htm_ids_to_mysql_database_table(
     # APPLY INDEXES IF NEEDED
     try:
         sqlQuery = u"""
-            ALTER TABLE %(tableName)s  ADD INDEX `idx_htm10ID` (`htm13ID` ASC);
-            ALTER TABLE %(tableName)s  ADD INDEX `idx_htm13ID` (`htm13ID` ASC);
-            ALTER TABLE %(tableName)s  ADD INDEX `idx_htm16ID` (`htm16ID` ASC);
+            ALTER TABLE %(tableName)s  ADD INDEX `i_htm10ID` (`htm10ID` ASC);
+            ALTER TABLE %(tableName)s  ADD INDEX `i_htm13ID` (`htm13ID` ASC);
+            ALTER TABLE %(tableName)s  ADD INDEX `i_htm16ID` (`htm16ID` ASC);
         """ % locals()
         writequery(
             log=log,
