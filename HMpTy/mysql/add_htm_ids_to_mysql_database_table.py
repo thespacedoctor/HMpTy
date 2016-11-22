@@ -270,7 +270,6 @@ def add_htm_ids_to_mysql_database_table(
             sqlQuery=sqlQuery,
             dbConn=dbConn
         )[0]["IndexIsThere"]
-        print count
         if count == 0:
             sqlQuery = u"""
                 ALTER TABLE %(tableName)s  ADD INDEX `%(iname)s` (`%(index)s` ASC);
