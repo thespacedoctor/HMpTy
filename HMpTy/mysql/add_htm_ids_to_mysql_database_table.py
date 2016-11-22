@@ -150,7 +150,8 @@ def add_htm_ids_to_mysql_database_table(
     rowCount = readquery(
         log=log,
         sqlQuery=sqlQuery,
-        dbConn=dbConn
+        dbConn=dbConn,
+        quiet=True
     )
     totalCount = rowCount[0]["count"]
 
