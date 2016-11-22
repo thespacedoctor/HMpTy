@@ -52,6 +52,10 @@ class test_htm():
     def test_htm_area_function(self):
 
         from HMpTy import HTM
+        mesh24 = HTM(
+            depth=24,
+            log=log
+        )
         mesh16 = HTM(
             depth=16,
             log=log
@@ -80,6 +84,9 @@ class test_htm():
             depth=10,
             log=log
         )
+
+        print "DEPTH24:", mesh24.depth
+        print "AREA24:", mesh24.area * 60 * 60 * 60 * 60, " arcsec^2"
         print "DEPTH16:", mesh16.depth
         print "AREA16:", mesh16.area * 60 * 60 * 60 * 60, " arcsec^2"
         print "DEPTH15:", mesh15.depth
@@ -106,26 +113,32 @@ class test_htm():
             depth=20,
             log=log
         )
+        mesh24 = HTM(
+            depth=24,
+            log=log
+        )
+        print "DEPTH24:", mesh24.depth
+        print "AREA24:", mesh24.area * 60 * 60 * 60 * 60, " arcsec^2"
         print "DEPTH16:", mesh16.depth
         print "AREA16:", mesh16.area * 60 * 60 * 60 * 60, " arcsec^2"
         print "DEPTH20:", mesh20.depth
         print "AREA20:", mesh20.area * 60 * 60 * 60 * 60, " arcsec^2"
 
-        overlappingTrixels = mesh16.intersect(
+        overlappingTrixels = mesh24.intersect(
             ra="23:25:53.56",
             dec="+26:54:23.9",
-            radius=1,
+            radius=0.01,
             inclusive=False
         )
-        print overlappingTrixels
+        # print overlappingTrixels
 
-        overlappingTrixels = mesh16.intersect(
+        overlappingTrixels = mesh24.intersect(
             ra="23:25:53.56",
             dec="+26:54:23.9",
             radius=10 / (60 * 60),
             inclusive=True
         )
-        print overlappingTrixels
+        # print overlappingTrixels
 
         twoArcsec = 2.0 / 3600.
         raList1 = [200.0, 200.0, 200.0, 175.23, 21.36]
