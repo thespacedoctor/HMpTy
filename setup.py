@@ -88,8 +88,8 @@ setup(name="HMpTy",
       license='MIT',
       packages=find_packages(),
       package_data={'HMpTy': [
-          'resources/*/*', 'resources/*.*']},
-      include_package_data=True,
+          'resources/*/*', 'resources/*.*', 'default_settings.yaml']},
+      # include_package_data=True,
       install_requires=[
           'pyyaml',
           'HMpTy',
