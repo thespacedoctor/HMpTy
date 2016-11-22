@@ -260,7 +260,7 @@ def add_htm_ids_to_mysql_database_table(
 
     # APPLY INDEXES IF NEEDED
     for index in ["htm10ID", "htm13ID", "htm16ID"]:
-        iname = "i_" + index
+        iname = "idx_" + index
         sqlQuery = u"""
             SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS
                 WHERE table_schema=DATABASE() AND table_name='%(tableName)s' AND index_name='%(iname)s';
@@ -270,6 +270,7 @@ def add_htm_ids_to_mysql_database_table(
             sqlQuery=sqlQuery,
             dbConn=dbConn
         )[0]["IndexIsThere"]
+        print count
         if count == 0:
             sqlQuery = u"""
                 ALTER TABLE %(tableName)s  ADD INDEX `%(iname)s` (`%(index)s` ASC);
