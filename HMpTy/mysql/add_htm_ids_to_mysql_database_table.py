@@ -141,11 +141,11 @@ def add_htm_ids_to_mysql_database_table(
 
     if cartesian:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
-        sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0 or cx is null or cy is null or cy is null))""" % locals(
+        sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and %(raColName)s > 0 and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0 or cx is null or cy is null or cy is null))""" % locals(
         )
     else:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
-        sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0))""" % locals(
+        sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and %(raColName)s > 0 and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0))""" % locals(
         )
     rowCount = readquery(
         log=log,
@@ -174,12 +174,12 @@ def add_htm_ids_to_mysql_database_table(
 
         if cartesian:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0 or cx is null or cy is null or cy is null)) limit %s""" % (
-                primaryIdColumnName, raColName, declColName, tableName, raColName, batchSize)
+            sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and %s > 0 and ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0 or cx is null or cy is null or cy is null)) limit %s""" % (
+                primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
         else:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0)) limit %s""" % (
-                primaryIdColumnName, raColName, declColName, tableName, raColName, batchSize)
+            sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and %s > 0 and ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0)) limit %s""" % (
+                primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
         batch = readquery(
             log=log,
             sqlQuery=sqlQuery,
