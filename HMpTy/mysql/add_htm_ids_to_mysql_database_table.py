@@ -259,20 +259,26 @@ def add_htm_ids_to_mysql_database_table(
                 'no HTMIds to add to the %s db table' % (tableName, ))
 
     # APPLY INDEXES IF NEEDED
-    try:
+    for index in ["htm10ID", "htm13ID", "htm16ID"]:
+        iname = "i_" + index
         sqlQuery = u"""
-            ALTER TABLE %(tableName)s  ADD INDEX `i_htm10ID` (`htm10ID` ASC);
-            ALTER TABLE %(tableName)s  ADD INDEX `i_htm13ID` (`htm13ID` ASC);
-            ALTER TABLE %(tableName)s  ADD INDEX `i_htm16ID` (`htm16ID` ASC);
+            SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS
+                WHERE table_schema=DATABASE() AND table_name='%(tableName)s' AND index_name='%(iname)s';
         """ % locals()
-        writequery(
+        count = readquery(
             log=log,
             sqlQuery=sqlQuery,
-            dbConn=dbConn,
-        )
-
-    except Exception, e:
-        log.info('no index needed on table: %(e)s' % locals())
+            dbConn=dbConn
+        )[0]["IndexIsThere"]
+        if count == 0:
+            sqlQuery = u"""
+                ALTER TABLE %(tableName)s  ADD INDEX `%(iname)s` (`%(index)s` ASC);
+            """ % locals()
+            writequery(
+                log=log,
+                sqlQuery=sqlQuery,
+                dbConn=dbConn,
+            )
 
     print "All HTMIds added to %(tableName)s" % locals()
 
