@@ -26,7 +26,8 @@ def add_htm_ids_to_mysql_database_table(
         dbConn,
         log,
         primaryIdColumnName="primaryId",
-        cartesian=False):
+        cartesian=False,
+        batchSize=2500):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
     **Key Arguments:**
@@ -37,6 +38,7 @@ def add_htm_ids_to_mysql_database_table(
         - ``log`` -- logger
         - ``primaryIdColumnName`` -- the primary id for the table
         - ``cartesian`` -- add cartesian columns. Default *False*
+        - ``batchSize`` -- the size of the batches of rows to add HTMIds to concurrently. Default *2500*
 
     **Return:**
         - None
@@ -156,7 +158,6 @@ def add_htm_ids_to_mysql_database_table(
     totalCount = rowCount[0]["count"]
 
     # ADD HTMIDs IN BATCHES
-    batchSize = 2500
     total = totalCount
     batches = int(total / batchSize)
 
@@ -199,12 +200,16 @@ def add_htm_ids_to_mysql_database_table(
         mesh13 = htm.HTM(13)
         mesh10 = htm.HTM(10)
 
+        log.debug(
+            'calculating htmIds for batch of %s rows in %s db table' % (batchSize, tableName, ))
         htm16Ids = mesh16.lookup_id(raList, decList)
         htm13Ids = mesh13.lookup_id(raList, decList)
         htm10Ids = mesh10.lookup_id(raList, decList)
-
+        log.debug(
+            'finshed calculating htmIds for batch of %s rows in %s db table' % (batchSize, tableName, ))
         if cartesian:
-
+            log.debug(
+                'calculating cartesian coordinates for batch of %s rows in %s db table' % (batchSize, tableName, ))
             cx = []
             cy = []
             cz = []
@@ -232,20 +237,16 @@ def add_htm_ids_to_mysql_database_table(
                         primaryIdColumnName,
                         pid
                     )
+            log.debug(
+                'finished calculating cartesian coordinates for batch of %s rows in %s db table' % (
+                    batchSize, tableName, ))
         else:
-            sqlQuery = ""
-            for h16, h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList):
-
-                sqlQuery += \
-                    """UPDATE %s SET htm16ID=%s, htm13ID=%s, htm10ID=%s where %s = '%s';\n""" \
-                    % (
-                        tableName,
-                        h16,
-                        h13,
-                        h10,
-                        primaryIdColumnName,
-                        pid
-                    )
+            log.debug('building the sqlquery')
+            updates = []
+            updates[:] = ["UPDATE %(tableName)s SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
+                          h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
+            sqlQuery = "\n".join(updates)
+            log.debug('finshed building the sqlquery')
 
         if len(sqlQuery):
             log.debug(
@@ -261,6 +262,7 @@ def add_htm_ids_to_mysql_database_table(
 
     # APPLY INDEXES IF NEEDED
     for index in ["htm10ID", "htm13ID", "htm16ID"]:
+        log.debug('adding %(index)s index to %(tableName)s' % locals())
         iname = "idx_" + index
         sqlQuery = u"""
             SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS
@@ -280,6 +282,7 @@ def add_htm_ids_to_mysql_database_table(
                 sqlQuery=sqlQuery,
                 dbConn=dbConn,
             )
+        log.debug('finished adding %(index)s index to %(tableName)s' % locals())
 
     print "All HTMIds added to %(tableName)s" % locals()
 

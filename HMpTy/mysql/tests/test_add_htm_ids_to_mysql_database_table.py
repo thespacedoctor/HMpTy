@@ -28,7 +28,7 @@ log, dbConn, pathToInputDir, pathToOutputDir = utKit.setupModule()
 utKit.tearDownModule()
 
 from fundamentals.mysql import writequery
-sqlQuery = """ALTER TABLE tcs_cat_ned_d_v10_2_0 DROP COLUMN cz, DROP COLUMN cy, DROP COLUMN cx, DROP COLUMN htm16ID, DROP COLUMN htm20ID"""
+sqlQuery = """ALTER TABLE tcs_cat_ned_d_v10_2_0 DROP COLUMN htm16ID, DROP COLUMN htm10ID, DROP COLUMN htm13ID"""
 try:
     writequery(
         log=log,
