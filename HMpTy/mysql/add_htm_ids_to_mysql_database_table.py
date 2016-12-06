@@ -185,11 +185,11 @@ def add_htm_ids_to_mysql_database_table(
             """Selecting the next %(batchSize)s rows requiring HTMID information in the %(tableName)s table""" % locals())
         if cartesian:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and %s > 0 and ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0 or cx is null or cy is null or cy is null)) limit %s""" % (
+            sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and %s > 0 and ((htm10ID is NULL or cx is null)) limit %s""" % (
                 primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
         else:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and %s > 0 and ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0)) limit %s""" % (
+            sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and %s > 0 and htm10ID is NULL limit %s""" % (
                 primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
         batch = readquery(
             log=log,
