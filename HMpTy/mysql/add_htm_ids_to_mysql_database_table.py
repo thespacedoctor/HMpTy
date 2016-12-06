@@ -149,11 +149,11 @@ def add_htm_ids_to_mysql_database_table(
         """Counting the number of rows still requiring HTMID information""" % locals())
     if cartesian:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
-        sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and %(raColName)s > 0 and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0 or cx is null or cy is null or cy is null))""" % locals(
+        sqlQuery = """SELECT count(*) as count from %(tableName)s where htm10ID is NULL or cx is null""" % locals(
         )
     else:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
-        sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and %(raColName)s > 0 and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0))""" % locals(
+        sqlQuery = """SELECT count(*) as count from %(tableName)s where htm10ID is NULL""" % locals(
         )
     log.debug(
         """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
