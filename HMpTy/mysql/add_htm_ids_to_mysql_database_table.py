@@ -147,8 +147,6 @@ def add_htm_ids_to_mysql_database_table(
                          % (tableName, str(e)))
             raise e
 
-    start = datetime.now()
-    start = start.strftime("%Y-%m-%dt%H:%M:%S")
     log.debug(
         """Counting the number of rows still requiring HTMID information""" % locals())
     if cartesian:
@@ -184,6 +182,9 @@ def add_htm_ids_to_mysql_database_table(
             sys.stdout.write("\x1b[1A\x1b[2K")
         if count > totalCount:
             count = totalCount
+
+        start = datetime.now()
+        start = start.strftime("%Y-%m-%dt%H:%M:%S")
 
         log.debug(
             """Selecting the next %(batchSize)s rows requiring HTMID information in the %(tableName)s table""" % locals())
@@ -277,7 +278,8 @@ def add_htm_ids_to_mysql_database_table(
             log.debug(
                 'no HTMIds to add to the %s db table' % (tableName, ))
 
-        print "%(count)s / %(totalCount)s htmIds added to %(tableName)s" % locals()
+        percent = float(count) * 100. / float(totalCount)
+        print "%(count)s / %(totalCount)s htmIds added to %(tableName)s (%(percent)s%% complete)" % locals()
         end = datetime.now()
         end = end.strftime("%Y-%m-%dt%H:%M:%S")
         timediff = times.calculate_time_difference(
