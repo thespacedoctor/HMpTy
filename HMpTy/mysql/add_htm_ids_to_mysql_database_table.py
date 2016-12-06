@@ -27,7 +27,7 @@ def add_htm_ids_to_mysql_database_table(
         log,
         primaryIdColumnName="primaryId",
         cartesian=False,
-        batchSize=25000):
+        batchSize=500000):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
     **Key Arguments:**
