@@ -282,7 +282,7 @@ def add_htm_ids_to_mysql_database_table(
         print "%(count)s / %(totalCount)s htmIds added to %(tableName)s (%(percent)0.5f%% complete)" % locals()
         end = time.time()
         timediff = end - start
-        timediff = timediff * 1000000. / float(count)
+        timediff = timediff * 1000000. / float(batchSize)
         print "Update speed: %(timediff)0.2fs/1e6 rows\n" % locals()
 
     # APPLY INDEXES IF NEEDED
