@@ -148,7 +148,7 @@ def add_htm_ids_to_mysql_database_table(
             raise e
 
     start = datetime.now()
-    start = start.strftime("%Y%m%dt%H%M%S")
+    start = start.strftime("%Y-%m-%dt%H:%M:%S")
     log.debug(
         """Counting the number of rows still requiring HTMID information""" % locals())
     if cartesian:
@@ -279,7 +279,7 @@ def add_htm_ids_to_mysql_database_table(
 
         print "%(count)s / %(totalCount)s htmIds added to %(tableName)s" % locals()
         end = datetime.now()
-        end = end.strftime("%Y%m%dt%H%M%S")
+        end = end.strftime("%Y-%m-%dt%H:%M:%S")
         timediff = times.calculate_time_difference(
             startDate=start, endDate=end)
         print timediff, "\n"
