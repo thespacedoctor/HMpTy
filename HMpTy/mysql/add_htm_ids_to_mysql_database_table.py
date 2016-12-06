@@ -148,6 +148,7 @@ def add_htm_ids_to_mysql_database_table(
             raise e
 
     start = datetime.now()
+    start = start.strftime("%Y%m%dt%H%M%S")
     log.debug(
         """Counting the number of rows still requiring HTMID information""" % locals())
     if cartesian:
@@ -277,9 +278,11 @@ def add_htm_ids_to_mysql_database_table(
                 'no HTMIds to add to the %s db table' % (tableName, ))
 
         print "%(count)s / %(totalCount)s htmIds added to %(tableName)s" % locals()
+        end = datetime.now()
+        end = end.strftime("%Y%m%dt%H%M%S")
         timediff = times.calculate_time_difference(
-            startDate=start, endDate=datetime.now())
-        print timediff
+            startDate=start, endDate=end)
+        print timediff, "\n"
 
     # APPLY INDEXES IF NEEDED
     for index in ["htm10ID", "htm13ID", "htm16ID"]:
