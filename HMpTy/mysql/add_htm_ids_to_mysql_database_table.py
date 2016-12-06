@@ -67,6 +67,8 @@ def add_htm_ids_to_mysql_database_table(
         dbConn=dbConn
     )
 
+    self.log.debug(
+        """Checking the table %(tableName)s exists in the database""" % locals())
     tableList = []
     for row in rows:
         tableList.extend(row.values())
@@ -75,6 +77,8 @@ def add_htm_ids_to_mysql_database_table(
         log.critical(message)
         raise IOError(message)
 
+    self.log.debug(
+        """Checking the RA and DEC columns exist in the %(tableName)s table""" % locals())
     # TEST COLUMNS EXISTS
     cursor = dbConn.cursor(ms.cursors.DictCursor)
     sqlQuery = """SELECT * FROM %s LIMIT 1""" % (tableName,)
@@ -141,6 +145,8 @@ def add_htm_ids_to_mysql_database_table(
                          % (tableName, str(e)))
             raise e
 
+    self.log.debug(
+        """Counting the number of rows still requiring HTMID information""" % locals())
     if cartesian:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
         sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and %(raColName)s > 0 and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0 or cx is null or cy is null or cy is null))""" % locals(
@@ -149,6 +155,8 @@ def add_htm_ids_to_mysql_database_table(
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
         sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and %(raColName)s > 0 and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0))""" % locals(
         )
+    self.log.debug(
+        """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
     rowCount = readquery(
         log=log,
         sqlQuery=sqlQuery,
@@ -172,8 +180,9 @@ def add_htm_ids_to_mysql_database_table(
             sys.stdout.write("\x1b[1A\x1b[2K")
         if count > totalCount:
             count = totalCount
-        print "%(count)s / %(totalCount)s htmIds added to %(tableName)s" % locals()
 
+        self.log.debug(
+            """Selecting the next %(batchSize)s rows requiring HTMID information in the %(tableName)s table""" % locals())
         if cartesian:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
             sqlQuery = """SELECT %s, %s, %s from %s where %s is not null and %s > 0 and ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0 or cx is null or cy is null or cy is null)) limit %s""" % (
@@ -187,6 +196,8 @@ def add_htm_ids_to_mysql_database_table(
             sqlQuery=sqlQuery,
             dbConn=dbConn
         )
+        self.log.debug(
+            """The next %(batchSize)s rows requiring HTMID information have now been selected""" % locals())
 
         raList = []
         decList = []
@@ -250,15 +261,19 @@ def add_htm_ids_to_mysql_database_table(
 
         if len(sqlQuery):
             log.debug(
-                'attempting to update the HTMIds for new objects in the %s db table' % (tableName, ))
+                'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
             writequery(
                 log=log,
                 sqlQuery=sqlQuery,
                 dbConn=dbConn,
             )
+            log.debug(
+                'finished updating the HTMIds for new objects in the %s db table' % (tableName, ))
         else:
             log.debug(
                 'no HTMIds to add to the %s db table' % (tableName, ))
+
+        print "%(count)s / %(totalCount)s htmIds added to %(tableName)s" % locals()
 
     # APPLY INDEXES IF NEEDED
     for index in ["htm10ID", "htm13ID", "htm16ID"]:
