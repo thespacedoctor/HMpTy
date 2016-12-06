@@ -17,8 +17,9 @@ os.environ['TERM'] = 'vt100'
 from fundamentals import tools
 import MySQLdb as ms
 from fundamentals.mysql import readquery, writequery
-from datetime import datetime, date, time
+from datetime import datetime, date
 from fundamentals import times
+import time
 
 
 def add_htm_ids_to_mysql_database_table(
@@ -183,7 +184,7 @@ def add_htm_ids_to_mysql_database_table(
         if count > totalCount:
             count = totalCount
 
-        start = time()
+        start = time.time()
 
         log.debug(
             """Selecting the next %(batchSize)s rows requiring HTMID information in the %(tableName)s table""" % locals())
@@ -279,7 +280,7 @@ def add_htm_ids_to_mysql_database_table(
 
         percent = float(count) * 100. / float(totalCount)
         print "%(count)s / %(totalCount)s htmIds added to %(tableName)s (%(percent)0.5f%% complete)" % locals()
-        end = time()
+        end = time.time()
         timediff = end - start
         print timediff, "\n"
 
