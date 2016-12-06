@@ -67,7 +67,7 @@ def add_htm_ids_to_mysql_database_table(
         dbConn=dbConn
     )
 
-    self.log.debug(
+    log.debug(
         """Checking the table %(tableName)s exists in the database""" % locals())
     tableList = []
     for row in rows:
@@ -77,7 +77,7 @@ def add_htm_ids_to_mysql_database_table(
         log.critical(message)
         raise IOError(message)
 
-    self.log.debug(
+    log.debug(
         """Checking the RA and DEC columns exist in the %(tableName)s table""" % locals())
     # TEST COLUMNS EXISTS
     cursor = dbConn.cursor(ms.cursors.DictCursor)
@@ -145,7 +145,7 @@ def add_htm_ids_to_mysql_database_table(
                          % (tableName, str(e)))
             raise e
 
-    self.log.debug(
+    log.debug(
         """Counting the number of rows still requiring HTMID information""" % locals())
     if cartesian:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
@@ -155,7 +155,7 @@ def add_htm_ids_to_mysql_database_table(
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
         sqlQuery = """SELECT count(*) as count from %(tableName)s where %(raColName)s is not null and %(raColName)s > 0 and  ((htm16ID is NULL or htm16ID = 0 or htm13ID is NULL or htm13ID = 0 or htm10ID is NULL or htm10ID = 0))""" % locals(
         )
-    self.log.debug(
+    log.debug(
         """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
     rowCount = readquery(
         log=log,
@@ -181,7 +181,7 @@ def add_htm_ids_to_mysql_database_table(
         if count > totalCount:
             count = totalCount
 
-        self.log.debug(
+        log.debug(
             """Selecting the next %(batchSize)s rows requiring HTMID information in the %(tableName)s table""" % locals())
         if cartesian:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
@@ -196,7 +196,7 @@ def add_htm_ids_to_mysql_database_table(
             sqlQuery=sqlQuery,
             dbConn=dbConn
         )
-        self.log.debug(
+        log.debug(
             """The next %(batchSize)s rows requiring HTMID information have now been selected""" % locals())
 
         raList = []
