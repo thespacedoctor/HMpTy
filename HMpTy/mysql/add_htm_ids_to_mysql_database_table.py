@@ -183,7 +183,7 @@ def add_htm_ids_to_mysql_database_table(
         if count > totalCount:
             count = totalCount
 
-        start = time.time()
+        start = time()
 
         log.debug(
             """Selecting the next %(batchSize)s rows requiring HTMID information in the %(tableName)s table""" % locals())
@@ -279,7 +279,7 @@ def add_htm_ids_to_mysql_database_table(
 
         percent = float(count) * 100. / float(totalCount)
         print "%(count)s / %(totalCount)s htmIds added to %(tableName)s (%(percent)0.5f%% complete)" % locals()
-        end = time.time()
+        end = time()
         timediff = end - start
         print timediff, "\n"
 
