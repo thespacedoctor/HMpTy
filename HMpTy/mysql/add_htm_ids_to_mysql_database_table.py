@@ -277,9 +277,9 @@ def add_htm_ids_to_mysql_database_table(
                 'no HTMIds to add to the %s db table' % (tableName, ))
 
         print "%(count)s / %(totalCount)s htmIds added to %(tableName)s" % locals()
-    timediff = times.calculate_time_difference(
-        startDate=start, endDate=datetime.now())
-    print timediff
+        timediff = times.calculate_time_difference(
+            startDate=start, endDate=datetime.now())
+        print timediff
 
     # APPLY INDEXES IF NEEDED
     for index in ["htm10ID", "htm13ID", "htm16ID"]:
