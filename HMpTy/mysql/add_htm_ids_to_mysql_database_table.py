@@ -265,12 +265,6 @@ def add_htm_ids_to_mysql_database_table(
             log.debug('finshed building the sqlquery')
 
         if len(sqlQuery):
-            dbConn.query('SET autocommit=0;')
-            dbConn.query('SET unique_checks=0; ')
-            dbConn.query('SET foreign_key_checks=0;')
-            dbConn.query('LOCK TABLES %s WRITE;' % (tableName))
-            dbConn.query('ALTER TABLE %s DISABLE KEYS;' % (tableName))
-            dbConn.query('START TRANSACTION;')
             log.debug(
                 'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
             writequery(
@@ -278,12 +272,6 @@ def add_htm_ids_to_mysql_database_table(
                 sqlQuery=sqlQuery,
                 dbConn=dbConn,
             )
-            dbConn.query('COMMIT;')
-            dbConn.query('UNLOCK TABLES')
-            dbConn.query('SET foreign_key_checks=1;')
-            dbConn.query('SET unique_checks=1; ')
-            dbConn.query('SET autocommit=1;')
-            dbConn.query('ALTER TABLE %s ENABLE KEYS;' % (tableName))
             log.debug(
                 'finished updating the HTMIds for new objects in the %s db table' % (tableName, ))
         else:
