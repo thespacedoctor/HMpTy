@@ -268,7 +268,7 @@ def add_htm_ids_to_mysql_database_table(
             dbConn.query('SET autocommit=0;')
             dbConn.query('SET unique_checks=0; ')
             dbConn.query('SET foreign_key_checks=0;')
-            dbConn.query('LOCK TABLES %s WRITE;' % (tablename))
+            dbConn.query('LOCK TABLES %s WRITE;' % (tableName))
             dbConn.query('START TRANSACTION;')
             log.debug(
                 'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
