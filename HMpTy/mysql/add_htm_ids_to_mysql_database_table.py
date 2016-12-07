@@ -265,7 +265,7 @@ def add_htm_ids_to_mysql_database_table(
             log.debug('finshed building the sqlquery')
 
         if len(sqlQuery):
-            dbConn.db.query('SET autocommit=0;')
+            dbConn.query('SET autocommit=0;')
             dbConn.query('SET unique_checks=0; ')
             dbConn.query('SET foreign_key_checks=0;')
             dbConn.query('LOCK TABLES %s WRITE;' % (tablename))
