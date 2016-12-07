@@ -241,7 +241,7 @@ def add_htm_ids_to_mysql_database_table(
             for h16, h13, h10, pid, cxx, cyy, czz in zip(htm16Ids, htm13Ids, htm10Ids, pIdList, cx, cy, cz):
 
                 sqlQuery += \
-                    """UPDATE `%s` SET htm16ID=%s, htm13ID=%s, htm10ID=%s, cx=%s, cy=%s, cz=%s where `%s` = %s;\n""" \
+                    """UPDATE `%s` SET htm16ID=%s, htm13ID=%s, htm10ID=%s, cx=%s, cy=%s, cz=%s where `%s` = '%s';\n""" \
                     % (
                         tableName,
                         h16,
@@ -259,7 +259,7 @@ def add_htm_ids_to_mysql_database_table(
         else:
             log.debug('building the sqlquery')
             updates = []
-            updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = %(pid)s;" % locals() for h16,
+            updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
                           h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
             sqlQuery = "\n".join(updates)
             log.debug('finshed building the sqlquery')
