@@ -5,7 +5,7 @@ Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org/en/stabl
 
 
 Usage:
-    hmpty index (-f) <tableName> <primaryIdCol> <raCol> <decCol> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>)
+    hmpty (-f) index <tableName> <primaryIdCol> <raCol> <decCol> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>)
     hmpty search <tableName> <raCol> <decCol> <ra> <dec> <radius> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>) [(-r <format>|-r mysql <resultsTable>)]
 
 Options:
@@ -54,7 +54,7 @@ def main(arguments=None):
         arguments=arguments,
         docString=__doc__,
         logLevel="DEBUG",
-        options_first=False,
+        options_first=True,
         projectName="HMpTy"
     )
     arguments, settings, log, dbConn = su.setup()
