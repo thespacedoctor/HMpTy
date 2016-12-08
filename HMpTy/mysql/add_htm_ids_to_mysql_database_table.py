@@ -236,7 +236,8 @@ def add_htm_ids_to_mysql_database_table(
             sqlQuery=sqlQuery,
             dbConn=dbConn
         )
-        lastId = batch[-1][primaryIdColumnName]
+        if reindex and len(batch):
+            lastId = batch[-1][primaryIdColumnName]
         log.debug(
             """The next %(batchSize)s rows requiring HTMID information have now been selected""" % locals())
 
