@@ -5,7 +5,7 @@ Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org/en/stabl
 
 
 Usage:
-    hmpty index (--reindex) <tableName> <primaryIdCol> <raCol> <decCol> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>)
+    hmpty index (-f) <tableName> <primaryIdCol> <raCol> <decCol> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>)
     hmpty search <tableName> <raCol> <decCol> <ra> <dec> <radius> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>) [(-r <format>|-r mysql <resultsTable>)]
 
 Options:
@@ -19,7 +19,7 @@ Options:
     ra                                                              the right ascension of the centre of the conesearch circle
     dec                                                             the declination of the centre of the conesearch circle
     radius                                                          the radius of the conesearch circle (arcsec)
-    --reindex                                                   trigger a reindex of the entire table (regenerate all HTMIDs)
+    -f, --force                                                     force a regeneration of all HTMIDs
     -h, --help                                                      show this help message
     -v, --version                                                   show version
     -s <pathToSettingsFile>, --settings <pathToSettingsFile>        path to a settings file containing the database credentials
@@ -54,7 +54,7 @@ def main(arguments=None):
         arguments=arguments,
         docString=__doc__,
         logLevel="DEBUG",
-        options_first=True,
+        options_first=False,
         projectName="HMpTy"
     )
     arguments, settings, log, dbConn = su.setup()
@@ -89,7 +89,7 @@ def main(arguments=None):
             dbConn=dbConn,
             log=log,
             primaryIdColumnName=primaryIdCol,
-            reindex=reindexFlag
+            reindex=forceFlag
         )
 
     if search:
