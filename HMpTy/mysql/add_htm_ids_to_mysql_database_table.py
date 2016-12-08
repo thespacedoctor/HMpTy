@@ -154,6 +154,19 @@ def add_htm_ids_to_mysql_database_table(
     log.debug(
         """Counting the number of rows still requiring HTMID information""" % locals())
     if reindex:
+        sqlQuery = u"""
+            SELECT NON_UNIQUE FROM INFORMATION_SCHEMA.STATISTICS
+                WHERE table_schema=DATABASE() AND table_name='%(tableName)s' and COLUMN_NAME = "%(primaryIdColumnName)s";
+        """ % locals()
+        nonunique = readquery(
+            log=log,
+            sqlQuery=sqlQuery,
+            dbConn=dbConn
+        )[0]["NON_UNIQUE"]
+        if nonunique == 1:
+            log.error('To reindex the entire table the primaryID you submit must be unique. "%(primaryIdColumnName)s" is not unique in table "%(tableName)s"' % locals())
+            return
+
         sqlQuery = """ALTER TABLE `%(tableName)s` disable keys""" % locals()
         writequery(
             log=log,
