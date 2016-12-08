@@ -30,7 +30,8 @@ def add_htm_ids_to_mysql_database_table(
         log,
         primaryIdColumnName="primaryId",
         cartesian=False,
-        batchSize=50000):
+        batchSize=50000,
+        reindex=False):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
     **Key Arguments:**
@@ -42,6 +43,7 @@ def add_htm_ids_to_mysql_database_table(
         - ``primaryIdColumnName`` -- the primary id for the table
         - ``cartesian`` -- add cartesian columns. Default *False*
         - ``batchSize`` -- the size of the batches of rows to add HTMIds to concurrently. Default *2500*
+        - ``reindex`` -- reindex the entire table
 
     **Return:**
         - None
@@ -57,7 +59,8 @@ def add_htm_ids_to_mysql_database_table(
                 tableName="my_big_star_table",
                 dbConn=dbConn,
                 log=log,
-                primaryIdColumnName="primaryId"
+                primaryIdColumnName="primaryId",
+                reindex=False
             )
     """
     log.info('starting the ``add_htm_ids_to_mysql_database_table`` function')
@@ -150,7 +153,10 @@ def add_htm_ids_to_mysql_database_table(
 
     log.debug(
         """Counting the number of rows still requiring HTMID information""" % locals())
-    if cartesian:
+    if reindex:
+        sqlQuery = """SELECT count(*) as count from `%(tableName)s`""" % locals(
+        )
+    elif cartesian:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
         sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm10ID is NULL or cx is null""" % locals(
         )
@@ -173,6 +179,7 @@ def add_htm_ids_to_mysql_database_table(
     batches = int(total / batchSize)
 
     count = 0
+    lastId = False
     # NOW GENERATE THE HTMLIds FOR THESE ROWS
     for i in range(batches + 1):
         if total == 0:
@@ -188,7 +195,15 @@ def add_htm_ids_to_mysql_database_table(
 
         log.debug(
             """Selecting the next %(batchSize)s rows requiring HTMID information in the %(tableName)s table""" % locals())
-        if cartesian:
+        if reindex:
+            # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
+            if lastId:
+                sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` > `%s` order by `%s` limit %s""" % (
+                    primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName,  lastId, primaryIdColumnName, batchSize)
+            else:
+                sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` order by `%s` limit %s""" % (
+                    primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName, batchSize)
+        elif cartesian:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
             sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` > 0 and ((htm10ID is NULL or cx is null)) limit %s""" % (
                 primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
@@ -201,6 +216,7 @@ def add_htm_ids_to_mysql_database_table(
             sqlQuery=sqlQuery,
             dbConn=dbConn
         )
+        lastId = batch[-1][primaryIdColumnName]
         log.debug(
             """The next %(batchSize)s rows requiring HTMID information have now been selected""" % locals())
 
@@ -253,6 +269,7 @@ def add_htm_ids_to_mysql_database_table(
                         primaryIdColumnName,
                         pid
                     )
+
             log.debug(
                 'finished calculating cartesian coordinates for batch of %s rows in %s db table' % (
                     batchSize, tableName, ))
