@@ -154,6 +154,13 @@ def add_htm_ids_to_mysql_database_table(
     log.debug(
         """Counting the number of rows still requiring HTMID information""" % locals())
     if reindex:
+        sqlQuery = """ALTER TABLE `%(tableName)s` disable keys""" % locals()
+        writequery(
+            log=log,
+            sqlQuery=sqlQuery,
+            dbConn=dbConn
+        )
+
         sqlQuery = """SELECT count(*) as count from `%(tableName)s`""" % locals(
         )
     elif cartesian:
@@ -325,6 +332,14 @@ def add_htm_ids_to_mysql_database_table(
                 dbConn=dbConn,
             )
         log.debug('finished adding %(index)s index to %(tableName)s' % locals())
+
+    if reindex:
+        sqlQuery = """ALTER TABLE `%(tableName)s` enable keys""" % locals()
+        writequery(
+            log=log,
+            sqlQuery=sqlQuery,
+            dbConn=dbConn
+        )
 
     print "All HTMIds added to %(tableName)s" % locals()
 
