@@ -54,7 +54,7 @@ def main(arguments=None):
         arguments=arguments,
         docString=__doc__,
         logLevel="DEBUG",
-        options_first=False,
+        options_first=True,
         projectName="HMpTy"
     )
     arguments, settings, log, dbConn = su.setup()
