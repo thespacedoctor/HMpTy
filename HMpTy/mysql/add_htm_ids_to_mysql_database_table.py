@@ -198,7 +198,7 @@ def add_htm_ids_to_mysql_database_table(
         if reindex:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
             if lastId:
-                sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` > `%s` order by `%s` limit %s""" % (
+                sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` > '%s' order by `%s` limit %s""" % (
                     primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName,  lastId, primaryIdColumnName, batchSize)
             else:
                 sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` order by `%s` limit %s""" % (
