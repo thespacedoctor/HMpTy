@@ -324,29 +324,34 @@ def add_htm_ids_to_mysql_database_table(
         print "Update speed: %(timediff)0.2fs/1e6 rows\n" % locals()
 
     # APPLY INDEXES IF NEEDED
+    sqlQuery = ""
     for index in ["htm10ID", "htm13ID", "htm16ID"]:
         log.debug('adding %(index)s index to %(tableName)s' % locals())
         iname = "idx_" + index
-        sqlQuery = u"""
+        asqlQuery = u"""
             SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS
                 WHERE table_schema=DATABASE() AND table_name='%(tableName)s' AND index_name='%(iname)s';
         """ % locals()
         count = readquery(
             log=log,
-            sqlQuery=sqlQuery,
+            sqlQuery=asqlQuery,
             dbConn=dbConn
         )[0]["IndexIsThere"]
-        if count == 0:
 
-            sqlQuery = u"""
-                ALTER TABLE %(tableName)s  ADD INDEX `%(iname)s` (`%(index)s` ASC);
-            """ % locals()
-            writequery(
-                log=log,
-                sqlQuery=sqlQuery,
-                dbConn=dbConn,
-            )
-        log.debug('finished adding %(index)s index to %(tableName)s' % locals())
+        if count == 0:
+            if not len(sqlQuery):
+                sqlQuery += u"""
+                    ALTER TABLE %(tableName)s ADD INDEX `%(iname)s` (`%(index)s` ASC)
+                """ % locals()
+            else:
+                sqlQuery += u""", ADD INDEX `%(iname)s` (`%(index)s` ASC)""" % locals()
+    if len(sqlQuery):
+        writequery(
+            log=log,
+            sqlQuery=sqlQuery + ";",
+            dbConn=dbConn,
+        )
+    log.debug('finished adding indexes to %(tableName)s' % locals())
 
     if reindex:
         print "Re-enabling keys within the '%(tableName)s' table" % locals()
