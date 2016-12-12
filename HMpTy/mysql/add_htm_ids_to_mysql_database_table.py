@@ -30,7 +30,8 @@ def add_htm_ids_to_mysql_database_table(
         log,
         primaryIdColumnName="primaryId",
         cartesian=False,
-        batchSize=50000):
+        batchSize=25000,
+        reindex=False):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
     **Key Arguments:**
@@ -42,6 +43,7 @@ def add_htm_ids_to_mysql_database_table(
         - ``primaryIdColumnName`` -- the primary id for the table
         - ``cartesian`` -- add cartesian columns. Default *False*
         - ``batchSize`` -- the size of the batches of rows to add HTMIds to concurrently. Default *2500*
+        - ``reindex`` -- reindex the entire table
 
     **Return:**
         - None
@@ -57,7 +59,8 @@ def add_htm_ids_to_mysql_database_table(
                 tableName="my_big_star_table",
                 dbConn=dbConn,
                 log=log,
-                primaryIdColumnName="primaryId"
+                primaryIdColumnName="primaryId",
+                reindex=False
             )
     """
     log.info('starting the ``add_htm_ids_to_mysql_database_table`` function')
@@ -150,7 +153,30 @@ def add_htm_ids_to_mysql_database_table(
 
     log.debug(
         """Counting the number of rows still requiring HTMID information""" % locals())
-    if cartesian:
+    if reindex:
+        sqlQuery = u"""
+            SELECT INDEX_NAME FROM INFORMATION_SCHEMA.STATISTICS
+                WHERE table_schema=DATABASE() AND table_name='%(tableName)s' and COLUMN_NAME = "%(primaryIdColumnName)s";
+        """ % locals()
+        keyname = readquery(
+            log=log,
+            sqlQuery=sqlQuery,
+            dbConn=dbConn
+        )[0]["INDEX_NAME"]
+        if keyname != "PRIMARY":
+            log.error('To reindex the entire table the primaryID you submit must be unique. "%(primaryIdColumnName)s" is not unique in table "%(tableName)s"' % locals())
+            return
+
+        sqlQuery = """ALTER TABLE `%(tableName)s` disable keys""" % locals()
+        writequery(
+            log=log,
+            sqlQuery=sqlQuery,
+            dbConn=dbConn
+        )
+
+        sqlQuery = """SELECT count(*) as count from `%(tableName)s`""" % locals(
+        )
+    elif cartesian:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
         sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm10ID is NULL or cx is null""" % locals(
         )
@@ -173,6 +199,7 @@ def add_htm_ids_to_mysql_database_table(
     batches = int(total / batchSize)
 
     count = 0
+    lastId = False
     # NOW GENERATE THE HTMLIds FOR THESE ROWS
     for i in range(batches + 1):
         if total == 0:
@@ -188,7 +215,15 @@ def add_htm_ids_to_mysql_database_table(
 
         log.debug(
             """Selecting the next %(batchSize)s rows requiring HTMID information in the %(tableName)s table""" % locals())
-        if cartesian:
+        if reindex:
+            # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
+            if lastId:
+                sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` > '%s' order by `%s` limit %s""" % (
+                    primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName,  lastId, primaryIdColumnName, batchSize)
+            else:
+                sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` order by `%s` limit %s""" % (
+                    primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName, batchSize)
+        elif cartesian:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
             sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` > 0 and ((htm10ID is NULL or cx is null)) limit %s""" % (
                 primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
@@ -201,6 +236,8 @@ def add_htm_ids_to_mysql_database_table(
             sqlQuery=sqlQuery,
             dbConn=dbConn
         )
+        if reindex and len(batch):
+            lastId = batch[-1][primaryIdColumnName]
         log.debug(
             """The next %(batchSize)s rows requiring HTMID information have now been selected""" % locals())
 
@@ -241,7 +278,7 @@ def add_htm_ids_to_mysql_database_table(
             for h16, h13, h10, pid, cxx, cyy, czz in zip(htm16Ids, htm13Ids, htm10Ids, pIdList, cx, cy, cz):
 
                 sqlQuery += \
-                    """UPDATE `%s` SET htm16ID=%s, htm13ID=%s, htm10ID=%s, cx=%s, cy=%s, cz=%s where `%s` = %s;\n""" \
+                    """UPDATE `%s` SET htm16ID=%s, htm13ID=%s, htm10ID=%s, cx=%s, cy=%s, cz=%s where `%s` = '%s';\n""" \
                     % (
                         tableName,
                         h16,
@@ -253,13 +290,14 @@ def add_htm_ids_to_mysql_database_table(
                         primaryIdColumnName,
                         pid
                     )
+
             log.debug(
                 'finished calculating cartesian coordinates for batch of %s rows in %s db table' % (
                     batchSize, tableName, ))
         else:
             log.debug('building the sqlquery')
             updates = []
-            updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = %(pid)s;" % locals() for h16,
+            updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
                           h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
             sqlQuery = "\n".join(updates)
             log.debug('finshed building the sqlquery')
@@ -286,28 +324,43 @@ def add_htm_ids_to_mysql_database_table(
         print "Update speed: %(timediff)0.2fs/1e6 rows\n" % locals()
 
     # APPLY INDEXES IF NEEDED
+    sqlQuery = ""
     for index in ["htm10ID", "htm13ID", "htm16ID"]:
         log.debug('adding %(index)s index to %(tableName)s' % locals())
         iname = "idx_" + index
-        sqlQuery = u"""
+        asqlQuery = u"""
             SELECT COUNT(1) IndexIsThere FROM INFORMATION_SCHEMA.STATISTICS
                 WHERE table_schema=DATABASE() AND table_name='%(tableName)s' AND index_name='%(iname)s';
         """ % locals()
         count = readquery(
             log=log,
-            sqlQuery=sqlQuery,
+            sqlQuery=asqlQuery,
             dbConn=dbConn
         )[0]["IndexIsThere"]
+
         if count == 0:
-            sqlQuery = u"""
-                ALTER TABLE %(tableName)s  ADD INDEX `%(iname)s` (`%(index)s` ASC);
-            """ % locals()
-            writequery(
-                log=log,
-                sqlQuery=sqlQuery,
-                dbConn=dbConn,
-            )
-        log.debug('finished adding %(index)s index to %(tableName)s' % locals())
+            if not len(sqlQuery):
+                sqlQuery += u"""
+                    ALTER TABLE %(tableName)s ADD INDEX `%(iname)s` (`%(index)s` ASC)
+                """ % locals()
+            else:
+                sqlQuery += u""", ADD INDEX `%(iname)s` (`%(index)s` ASC)""" % locals()
+    if len(sqlQuery):
+        writequery(
+            log=log,
+            sqlQuery=sqlQuery + ";",
+            dbConn=dbConn,
+        )
+    log.debug('finished adding indexes to %(tableName)s' % locals())
+
+    if reindex:
+        print "Re-enabling keys within the '%(tableName)s' table" % locals()
+        sqlQuery = """ALTER TABLE `%(tableName)s` enable keys""" % locals()
+        writequery(
+            log=log,
+            sqlQuery=sqlQuery,
+            dbConn=dbConn
+        )
 
     print "All HTMIds added to %(tableName)s" % locals()
 
