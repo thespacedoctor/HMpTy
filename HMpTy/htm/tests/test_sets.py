@@ -72,7 +72,7 @@ for l in thisData[1:]:
         decList.append(l[2])
 
 
-class test_sets():
+class test_sets(unittest.TestCase):
 
     def test_sets_single_extract_function(self):
 

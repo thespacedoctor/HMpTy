@@ -111,7 +111,7 @@ class HTM(_htmcCode.HTMC):
     # use the tab-trigger below for new method
     # xt-class-method
 
-    def intersect(self, ra, dec, radius, inclusive=True):
+    def intersect(self, ra, dec, radius, inclusive=True, convertCoordinates=True):
         """*return IDs of all triangles contained within and/or intersecting a circle centered on a given ra and dec*
 
         **Key Arguments:**
@@ -119,6 +119,8 @@ class HTM(_htmcCode.HTMC):
             - ``dec`` -- DEC of central point in decimal degrees or sexagesimal
             - ``radius`` -- radius of circle in degrees
             - ``inclusive`` -- include IDs of triangles that intersect the circle as well as those completely inclosed by the circle. Default *True*
+            - ``convertCoordinates`` -- convert the corrdinates passed to intersect. Default *True*
+            -
 
         **Return:**
             - ``trixelArray`` -- a numpy array of the match trixel IDs
@@ -148,15 +150,17 @@ class HTM(_htmcCode.HTMC):
                 )
         """
         # CONVERT RA AND DEC DECIMAL DEGREES
-        converter = unit_conversion(
-            log=self.log
-        )
-        ra = converter.ra_sexegesimal_to_decimal(
-            ra=ra
-        )
-        dec = converter.dec_sexegesimal_to_decimal(
-            dec=dec
-        )
+
+        if convertCoordinates == True:
+            converter = unit_conversion(
+                log=self.log
+            )
+            ra = converter.ra_sexegesimal_to_decimal(
+                ra=ra
+            )
+            dec = converter.dec_sexegesimal_to_decimal(
+                dec=dec
+            )
 
         if inclusive:
             inc = 1
@@ -164,7 +168,7 @@ class HTM(_htmcCode.HTMC):
             inc = 0
         return super(HTM, self).intersect(ra, dec, radius, inc)
 
-    def match(self, ra1, dec1, ra2, dec2, radius, maxmatch=1):
+    def match(self, ra1, dec1, ra2, dec2, radius, maxmatch=1, convertToArray=True):
         """*Crossmatch two lists of ra/dec points*
 
         This is very efficient for large search angles and large lists. Note, if you need to match against the same points many times, you should use a `Matcher` object
@@ -176,6 +180,7 @@ class HTM(_htmcCode.HTMC):
             - ``dec2`` -- list, numpy array or single dec value (second coordinate set - must match ra2 array length)
             - ``radius`` -- search radius in degrees. Can be list, numpy array or single value. If list or numpy array must be same length as ra1 array length)
             - ``maxmatch`` -- maximum number of matches to return. Set to `0` to match all points. Default *1* (i.e. closest match)
+            - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
 
         **Return:**
             - ``matchIndices1`` -- match indices for list1 (ra1, dec1)
@@ -235,7 +240,8 @@ class HTM(_htmcCode.HTMC):
             log=self.log,
             depth=depth,
             ra=ra2,
-            dec=dec2)
+            dec=dec2,
+            convertToArray=convertToArray)
         return matcher.match(
             ra=ra1,
             dec=dec1,
@@ -253,7 +259,7 @@ class Matcher(_htmcCode.Matcher):
         - ``depth`` -- the depth of the mesh generate the Matcher object at. Default *16*
         - ``ra`` -- list, numpy array or single ra value
         - ``dec`` -- --list, numpy array or single dec value (must match ra array length)
-
+        - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
 
     **Return:**
         - None
@@ -285,7 +291,10 @@ class Matcher(_htmcCode.Matcher):
             ra,
             dec,
             depth=16,
-            log=False):
+            log=False,
+            convertToArray=True):
+
+        self.convertToArray = convertToArray
 
         if log == False:
             if log == False:
@@ -294,12 +303,13 @@ class Matcher(_htmcCode.Matcher):
         else:
             self.log = log
 
-        from astrocalc.coords import coordinates_to_array
-        ra, dec = coordinates_to_array(
-            log=log,
-            ra=ra,
-            dec=dec
-        )
+        if convertToArray == True:
+            from astrocalc.coords import coordinates_to_array
+            ra, dec = coordinates_to_array(
+                log=log,
+                ra=ra,
+                dec=dec
+            )
 
         if ra.size != dec.size:
             raise ValueError("ra size (%d) != "
@@ -367,12 +377,13 @@ class Matcher(_htmcCode.Matcher):
             Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
         """
 
-        from astrocalc.coords import coordinates_to_array
-        ra, dec = coordinates_to_array(
-            log=self.log,
-            ra=ra,
-            dec=dec
-        )
+        if self.convertToArray == True:
+            from astrocalc.coords import coordinates_to_array
+            ra, dec = coordinates_to_array(
+                log=self.log,
+                ra=ra,
+                dec=dec
+            )
 
         radius = numpy.array(radius, dtype='f8', ndmin=1, copy=False)
 

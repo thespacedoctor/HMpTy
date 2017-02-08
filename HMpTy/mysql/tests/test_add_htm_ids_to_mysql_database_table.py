@@ -39,7 +39,7 @@ except:
     pass
 
 
-class test_add_htm_ids_to_mysql_database_table():
+class test_add_htm_ids_to_mysql_database_table(unittest.TestCase):
 
     def test_add_htm_ids_to_mysql_database_table_function(self):
 

@@ -53,7 +53,7 @@ Documentation for HMpTy is hosted by `Read the Docs <http://HMpTy.readthedocs.or
 Installation
 ============
 
-The easiest way to install HMpTy us to use ``pip``:
+The easiest way to install HMpTy is to use ``pip``:
 
 .. code:: bash
 

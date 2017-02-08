@@ -12,6 +12,7 @@
 ################# GLOBAL IMPORTS ####################
 import sys
 import os
+import re
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
 from HMpTy.htm import HTM
@@ -186,7 +187,7 @@ class conesearch():
         log.debug("instansiating a new 'conesearch' object")
         self.tableName = tableName
         self.dbConn = dbConn
-        self.radius = radiusArcsec
+        self.radius = float(radiusArcsec)
         self.raCol = raCol
         self.decCol = decCol
         self.columns = columns
@@ -225,6 +226,9 @@ class conesearch():
             log=self.log
         )
 
+        # DATETIME REGEX - EXPENSIVE OPERATION, LET"S JUST DO IT ONCE
+        self.reDatetime = re.compile('^[0-9]{4}-[0-9]{2}-[0-9]{2}T')
+
         return None
 
     @property
@@ -258,7 +262,8 @@ class conesearch():
         from fundamentals.renderer import list_of_dictionaries
         matches = list_of_dictionaries(
             log=self.log,
-            listOfDictionaries=matches
+            listOfDictionaries=matches,
+            reDatetime=self.reDatetime
         )
 
         self.log.info('completed the ``get`` method')
@@ -279,9 +284,16 @@ class conesearch():
         # GET ALL THE TRIXELS REQUIRED
         trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
 
-        thesHtmIds = ",".join(np.array(map(str, trixelArray)))
         htmLevel = "htm%sID" % self.htmDepth
-        htmWhereClause = "where %(htmLevel)s in (%(thesHtmIds)s)" % locals()
+        if trixelArray.size > 50000:
+            minID = np.min(trixelArray)
+            maxID = np.max(trixelArray)
+            htmWhereClause = "where %(htmLevel)s between %(minID)s and %(maxID)s  " % locals(
+            )
+        else:
+            thesHtmIds = ",".join(np.array(map(str, trixelArray)))
+            htmWhereClause = "where %(htmLevel)s in (%(thesHtmIds)s)" % locals(
+            )
 
         cols = self.columns[:]
         if cols != "*" and raCol.lower() not in cols.lower():
@@ -317,10 +329,13 @@ class conesearch():
         trixelArray = np.array([], dtype='int16', ndmin=1, copy=False)
         # FOR EACH RA, DEC SET IN THE NUMPY ARRAY, COLLECT THE OVERLAPPING HTM
         # TRIXELS
-        for ra1, dec1 in zip(self.ra, self.dec):
-            thisArray = self.mesh.intersect(
-                ra1, dec1, self.radius / (60. * 60.), inclusive=True)
-            trixelArray = np.hstack((trixelArray, thisArray))
+        r = self.radius / (60. * 60.)
+
+        trixelArray = []
+        trixelArray[:] = [self.mesh.intersect(
+            ra1, dec1, r, inclusive=True, convertCoordinates=False) for ra1, dec1 in zip(self.ra, self.dec)]
+
+        trixelArray = np.unique(np.concatenate(trixelArray))
 
         self.log.info(
             'completed the ``_get_trixel_ids_that_overlap_conesearch_circles`` method')
