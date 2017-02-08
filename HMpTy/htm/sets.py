@@ -14,6 +14,7 @@ import sys
 import os
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
+import numpy as np
 
 
 class sets():
@@ -26,6 +27,8 @@ class sets():
         - ``dec`` -- a list of the corrdinate declinations (same length as ``ra``)
         - ``radius`` -- the radius to crossmatch the list of coordinates against itself (degrees)
         - ``sourceList`` -- the list of source imformation to be divided into associated sets (same length as ``ra`` and ``dec``)
+        - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
+
 
     **Usage:**
 
@@ -59,6 +62,7 @@ class sets():
             dec,
             radius,
             sourceList,
+            convertToArray=True
     ):
         self.log = log
         log.debug("instansiating a new 'sets' object")
@@ -66,6 +70,7 @@ class sets():
         self.dec = dec
         self.radius = radius
         self.sourceList = sourceList
+        self.convertToArray = convertToArray
         # Initial Actions
 
         return None
@@ -80,61 +85,6 @@ class sets():
 
         return self._extract_all_sets_from_list()
 
-    def _extract_one_set_from_list(
-            self,
-            ra,
-            dec,
-            radius,
-            sourceList):
-        """*Crossmatch the first row in the list against the remaining rows*
-
-        **Key Arguments:**
-            - ``ra`` -- a list of RAs
-            - ``dec`` -- a list of DECs (same length as ``ra``)
-            - ``radius`` -- the radius of the crossmatch
-            - ``sourceList`` -- the list of source imformation to be divided into associated sets (same length as ``ra`` and ``dec``)
-
-        **Return:**
-            - ``matches`` -- the matches from the cross-match
-            - ``ra`` -- the remaining RAs
-            - ``dec`` -- the remaining DECs
-        """
-        self.log.info('starting the ``_extract_one_set_from_list`` method')
-
-        matches = []
-
-        from HMpTy import HTM
-        mesh = HTM(
-            depth=12,
-            log=self.log
-        )
-        matchIndices1, matchIndices2, seps = mesh.match(
-            ra1=ra[0],
-            dec1=dec[0],
-            ra2=ra[1:],
-            dec2=dec[1:],
-            radius=radius,
-            maxmatch=0  # 1 = match closest 1, 0 = match all
-        )
-
-        matches = []
-        matches.append(sourceList[0])
-
-        indiciesToRemove = [0]
-
-        for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-            matches.append(sourceList[1:][m2])
-            if (m2 + 1) not in indiciesToRemove:
-                indiciesToRemove.append(m2 + 1)
-
-        for index in sorted(indiciesToRemove, reverse=True):
-            del ra[index]
-            del dec[index]
-            del sourceList[index]
-
-        self.log.info('completed the ``_extract_one_set_from_list`` method')
-        return matches, ra, dec, sourceList
-
     def _extract_all_sets_from_list(
             self):
         """*Extract all of the sets from the list of coordinates*
@@ -144,24 +94,37 @@ class sets():
         """
         self.log.info('starting the ``_extract_all_sets_from_list`` method')
 
-        allMatches = []
-
-        matches, ra, dec, sourceList = self._extract_one_set_from_list(
-            ra=self.ra[:],
-            dec=self.dec[:],
-            radius=self.radius,
-            sourceList=self.sourceList[:]
+        from HMpTy import HTM
+        mesh = HTM(
+            depth=12,
+            log=self.log
         )
-        allMatches.append(matches)
 
-        while len(sourceList):
-            matches, ra, dec, sourceList = self._extract_one_set_from_list(
-                ra=ra,
-                dec=dec,
-                radius=self.radius,
-                sourceList=sourceList
-            )
-            allMatches.append(matches)
+        matchIndices1, matchIndices2, seps = mesh.match(
+            ra1=self.ra,
+            dec1=self.dec,
+            ra2=self.ra,
+            dec2=self.dec,
+            radius=self.radius,
+            maxmatch=0,  # 1 = match closest 1, 0 = match all,
+            convertToArray=self.convertToArray
+        )
+
+        anchorIndicies = []
+        childIndicies = []
+        allMatches = []
+        thisMatch = None
+        for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
+            if m1 not in anchorIndicies and m1 not in childIndicies:
+                if thisMatch:
+                    allMatches.append(thisMatch)
+                thisMatch = [self.sourceList[m1]]
+                anchorIndicies.append(m1)
+            if m2 not in anchorIndicies and m2 not in childIndicies:
+                childIndicies.append(m2)
+                thisMatch.append(self.sourceList[m2])
+        if thisMatch:
+            allMatches.append(thisMatch)
 
         self.log.info('completed the ``_extract_all_sets_from_list`` method')
         return allMatches

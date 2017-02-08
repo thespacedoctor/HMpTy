@@ -48,7 +48,7 @@ if not os.path.exists(pathToOutputDir):
 # xt-setup-unit-testing-files-and-folders
 
 
-class test_conesearch():
+class test_conesearch(unittest.TestCase):
 
     def test_get_trixel_ids_that_overlap_conesearch_circles(self):
 

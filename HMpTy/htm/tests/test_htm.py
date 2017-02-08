@@ -47,7 +47,21 @@ if not os.path.exists(pathToOutputDir):
 # xt-setup-unit-testing-files-and-folders
 
 
-class test_htm():
+class test_htm(unittest.TestCase):
+
+    def test_lookup01(self):
+
+        raList1 = ["138.30789"]
+        decList1 = ["+61.09267"]
+        from HMpTy import HTM
+        mesh16 = HTM(
+            depth=16,
+            log=log
+        )
+        print "LOOKUP"
+        htmids = mesh16.lookup_id(raList1, decList1)
+        for h, r, d in zip(htmids, raList1, decList1):
+            print r, d, " --> ", h
 
     def test_htm_area_function(self):
 

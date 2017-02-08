@@ -97,8 +97,8 @@ setup(name="HMpTy",
           'docopt',
           'astrocalc'
       ],
-      test_suite='nose.collector',
-      tests_require=['nose', 'nose-cover3'],
+      test_suite='nose2.collector.collector',
+      tests_require=['nose2', 'cov-core'],
       ext_modules=ext_modules,
       entry_points={
           'console_scripts': ['hmpty=HMpTy.cl_utils:main'],
