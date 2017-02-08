@@ -178,11 +178,11 @@ def add_htm_ids_to_mysql_database_table(
         )
     elif cartesian:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
-        sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm10ID is NULL or cx is null""" % locals(
+        sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm10ID is NULL or cx is null and %(raColName)s is not null""" % locals(
         )
     else:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
-        sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm10ID is NULL""" % locals(
+        sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm10ID is NULL and %(raColName)s is not null""" % locals(
         )
     log.debug(
         """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
