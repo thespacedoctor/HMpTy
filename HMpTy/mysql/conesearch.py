@@ -285,7 +285,7 @@ class conesearch():
         trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
 
         htmLevel = "htm%sID" % self.htmDepth
-        if trixelArray.size > 50000:
+        if trixelArray.size > 35000:
             minID = np.min(trixelArray)
             maxID = np.max(trixelArray)
             htmWhereClause = "where %(htmLevel)s between %(minID)s and %(maxID)s  " % locals(
