@@ -285,7 +285,7 @@ class conesearch():
         trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
 
         htmLevel = "htm%sID" % self.htmDepth
-        if trixelArray.size > 20000:
+        if trixelArray.size > 40000:
             minID = np.min(trixelArray)
             maxID = np.max(trixelArray)
             htmWhereClause = "where %(htmLevel)s between %(minID)s and %(maxID)s  " % locals(
@@ -314,6 +314,7 @@ class conesearch():
 
         self.log.info(
             'completed the ``_get_on_trixel_sources_from_database_query`` method')
+
         return sqlQuery
 
     def _get_trixel_ids_that_overlap_conesearch_circles(
@@ -366,7 +367,15 @@ class conesearch():
                 message = "Please add and populate the HTM columns to this database table BEFORE running any conesearches. You can use HMpTy to do this: http://hmpty.readthedocs.io/en/stable/"
                 self.log.error(message)
                 raise IOError(message)
+            elif "Truncated incorrect DOUBLE value" in str(e) or "Truncated incorrect DECIMAL value" in str(e):
+                databaseRows = readquery(
+                    log=self.log,
+                    sqlQuery=sqlQuery,
+                    dbConn=self.dbConn,
+                    quiet=True
+                )
             else:
+                print sqlQuery
                 raise e
 
         if self.distinct and (self.columns != "*" and (self.raCol.lower() not in self.columns.lower() or self.decCol.lower() not in self.columns.lower())):
