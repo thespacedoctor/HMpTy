@@ -15,7 +15,7 @@ import os
 import math
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
-import MySQLdb as ms
+import pymysql as ms
 from fundamentals.mysql import readquery, writequery
 from datetime import datetime, date
 from fundamentals import times
