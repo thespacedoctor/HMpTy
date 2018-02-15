@@ -234,19 +234,35 @@ class HTM(_htmcCode.HTMC):
             raise ValueError("radius size (%d) != 1 and"
                              " != ra2,dec2 size (%d)" % (radius.size, ra2.size))
 
+        # QUICK TRIMMING IN DEC SPACE OF BOTH SETS OF ARRAYS
+        decMatchIndices2 = (numpy.abs(dec1[:, None] - dec2) < radius).any(0)
+        decMatchIndices2 = numpy.where(decMatchIndices2)[0]
+        ra2a = ra2[decMatchIndices2]
+        dec2a = dec2[decMatchIndices2]
+
+        decMatchIndices1 = (numpy.abs(dec2[:, None] - dec1) < radius).any(0)
+        decMatchIndices1 = numpy.where(decMatchIndices1)[0]
+        ra1a = ra1[decMatchIndices1]
+        dec1a = dec1[decMatchIndices1]
+
         # new way using a Matcher
         depth = self.depth
         matcher = Matcher(
             log=self.log,
             depth=depth,
-            ra=ra2,
-            dec=dec2,
+            ra=ra2a,
+            dec=dec2a,
             convertToArray=convertToArray)
-        return matcher.match(
-            ra=ra1,
-            dec=dec1,
+        matchIndices1, matchIndices2, seps = matcher.match(
+            ra=ra1a,
+            dec=dec1a,
             radius=radius,
             maxmatch=maxmatch)
+
+        matchIndices1 = decMatchIndices1[matchIndices1]
+        matchIndices2 = decMatchIndices2[matchIndices2]
+
+        return matchIndices1, matchIndices2, seps
 
 
 class Matcher(_htmcCode.Matcher):

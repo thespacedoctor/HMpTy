@@ -256,6 +256,7 @@ class conesearch():
         self.log.info('starting the ``get`` method')
 
         sqlQuery = self._get_on_trixel_sources_from_database_query()
+
         databaseRows = self._execute_query(sqlQuery)
         matchIndies, matches = self._list_crossmatch(databaseRows)
 
