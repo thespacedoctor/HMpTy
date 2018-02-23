@@ -188,13 +188,14 @@ def add_htm_ids_to_mysql_database_table(
         )
     log.debug(
         """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
-    rowCount = readquery(
-        log=log,
-        sqlQuery=sqlQuery,
-        dbConn=dbConn,
-        quiet=False
-    )
-    totalCount = rowCount[0]["count"]
+    # rowCount = readquery(
+    #     log=log,
+    #     sqlQuery=sqlQuery,
+    #     dbConn=dbConn,
+    #     quiet=False
+    # )
+    # totalCount = rowCount[0]["count"]
+    totalCount = 10
 
     # ADD HTMIDs IN BATCHES
     total = totalCount
@@ -310,6 +311,7 @@ def add_htm_ids_to_mysql_database_table(
             log.debug(
                 'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
 
+            print "CHANGE ADDED"
             from fundamentals.mysql import insert_list_of_dictionaries_into_database_tables
             # USE dbSettings TO ACTIVATE MULTIPROCESSING
             insert_list_of_dictionaries_into_database_tables(
