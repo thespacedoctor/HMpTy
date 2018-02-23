@@ -301,7 +301,7 @@ def add_htm_ids_to_mysql_database_table(
             sqlQuery = "\n".join(updates)
             # updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
             # h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
-            updates[:] = [{"htm16ID" = h16, "htm13ID" = h13, "htm10ID" = h10, primaryIdColumnName: pid} for h16,
+            updates[:] = [{"htm16ID": h16, "htm13ID": h13, "htm10ID": h10, primaryIdColumnName: pid} for h16,
                           h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
             log.debug('finshed building the sqlquery')
 
