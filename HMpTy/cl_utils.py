@@ -87,6 +87,13 @@ def main(arguments=None):
     print settings
     sys.exit(0)
 
+    dbSettings = {
+        'host': hostFlag,
+        'user': userFlag,
+        'password': passwdFlag,
+        'db': dbNameFlag
+    }
+
     # CALL FUNCTIONS/OBJECTS
     if index:
         add_htm_ids_to_mysql_database_table(
@@ -96,7 +103,8 @@ def main(arguments=None):
             dbConn=dbConn,
             log=log,
             primaryIdColumnName=primaryIdCol,
-            reindex=forceFlag
+            reindex=forceFlag,
+            dbSettings=dbSettings
         )
 
     if search:

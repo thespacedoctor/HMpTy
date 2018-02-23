@@ -31,7 +31,8 @@ def add_htm_ids_to_mysql_database_table(
         primaryIdColumnName="primaryId",
         cartesian=False,
         batchSize=50000,
-        reindex=False):
+        reindex=False,
+        dbSettings=False):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
     **Key Arguments:**
@@ -44,6 +45,7 @@ def add_htm_ids_to_mysql_database_table(
         - ``cartesian`` -- add cartesian columns. Default *False*
         - ``batchSize`` -- the size of the batches of rows to add HTMIds to concurrently. Default *2500*
         - ``reindex`` -- reindex the entire table
+        - ``dbSettings`` -- yaml settings for database
 
     **Return:**
         - None
@@ -320,14 +322,14 @@ def add_htm_ids_to_mysql_database_table(
                 dateModified=False,
                 batchSize=20000,
                 replace=True,
-                dbSettings=False
+                dbSettings=dbSettings
             )
 
-            writequery(
-                log=log,
-                sqlQuery=sqlQuery,
-                dbConn=dbConn,
-            )
+            # writequery(
+            #     log=log,
+            #     sqlQuery=sqlQuery,
+            #     dbConn=dbConn,
+            # )
             log.debug(
                 'finished updating the HTMIds for new objects in the %s db table' % (tableName, ))
         else:
