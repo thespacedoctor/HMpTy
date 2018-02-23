@@ -16,7 +16,7 @@ import math
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
 import pymysql as ms
-from fundamentals.mysql import readquery, writequery
+from fundamentals.mysql import readquery, writequery, insert_list_of_dictionaries_into_database_tables
 from datetime import datetime, date
 from fundamentals import times
 import time
@@ -188,14 +188,13 @@ def add_htm_ids_to_mysql_database_table(
         )
     log.debug(
         """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
-    # rowCount = readquery(
-    #     log=log,
-    #     sqlQuery=sqlQuery,
-    #     dbConn=dbConn,
-    #     quiet=False
-    # )
-    # totalCount = rowCount[0]["count"]
-    totalCount = 10
+    rowCount = readquery(
+        log=log,
+        sqlQuery=sqlQuery,
+        dbConn=dbConn,
+        quiet=False
+    )
+    totalCount = rowCount[0]["count"]
 
     # ADD HTMIDs IN BATCHES
     total = totalCount
@@ -311,8 +310,6 @@ def add_htm_ids_to_mysql_database_table(
             log.debug(
                 'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
 
-            print "CHANGE ADDED"
-            from fundamentals.mysql import insert_list_of_dictionaries_into_database_tables
             # USE dbSettings TO ACTIVATE MULTIPROCESSING
             insert_list_of_dictionaries_into_database_tables(
                 dbConn=dbConn,
