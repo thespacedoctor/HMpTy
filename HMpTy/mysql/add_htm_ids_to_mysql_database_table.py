@@ -298,14 +298,31 @@ def add_htm_ids_to_mysql_database_table(
         else:
             log.debug('building the sqlquery')
             updates = []
-            updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
-                          h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
             sqlQuery = "\n".join(updates)
+            # updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
+            # h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
+            updates[:] = [{"htm16ID" = h16, "htm13ID" = h13, "htm10ID" = h10, primaryIdColumnName: pid} for h16,
+                          h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
             log.debug('finshed building the sqlquery')
 
-        if len(sqlQuery):
+        if len(updates):
             log.debug(
                 'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
+
+            from fundamentals.mysql import insert_list_of_dictionaries_into_database_tables
+            # USE dbSettings TO ACTIVATE MULTIPROCESSING
+            insert_list_of_dictionaries_into_database_tables(
+                dbConn=dbConn,
+                log=log,
+                dictList=updates,
+                dbTableName=tableName,
+                uniqueKeyList=[],
+                dateModified=False,
+                batchSize=20000,
+                replace=True,
+                dbSettings=False
+            )
+
             writequery(
                 log=log,
                 sqlQuery=sqlQuery,

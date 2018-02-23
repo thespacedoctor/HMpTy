@@ -84,6 +84,9 @@ def main(arguments=None):
         '--- STARTING TO RUN THE cl_utils.py AT %s' %
         (startTime,))
 
+    print settings
+    sys.exit(0)
+
     # CALL FUNCTIONS/OBJECTS
     if index:
         add_htm_ids_to_mysql_database_table(
