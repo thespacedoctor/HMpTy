@@ -84,9 +84,6 @@ def main(arguments=None):
         '--- STARTING TO RUN THE cl_utils.py AT %s' %
         (startTime,))
 
-    print settings
-    sys.exit(0)
-
     dbSettings = {
         'host': hostFlag,
         'user': userFlag,

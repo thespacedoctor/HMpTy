@@ -188,14 +188,13 @@ def add_htm_ids_to_mysql_database_table(
         )
     log.debug(
         """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
-    # rowCount = readquery(
-    #     log=log,
-    #     sqlQuery=sqlQuery,
-    #     dbConn=dbConn,
-    #     quiet=False
-    # )
-    # totalCount = rowCount[0]["count"]
-    totalCount = 40404040404040
+    rowCount = readquery(
+        log=log,
+        sqlQuery=sqlQuery,
+        dbConn=dbConn,
+        quiet=False
+    )
+    totalCount = rowCount[0]["count"]
 
     # ADD HTMIDs IN BATCHES
     total = totalCount
@@ -332,6 +331,8 @@ def add_htm_ids_to_mysql_database_table(
             # )
             log.debug(
                 'finished updating the HTMIds for new objects in the %s db table' % (tableName, ))
+
+            sys.exit(0)
         else:
             log.debug(
                 'no HTMIds to add to the %s db table' % (tableName, ))
