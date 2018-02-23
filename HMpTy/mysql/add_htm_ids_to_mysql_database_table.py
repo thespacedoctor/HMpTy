@@ -323,7 +323,8 @@ def add_htm_ids_to_mysql_database_table(
                 dateModified=False,
                 batchSize=20000,
                 replace=True,
-                dbSettings=dbSettings
+                dbSettings=dbSettings,
+                dateCreated=False
             )
 
             # writequery(
