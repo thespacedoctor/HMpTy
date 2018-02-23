@@ -30,7 +30,7 @@ def add_htm_ids_to_mysql_database_table(
         log,
         primaryIdColumnName="primaryId",
         cartesian=False,
-        batchSize=25000,
+        batchSize=50000,
         reindex=False):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
@@ -186,13 +186,14 @@ def add_htm_ids_to_mysql_database_table(
         )
     log.debug(
         """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
-    rowCount = readquery(
-        log=log,
-        sqlQuery=sqlQuery,
-        dbConn=dbConn,
-        quiet=False
-    )
-    totalCount = rowCount[0]["count"]
+    # rowCount = readquery(
+    #     log=log,
+    #     sqlQuery=sqlQuery,
+    #     dbConn=dbConn,
+    #     quiet=False
+    # )
+    # totalCount = rowCount[0]["count"]
+    totalCount = 40404040404040
 
     # ADD HTMIDs IN BATCHES
     total = totalCount
