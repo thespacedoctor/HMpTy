@@ -331,8 +331,6 @@ def add_htm_ids_to_mysql_database_table(
             # )
             log.debug(
                 'finished updating the HTMIds for new objects in the %s db table' % (tableName, ))
-
-            sys.exit(0)
         else:
             log.debug(
                 'no HTMIds to add to the %s db table' % (tableName, ))
