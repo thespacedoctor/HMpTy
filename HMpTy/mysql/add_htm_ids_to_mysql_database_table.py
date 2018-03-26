@@ -65,7 +65,7 @@ def add_htm_ids_to_mysql_database_table(
                 reindex=False
             )
     """
-    log.info('starting the ``add_htm_ids_to_mysql_database_table`` function')
+    log.debug('starting the ``add_htm_ids_to_mysql_database_table`` function')
 
     # TEST TABLE EXIST
     sqlQuery = """show tables"""
@@ -383,5 +383,5 @@ def add_htm_ids_to_mysql_database_table(
 
     print "All HTMIds added to %(tableName)s" % locals()
 
-    log.info('completed the ``add_htm_ids_to_mysql_database_table`` function')
+    log.debug('completed the ``add_htm_ids_to_mysql_database_table`` function')
     return None
