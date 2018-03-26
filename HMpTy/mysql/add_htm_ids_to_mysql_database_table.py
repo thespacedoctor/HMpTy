@@ -63,7 +63,7 @@ def add_htm_ids_to_mysql_database_table(
                 reindex=False
             )
     """
-    log.info('starting the ``add_htm_ids_to_mysql_database_table`` function')
+    log.debug('starting the ``add_htm_ids_to_mysql_database_table`` function')
 
     # TEST TABLE EXIST
     sqlQuery = """show tables"""
@@ -226,11 +226,11 @@ def add_htm_ids_to_mysql_database_table(
                     primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName, batchSize)
         elif cartesian:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` > 0 and ((htm10ID is NULL or cx is null)) limit %s""" % (
+            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` >= 0 and ((htm10ID is NULL or cx is null)) limit %s""" % (
                 primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
         else:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` > 0 and htm10ID is NULL limit %s""" % (
+            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` >= 0 and htm10ID is NULL limit %s""" % (
                 primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
         batch = readquery(
             log=log,
@@ -367,5 +367,5 @@ def add_htm_ids_to_mysql_database_table(
 
     print "All HTMIds added to %(tableName)s" % locals()
 
-    log.info('completed the ``add_htm_ids_to_mysql_database_table`` function')
+    log.debug('completed the ``add_htm_ids_to_mysql_database_table`` function')
     return None

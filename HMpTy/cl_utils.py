@@ -84,12 +84,15 @@ def main(arguments=None):
         '--- STARTING TO RUN THE cl_utils.py AT %s' %
         (startTime,))
 
-    dbSettings = {
-        'host': hostFlag,
-        'user': userFlag,
-        'password': passwdFlag,
-        'db': dbNameFlag
-    }
+    if hostFlag:
+        dbSettings = {
+            'host': hostFlag,
+            'user': userFlag,
+            'password': passwdFlag,
+            'db': dbNameFlag
+        }
+    elif settings:
+        dbSettings = settings["database settings"]
 
     # CALL FUNCTIONS/OBJECTS
     if index:

@@ -92,7 +92,7 @@ class sets():
         **Return:**
             - ``allMatches`` -- a list of lists. All of the assocaited sets of sources
         """
-        self.log.info('starting the ``_extract_all_sets_from_list`` method')
+        self.log.debug('starting the ``_extract_all_sets_from_list`` method')
 
         from HMpTy import HTM
         mesh = HTM(
@@ -126,5 +126,5 @@ class sets():
         if thisMatch:
             allMatches.append(thisMatch)
 
-        self.log.info('completed the ``_extract_all_sets_from_list`` method')
+        self.log.debug('completed the ``_extract_all_sets_from_list`` method')
         return allMatches
