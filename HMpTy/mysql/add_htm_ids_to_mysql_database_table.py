@@ -16,7 +16,7 @@ import math
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
 import pymysql as ms
-from fundamentals.mysql import readquery, writequery
+from fundamentals.mysql import readquery, writequery, insert_list_of_dictionaries_into_database_tables
 from datetime import datetime, date
 from fundamentals import times
 import time
@@ -31,7 +31,8 @@ def add_htm_ids_to_mysql_database_table(
         primaryIdColumnName="primaryId",
         cartesian=False,
         batchSize=50000,
-        reindex=False):
+        reindex=False,
+        dbSettings=False):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
     **Key Arguments:**
@@ -44,6 +45,7 @@ def add_htm_ids_to_mysql_database_table(
         - ``cartesian`` -- add cartesian columns. Default *False*
         - ``batchSize`` -- the size of the batches of rows to add HTMIds to concurrently. Default *2500*
         - ``reindex`` -- reindex the entire table
+        - ``dbSettings`` -- yaml settings for database
 
     **Return:**
         - None
@@ -186,14 +188,13 @@ def add_htm_ids_to_mysql_database_table(
         )
     log.debug(
         """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
-    # rowCount = readquery(
-    #     log=log,
-    #     sqlQuery=sqlQuery,
-    #     dbConn=dbConn,
-    #     quiet=False
-    # )
-    # totalCount = rowCount[0]["count"]
-    totalCount = 40404040404040
+    rowCount = readquery(
+        log=log,
+        sqlQuery=sqlQuery,
+        dbConn=dbConn,
+        quiet=False
+    )
+    totalCount = rowCount[0]["count"]
 
     # ADD HTMIDs IN BATCHES
     total = totalCount
@@ -298,21 +299,36 @@ def add_htm_ids_to_mysql_database_table(
         else:
             log.debug('building the sqlquery')
             updates = []
+            sqlQuery = "\n".join(updates)
             # updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
             # h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
             updates[:] = [{"htm16ID": h16, "htm13ID": h13, "htm10ID": h10, primaryIdColumnName: pid} for h16,
                           h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
-            sqlQuery = "\n".join(updates)
             log.debug('finshed building the sqlquery')
 
-        if len(sqlQuery):
+        if len(updates):
             log.debug(
                 'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
-            writequery(
-                log=log,
-                sqlQuery=sqlQuery,
+
+            # USE dbSettings TO ACTIVATE MULTIPROCESSING
+            insert_list_of_dictionaries_into_database_tables(
                 dbConn=dbConn,
+                log=log,
+                dictList=updates,
+                dbTableName=tableName,
+                uniqueKeyList=[],
+                dateModified=False,
+                batchSize=20000,
+                replace=True,
+                dbSettings=dbSettings,
+                dateCreated=False
             )
+
+            # writequery(
+            #     log=log,
+            #     sqlQuery=sqlQuery,
+            #     dbConn=dbConn,
+            # )
             log.debug(
                 'finished updating the HTMIds for new objects in the %s db table' % (tableName, ))
         else:
