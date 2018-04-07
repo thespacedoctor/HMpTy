@@ -262,7 +262,7 @@ def add_htm_ids_to_mysql_database_table(
         htm10Ids = mesh10.lookup_id(raList, decList)
         log.debug(
             'finshed calculating htmIds for batch of %s rows in %s db table' % (batchSize, tableName, ))
-        updates = []
+
         if cartesian:
             log.debug(
                 'calculating cartesian coordinates for batch of %s rows in %s db table' % (batchSize, tableName, ))
@@ -277,22 +277,9 @@ def add_htm_ids_to_mysql_database_table(
                 cy.append(math.sin(r) * cos_dec)
                 cz.append(math.sin(d))
 
-            sqlQuery = ""
-            for h16, h13, h10, pid, cxx, cyy, czz in zip(htm16Ids, htm13Ids, htm10Ids, pIdList, cx, cy, cz):
-
-                sqlQuery += \
-                    """UPDATE `%s` SET htm16ID=%s, htm13ID=%s, htm10ID=%s, cx=%s, cy=%s, cz=%s where `%s` = '%s';\n""" \
-                    % (
-                        tableName,
-                        h16,
-                        h13,
-                        h10,
-                        cxx,
-                        cyy,
-                        czz,
-                        primaryIdColumnName,
-                        pid
-                    )
+            updates = []
+            updates[:] = [{"htm16ID": h16, "htm13ID": h13, "htm10ID": h10, primaryIdColumnName: pid, "cx": ccx, "cy": ccy, "cz": ccz} for h16,
+                          h13, h10, pid, ccx, ccy, ccz in zip(htm16Ids, htm13Ids, htm10Ids, pIdList, cx, cy, cz)]
 
             log.debug(
                 'finished calculating cartesian coordinates for batch of %s rows in %s db table' % (
@@ -300,7 +287,6 @@ def add_htm_ids_to_mysql_database_table(
         else:
             log.debug('building the sqlquery')
             updates = []
-            sqlQuery = "\n".join(updates)
             # updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
             # h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
             updates[:] = [{"htm16ID": h16, "htm13ID": h13, "htm10ID": h10, primaryIdColumnName: pid} for h16,
