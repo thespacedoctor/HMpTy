@@ -262,6 +262,7 @@ def add_htm_ids_to_mysql_database_table(
         htm10Ids = mesh10.lookup_id(raList, decList)
         log.debug(
             'finshed calculating htmIds for batch of %s rows in %s db table' % (batchSize, tableName, ))
+        updates = []
         if cartesian:
             log.debug(
                 'calculating cartesian coordinates for batch of %s rows in %s db table' % (batchSize, tableName, ))
