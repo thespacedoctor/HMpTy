@@ -286,9 +286,17 @@ class conesearch():
         trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
         if trixelArray.size > 50000 and self.htmDepth == 16:
             self.htmDepth = 13
+            self.mesh = HTM(
+                depth=self.htmDepth,
+                log=self.log
+            )
             trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
         if trixelArray.size > 50000 and self.htmDepth == 13:
             self.htmDepth = 10
+            self.mesh = HTM(
+                depth=self.htmDepth,
+                log=self.log
+            )
             trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
 
         htmLevel = "htm%sID" % self.htmDepth
