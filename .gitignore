@@ -33,3 +33,4 @@ build
 *.gem
 *.gemspec
 Gemfile.lockexample_settings.yaml
+_htmc.so
