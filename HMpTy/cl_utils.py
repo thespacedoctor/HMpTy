@@ -84,6 +84,16 @@ def main(arguments=None):
         '--- STARTING TO RUN THE cl_utils.py AT %s' %
         (startTime,))
 
+    if hostFlag:
+        dbSettings = {
+            'host': hostFlag,
+            'user': userFlag,
+            'password': passwdFlag,
+            'db': dbNameFlag
+        }
+    elif settings:
+        dbSettings = settings["database settings"]
+
     # CALL FUNCTIONS/OBJECTS
     if index:
         add_htm_ids_to_mysql_database_table(
@@ -93,7 +103,8 @@ def main(arguments=None):
             dbConn=dbConn,
             log=log,
             primaryIdColumnName=primaryIdCol,
-            reindex=forceFlag
+            reindex=forceFlag,
+            dbSettings=dbSettings
         )
 
     if search:

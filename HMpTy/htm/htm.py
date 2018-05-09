@@ -96,7 +96,7 @@ class HTM(_htmcCode.HTMC):
                     print r, d, " --> ", h
 
         """
-        self.log.info('starting the ``lookup_id`` method')
+        self.log.debug('starting the ``lookup_id`` method')
 
         from astrocalc.coords import coordinates_to_array
         raArray, decArray = coordinates_to_array(
@@ -105,7 +105,7 @@ class HTM(_htmcCode.HTMC):
             dec=dec
         )
 
-        self.log.info('completed the ``lookup_id`` method')
+        self.log.debug('completed the ``lookup_id`` method')
         return super(HTM, self).lookup_id(raArray, decArray)
 
     # use the tab-trigger below for new method

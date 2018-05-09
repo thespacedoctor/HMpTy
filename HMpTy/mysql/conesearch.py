@@ -253,7 +253,7 @@ class conesearch():
 
             See class usage.
         """
-        self.log.info('starting the ``get`` method')
+        self.log.debug('starting the ``get`` method')
 
         sqlQuery = self._get_on_trixel_sources_from_database_query()
 
@@ -267,26 +267,43 @@ class conesearch():
             reDatetime=self.reDatetime
         )
 
-        self.log.info('completed the ``get`` method')
+        self.log.debug('completed the ``get`` method')
         return matchIndies, matches
 
     def _get_on_trixel_sources_from_database_query(
             self):
         """*generate the mysql query before executing it*
         """
-        self.log.info(
-            'starting the ``_get_on_trixel_sources_from_database_query`` method')
+        self.log.debug(
+            'completed the ````_get_on_trixel_sources_from_database_query`` method')
 
         tableName = self.tableName
         raCol = self.raCol
         decCol = self.decCol
+        radiusArc = self.radius
         radius = self.radius / (60. * 60.)
 
         # GET ALL THE TRIXELS REQUIRED
         trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
+        if trixelArray.size > 50000 and self.htmDepth == 16:
+            self.htmDepth = 13
+            self.mesh = HTM(
+                depth=self.htmDepth,
+                log=self.log
+            )
+            trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
+        if trixelArray.size > 50000 and self.htmDepth == 13:
+            self.htmDepth = 10
+            self.mesh = HTM(
+                depth=self.htmDepth,
+                log=self.log
+            )
+            trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
 
         htmLevel = "htm%sID" % self.htmDepth
-        if trixelArray.size > 35000:
+        if trixelArray.size > 150000:
+            self.log.info(
+                "Your search radius of the `%(tableName)s` table may be too large (%(radiusArc)s arcsec)" % locals())
             minID = np.min(trixelArray)
             maxID = np.max(trixelArray)
             htmWhereClause = "where %(htmLevel)s between %(minID)s and %(maxID)s  " % locals(
@@ -313,7 +330,7 @@ class conesearch():
         if self.sqlWhere and len(self.sqlWhere):
             sqlQuery += " and " + self.sqlWhere
 
-        self.log.info(
+        self.log.debug(
             'completed the ``_get_on_trixel_sources_from_database_query`` method')
 
         return sqlQuery
@@ -325,8 +342,8 @@ class conesearch():
         **Return:**
             - ``trixelArray`` -- an array of all the overlapping trixel ids
         """
-        self.log.info(
-            'starting the ``_get_trixel_ids_that_overlap_conesearch_circles`` method')
+        self.log.debug(
+            'completed the ````_get_trixel_ids_that_overlap_conesearch_circles`` method')
 
         trixelArray = np.array([], dtype='int16', ndmin=1, copy=False)
         # FOR EACH RA, DEC SET IN THE NUMPY ARRAY, COLLECT THE OVERLAPPING HTM
@@ -334,12 +351,13 @@ class conesearch():
         r = self.radius / (60. * 60.)
 
         trixelArray = []
+
         trixelArray[:] = [self.mesh.intersect(
             ra1, dec1, r, inclusive=True, convertCoordinates=False) for ra1, dec1 in zip(self.ra, self.dec)]
 
         trixelArray = np.unique(np.concatenate(trixelArray))
 
-        self.log.info(
+        self.log.debug(
             'completed the ``_get_trixel_ids_that_overlap_conesearch_circles`` method')
         return trixelArray
 
@@ -354,8 +372,8 @@ class conesearch():
         **Return:**
             - ``databaseRows`` -- the database rows found on HTM trixles with requested IDs
         """
-        self.log.info(
-            'starting the ``_execute_query`` method')
+        self.log.debug(
+            'completed the ````_execute_query`` method')
 
         try:
             databaseRows = readquery(
@@ -396,7 +414,7 @@ class conesearch():
                     distinctRows.append(r)
             databaseRows = distinctRows
 
-        self.log.info(
+        self.log.debug(
             'completed the ``_execute_query`` method')
         return databaseRows
 
@@ -412,7 +430,7 @@ class conesearch():
             - ``matchIndices1`` -- indices of the coordinate in the original ra and dec lists
             - ``matches`` -- the matched database rows
         """
-        self.log.info('starting the ``_list_crossmatch`` method')
+        self.log.debug('starting the ``_list_crossmatch`` method')
 
         dbRas = []
         dbRas[:] = [d[self.raCol] for d in dbRows]
@@ -446,7 +464,7 @@ class conesearch():
                 dbRows[m2]["cmSepArcsec"] = s * (60. * 60.)
             matches.append(dbRows[m2])
 
-        self.log.info('completed the ``_list_crossmatch`` method')
+        self.log.debug('completed the ``_list_crossmatch`` method')
         return matchIndices1, matches
 
     # xt-class-method

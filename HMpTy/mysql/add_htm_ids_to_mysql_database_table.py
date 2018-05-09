@@ -16,7 +16,7 @@ import math
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
 import pymysql as ms
-from fundamentals.mysql import readquery, writequery
+from fundamentals.mysql import readquery, writequery, insert_list_of_dictionaries_into_database_tables
 from datetime import datetime, date
 from fundamentals import times
 import time
@@ -30,8 +30,9 @@ def add_htm_ids_to_mysql_database_table(
         log,
         primaryIdColumnName="primaryId",
         cartesian=False,
-        batchSize=25000,
-        reindex=False):
+        batchSize=50000,
+        reindex=False,
+        dbSettings=False):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
     **Key Arguments:**
@@ -44,6 +45,7 @@ def add_htm_ids_to_mysql_database_table(
         - ``cartesian`` -- add cartesian columns. Default *False*
         - ``batchSize`` -- the size of the batches of rows to add HTMIds to concurrently. Default *2500*
         - ``reindex`` -- reindex the entire table
+        - ``dbSettings`` -- yaml settings for database
 
     **Return:**
         - None
@@ -63,7 +65,7 @@ def add_htm_ids_to_mysql_database_table(
                 reindex=False
             )
     """
-    log.info('starting the ``add_htm_ids_to_mysql_database_table`` function')
+    log.debug('starting the ``add_htm_ids_to_mysql_database_table`` function')
 
     # TEST TABLE EXIST
     sqlQuery = """show tables"""
@@ -225,11 +227,11 @@ def add_htm_ids_to_mysql_database_table(
                     primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName, batchSize)
         elif cartesian:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` > 0 and ((htm10ID is NULL or cx is null)) limit %s""" % (
+            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` >= 0 and ((htm10ID is NULL or cx is null)) limit %s""" % (
                 primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
         else:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` > 0 and htm10ID is NULL limit %s""" % (
+            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` >= 0 and htm10ID is NULL limit %s""" % (
                 primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
         batch = readquery(
             log=log,
@@ -260,6 +262,7 @@ def add_htm_ids_to_mysql_database_table(
         htm10Ids = mesh10.lookup_id(raList, decList)
         log.debug(
             'finshed calculating htmIds for batch of %s rows in %s db table' % (batchSize, tableName, ))
+
         if cartesian:
             log.debug(
                 'calculating cartesian coordinates for batch of %s rows in %s db table' % (batchSize, tableName, ))
@@ -274,22 +277,9 @@ def add_htm_ids_to_mysql_database_table(
                 cy.append(math.sin(r) * cos_dec)
                 cz.append(math.sin(d))
 
-            sqlQuery = ""
-            for h16, h13, h10, pid, cxx, cyy, czz in zip(htm16Ids, htm13Ids, htm10Ids, pIdList, cx, cy, cz):
-
-                sqlQuery += \
-                    """UPDATE `%s` SET htm16ID=%s, htm13ID=%s, htm10ID=%s, cx=%s, cy=%s, cz=%s where `%s` = '%s';\n""" \
-                    % (
-                        tableName,
-                        h16,
-                        h13,
-                        h10,
-                        cxx,
-                        cyy,
-                        czz,
-                        primaryIdColumnName,
-                        pid
-                    )
+            updates = []
+            updates[:] = [{"htm16ID": h16, "htm13ID": h13, "htm10ID": h10, primaryIdColumnName: pid, "cx": ccx, "cy": ccy, "cz": ccz} for h16,
+                          h13, h10, pid, ccx, ccy, ccz in zip(htm16Ids, htm13Ids, htm10Ids, pIdList, cx, cy, cz)]
 
             log.debug(
                 'finished calculating cartesian coordinates for batch of %s rows in %s db table' % (
@@ -297,19 +287,35 @@ def add_htm_ids_to_mysql_database_table(
         else:
             log.debug('building the sqlquery')
             updates = []
-            updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
+            # updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
+            # h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
+            updates[:] = [{"htm16ID": h16, "htm13ID": h13, "htm10ID": h10, primaryIdColumnName: pid} for h16,
                           h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
-            sqlQuery = "\n".join(updates)
             log.debug('finshed building the sqlquery')
 
-        if len(sqlQuery):
+        if len(updates):
             log.debug(
                 'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
-            writequery(
-                log=log,
-                sqlQuery=sqlQuery,
+
+            # USE dbSettings TO ACTIVATE MULTIPROCESSING
+            insert_list_of_dictionaries_into_database_tables(
                 dbConn=dbConn,
+                log=log,
+                dictList=updates,
+                dbTableName=tableName,
+                uniqueKeyList=[],
+                dateModified=False,
+                batchSize=20000,
+                replace=True,
+                dbSettings=dbSettings,
+                dateCreated=False
             )
+
+            # writequery(
+            #     log=log,
+            #     sqlQuery=sqlQuery,
+            #     dbConn=dbConn,
+            # )
             log.debug(
                 'finished updating the HTMIds for new objects in the %s db table' % (tableName, ))
         else:
@@ -364,5 +370,5 @@ def add_htm_ids_to_mysql_database_table(
 
     print "All HTMIds added to %(tableName)s" % locals()
 
-    log.info('completed the ``add_htm_ids_to_mysql_database_table`` function')
+    log.debug('completed the ``add_htm_ids_to_mysql_database_table`` function')
     return None
