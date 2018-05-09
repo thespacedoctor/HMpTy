@@ -350,6 +350,7 @@ class conesearch():
         r = self.radius / (60. * 60.)
 
         trixelArray = []
+
         trixelArray[:] = [self.mesh.intersect(
             ra1, dec1, r, inclusive=True, convertCoordinates=False) for ra1, dec1 in zip(self.ra, self.dec)]
 
