@@ -50,11 +50,11 @@ else:
     extra_link_args = []
 
 # HTM
-# try:
-#     import numpy
-# except:
-#     import pip
-#     pip.main(['install', 'numpy'])
+try:
+    import numpy
+except:
+    import pip
+    pip.main(['install', 'numpy'])
 
 import numpy
 include_dirs = [numpy.get_include(), 'HMpTy/include',
