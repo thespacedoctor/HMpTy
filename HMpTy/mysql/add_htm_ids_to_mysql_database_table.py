@@ -79,8 +79,8 @@ def add_htm_ids_to_mysql_database_table(
         """Checking the table %(tableName)s exists in the database""" % locals())
     tableList = []
     for row in rows:
-        tableList.extend(row.values())
-    if tableName not in tableList:
+        tableList.append(row.values()[0].lower())
+    if tableName.lower() not in tableList:
         message = "The %s table does not exist in the database" % (tableName,)
         log.critical(message)
         raise IOError(message)
