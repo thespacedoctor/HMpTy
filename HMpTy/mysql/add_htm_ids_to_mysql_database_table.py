@@ -293,10 +293,6 @@ def add_htm_ids_to_mysql_database_table(
                           h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
             log.debug('finshed building the sqlquery')
 
-        for u in updates:
-            print type(u["htm16ID"])
-            sys.exits(0)
-
         if len(updates):
             log.debug(
                 'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
