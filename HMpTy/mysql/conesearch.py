@@ -343,7 +343,7 @@ class conesearch():
             - ``trixelArray`` -- an array of all the overlapping trixel ids
         """
         self.log.debug(
-            'completed the ````_get_trixel_ids_that_overlap_conesearch_circles`` method')
+            'starting the ````_get_trixel_ids_that_overlap_conesearch_circles`` method')
 
         trixelArray = np.array([], dtype='int16', ndmin=1, copy=False)
         # FOR EACH RA, DEC SET IN THE NUMPY ARRAY, COLLECT THE OVERLAPPING HTM
