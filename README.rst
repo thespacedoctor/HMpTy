@@ -6,10 +6,6 @@ HMpTy
 .. image:: http://i.imgur.com/5GG4979.png
     :width: 600 px
 
-Here's a summary of what's included in the python package:
-
-.. include:: /classes_and_functions.rst
-
 Command-Line Usage
 ======
 
