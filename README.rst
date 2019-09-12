@@ -1,5 +1,5 @@
 HMpTy 
-=========================
+=====
 
 *A python package and command-line tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTM-ids, crossmatch sets of sky-coordinates and more*.
 
@@ -7,7 +7,7 @@ HMpTy
     :width: 600 px
 
 Command-Line Usage
-======
+==================
 
 .. code-block:: bash 
    
