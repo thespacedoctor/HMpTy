@@ -305,9 +305,9 @@ def add_htm_ids_to_mysql_database_table(
                 dbTableName=tableName,
                 uniqueKeyList=[],
                 dateModified=False,
-                batchSize=20,
+                batchSize=20000,
                 replace=True,
-                dbSettings=dbSettings,
+                dbSettings=False,
                 dateCreated=False
             )
 
