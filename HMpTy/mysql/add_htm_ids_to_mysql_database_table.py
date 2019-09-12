@@ -298,6 +298,10 @@ def add_htm_ids_to_mysql_database_table(
                 'starting to update the HTMIds for new objects in the %s db table' % (tableName, ))
 
             # USE dbSettings TO ACTIVATE MULTIPROCESSING
+
+            for u in updates:
+                print u
+
             insert_list_of_dictionaries_into_database_tables(
                 dbConn=dbConn,
                 log=log,
