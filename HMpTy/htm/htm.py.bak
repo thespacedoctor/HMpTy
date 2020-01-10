@@ -10,9 +10,7 @@
     October  6, 2016
 """
 from __future__ import absolute_import
-from __future__ import division
 ################# GLOBAL IMPORTS ####################
-from past.utils import old_div
 import sys
 import os
 os.environ['TERM'] = 'vt100'
@@ -69,7 +67,7 @@ class HTM(_htmcCode.HTMC):
         pi = numpy.pi
         area0 = 4.0 * pi / 8.0
         areadiv = 4.0 ** self.depth
-        area = old_div(area0, areadiv) * (180.0 / pi) ** 2
+        area = area0 / areadiv * (180.0 / pi) ** 2
         return area
 
     def lookup_id(

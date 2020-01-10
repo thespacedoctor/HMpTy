@@ -66,33 +66,18 @@ def main(arguments=None):
 
     # unpack remaining cl arguments using `exec` to setup the variable names
     # automatically
-    a = {}
-    for arg, val in list(arguments.items()):
+    for arg, val in arguments.items():
         if arg[0] == "-":
             varname = arg.replace("-", "") + "Flag"
         else:
             varname = arg.replace("<", "").replace(">", "")
-        a[varname] = val
+        if isinstance(val, ("".__class__, u"".__class__)):
+            exec(varname + " = '%s'" % (val,))
+        else:
+            exec(varname + " = %s" % (val,))
         if arg == "--dbConn":
             dbConn = val
-            a["dbConn"] = val
         log.debug('%s = %s' % (varname, val,))
-
-    hostFlag = a["hostFlag"]
-    userFlag = a["userFlag"]
-    passwdFlag = a["passwdFlag"]
-    dbNameFlag = a["dbNameFlag"]
-    tableName = a["tableName"]
-    index = a["index"]
-    htmid = a["htmid"]
-    primaryIdCol = a["primaryIdCol"]
-    raCol = a["raCol"]
-    decCol = a["decCol"]
-    ra = a["ra"]
-    radius = a["radius"]
-    level = a["level"]
-    forceFlag = a["forceFlag"]
-    renderFlag = a["renderFlag"]
 
     ## START LOGGING ##
     startTime = times.get_now_sql_datetime()
