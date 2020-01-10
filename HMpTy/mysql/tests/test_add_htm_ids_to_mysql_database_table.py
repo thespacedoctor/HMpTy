@@ -23,7 +23,7 @@ log, dbConn, pathToInputDir, pathToOutputDir = utKit.setupModule()
 utKit.tearDownModule()
 
 # load settings
-stream = file(
+stream = open(
     pathToInputDir + "/example_settings.yaml", 'r')
 settings = yaml.load(stream)
 stream.close()

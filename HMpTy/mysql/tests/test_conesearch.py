@@ -9,7 +9,7 @@ from fundamentals import tools
 
 
 # # load settings
-# stream = file(
+# stream = open(
 #     "/Users/Dave/.config/HMpTy/HMpTy.yaml", 'r')
 # settings = yaml.load(stream)
 # stream.close()
@@ -21,7 +21,7 @@ log, dbConn, pathToInputDir, pathToOutputDir = utKit.setupModule()
 utKit.tearDownModule()
 
 # load settings
-stream = file(
+stream = open(
     pathToInputDir + "/example_settings.yaml", 'r')
 settings = yaml.load(stream)
 stream.close()
@@ -296,7 +296,7 @@ class test_conesearch(unittest.TestCase):
             )
             this.get()
             assert False
-        except Exception, e:
+        except Exception as e:
             assert True
             print(str(e))
 

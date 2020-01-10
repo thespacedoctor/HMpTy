@@ -212,13 +212,13 @@ class NumpyRecords {
 public:
     NumpyRecords() throw (const char*)
     {
-        import_array();
+        _import_array();
         set_defaults();
     }
 
     NumpyRecords(PyObject* obj) throw (const char*)
     {
-        import_array();
+        _import_array();
         set_defaults();
         init(obj);
     }
@@ -906,7 +906,7 @@ private:
 
             // get the name of this field
             PyObject* name_obj = PyTuple_GET_ITEM(descr->names, i);
-            std::string name = PyString_AS_STRING(name_obj);
+            std::string name = PyBytes_AS_STRING(name_obj);
             //name = name+'\0';
             this->names_[i] = name;
 

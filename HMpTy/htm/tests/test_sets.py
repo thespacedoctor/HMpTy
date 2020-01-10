@@ -19,7 +19,7 @@ su = tools(
 arguments, settings, log, dbConn = su.setup()
 
 # # load settings
-# stream = file(
+# stream = open(
 #     "/Users/Dave/.config/hmpty/hmpty.yaml", 'r')
 # settings = yaml.load(stream)
 # stream.close()
@@ -31,7 +31,7 @@ log, dbConn, pathToInputDir, pathToOutputDir = utKit.setupModule()
 utKit.tearDownModule()
 
 # load settings
-stream = file(
+stream = open(
     pathToInputDir + "/example_settings.yaml", 'r')
 settings = yaml.load(stream)
 stream.close()
@@ -58,7 +58,7 @@ try:
     readFile = codecs.open(pathToReadFile, encoding='utf-8', mode='r')
     thisData = readFile.read().split("\n")
     readFile.close()
-except IOError, e:
+except IOError as e:
     message = 'could not open the file %s' % (pathToReadFile,)
     log.critical(message)
     raise IOError(message)
@@ -115,7 +115,7 @@ class test_sets(unittest.TestCase):
             )
             this.get()
             assert False
-        except Exception, e:
+        except Exception as e:
             assert True
             print(str(e))
 
