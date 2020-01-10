@@ -1,7 +1,7 @@
 import os
-import nose
 import shutil
 import yaml
+import unittest
 from HMpTy.utKit import utKit
 
 from fundamentals import tools
@@ -73,27 +73,6 @@ for l in thisData[1:]:
 
 
 class test_sets(unittest.TestCase):
-
-    def test_sets_single_extract_function(self):
-
-        from HMpTy.htm import sets
-        xmatcher = sets(
-            log=log,
-            ra=raList,
-            dec=decList,
-            radius=10 / (60. * 60.),
-            sourceList=transientList
-        )
-        matches, ra, dec, sourceList = xmatcher._extract_one_set_from_list(
-            ra=raList,
-            dec=decList,
-            radius=10 / (60. * 60.),
-            sourceList=transientList
-        )
-        print matches
-        print len(ra)
-        print len(dec)
-        print len(sourceList)
 
     def test_sets_all_extract_function(self):
 

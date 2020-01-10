@@ -53,8 +53,8 @@ else:
 try:
     import numpy
 except:
-    import pip
-    pip.main(['install', 'numpy'])
+    print "Please install numpy & pandas before installing HMpTy"
+    sys.exit(0)
 
 import numpy
 include_dirs = [numpy.get_include(), 'HMpTy/include',

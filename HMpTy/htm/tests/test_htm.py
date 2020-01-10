@@ -1,7 +1,7 @@
 import os
-import nose
 import shutil
 import yaml
+import unittest
 from HMpTy import htm, cl_utils
 from HMpTy.utKit import utKit
 
