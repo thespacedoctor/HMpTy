@@ -34,3 +34,4 @@ build
 *.gemspec
 Gemfile.lockexample_settings.yaml
 _htmc.so
+/HMpTy/htm/_htmc.so
