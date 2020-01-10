@@ -1,14 +1,15 @@
+from builtins import str
 import os
-import nose
 import shutil
 import yaml
+import unittest
 from HMpTy.utKit import utKit
 
 from fundamentals import tools
 
 
 # # load settings
-# stream = file(
+# stream = open(
 #     "/Users/Dave/.config/HMpTy/HMpTy.yaml", 'r')
 # settings = yaml.load(stream)
 # stream.close()
@@ -20,7 +21,7 @@ log, dbConn, pathToInputDir, pathToOutputDir = utKit.setupModule()
 utKit.tearDownModule()
 
 # load settings
-stream = file(
+stream = open(
     pathToInputDir + "/example_settings.yaml", 'r')
 settings = yaml.load(stream)
 stream.close()
@@ -62,8 +63,8 @@ class test_conesearch(unittest.TestCase):
             dec="+26:54:23.9",
             radiusArcsec=5
         )
-        print "SINGLE COORDINATE CONESEARCH TRIXEL IDs"
-        print cs._get_trixel_ids_that_overlap_conesearch_circles()
+        print("SINGLE COORDINATE CONESEARCH TRIXEL IDs")
+        print(cs._get_trixel_ids_that_overlap_conesearch_circles())
 
         raList1 = ["13:20:00.00", 200.0, "13:20:00.00", 175.23, 21.36]
         decList1 = ["+24:18:00.00",  24.3,  "+24:18:00.00",  -28.25, -15.32]
@@ -78,8 +79,8 @@ class test_conesearch(unittest.TestCase):
             dec=decList1,
             radiusArcsec=5
         )
-        print "COORDINATE LIST CONESEARCH TRIXEL IDs"
-        print cs._get_trixel_ids_that_overlap_conesearch_circles()
+        print("COORDINATE LIST CONESEARCH TRIXEL IDs")
+        print(cs._get_trixel_ids_that_overlap_conesearch_circles())
 
     def test_conesearch_function(self):
 
@@ -93,7 +94,7 @@ class test_conesearch(unittest.TestCase):
             dec="+26:54:23.9",
             radiusArcsec=5
         )
-        print cs.query
+        print(cs.query)
 
     def test_conesearch_function2(self):
 
@@ -107,7 +108,7 @@ class test_conesearch(unittest.TestCase):
             dec=26.90664,
             radiusArcsec=5
         )
-        print cs.query
+        print(cs.query)
 
     def test_conesearch_function3(self):
 
@@ -129,7 +130,7 @@ class test_conesearch(unittest.TestCase):
         )
         matchIndies, matches = cs.search()
         for row in matches.list:
-            print row
+            print(row)
 
     def test_conesearch_function4(self):
 
@@ -171,7 +172,7 @@ class test_conesearch(unittest.TestCase):
         )
         matchIndies, matches = cs.search()
         for row in matches.list:
-            print row
+            print(row)
 
     def test_conesearch_sql_where_function(self):
 
@@ -180,7 +181,7 @@ class test_conesearch(unittest.TestCase):
         decList1 = ["+26:54:23.9",  "-48:38:24.3",
                     "+24:18:00.00",  8.43016, -42.34428]
 
-        print "WHERE CLAUSE ADDED"
+        print("WHERE CLAUSE ADDED")
         from HMpTy.mysql import conesearch
         cs = conesearch(
             log=log,
@@ -196,7 +197,8 @@ class test_conesearch(unittest.TestCase):
         )
         matchIndies, matches = cs.search()
         for row in matches.list:
-            print row
+            pass
+            print(row)
 
     def test_conesearch_sql_where_function2(self):
 
@@ -205,7 +207,7 @@ class test_conesearch(unittest.TestCase):
         decList1 = ["+26:54:23.9",  "-48:38:24.3",
                     "+24:18:00.00",  8.43016, -42.34428]
 
-        print "WHERE CLAUSE ADDED & DISTINCT"
+        print("WHERE CLAUSE ADDED & DISTINCT")
         from HMpTy.mysql import conesearch
         cs = conesearch(
             log=log,
@@ -221,7 +223,8 @@ class test_conesearch(unittest.TestCase):
         )
         matchIndies, matches = cs.search()
         for row in matches.list:
-            print row
+            pass
+            print(row)
 
     def test_documentaion_function(self):
 
@@ -230,7 +233,7 @@ class test_conesearch(unittest.TestCase):
         decList1 = ["+26:54:23.9",  "-48:38:24.3",
                     "+24:18:00.00",  8.43016, -42.34428]
 
-        print "TUTORIAL"
+        print("TUTORIAL")
         from HMpTy.mysql import conesearch
         cs = conesearch(
             log=log,
@@ -244,10 +247,11 @@ class test_conesearch(unittest.TestCase):
             distinct=False,
             sqlWhere=False
         )
-        print cs.query
+        print(cs.query)
         matchIndies, matches = cs.search()
         for row in matches.list:
-            print row
+            pass
+            print(row)
 
     def test_documentaion_functio2(self):
 
@@ -256,7 +260,7 @@ class test_conesearch(unittest.TestCase):
         decList1 = ["+26:54:23.9",  "-48:38:24.3",
                     "+24:18:00.00",  8.43016, -42.34428]
 
-        print "TUTORIAL"
+        print("TUTORIAL")
         from HMpTy.mysql import conesearch
         cs = conesearch(
             log=log,
@@ -270,15 +274,16 @@ class test_conesearch(unittest.TestCase):
             distinct=True,
             sqlWhere="spectralType is not null"
         )
-        print cs.query
+        print(cs.query)
         matchIndies, matches = cs.search()
         for row in matches.list:
-            print row
+            pass
+            print(row)
 
-        print matches.table()
+        print(matches.table())
         matches.table(filepath=pathToOutputDir + "results.dat")
 
-        print matches.mysql(tableName="mysql_table", filepath=None)
+        print(matches.mysql(tableName="mysql_table", filepath=None))
 
     def test_conesearch_function_exception(self):
 
@@ -291,9 +296,9 @@ class test_conesearch(unittest.TestCase):
             )
             this.get()
             assert False
-        except Exception, e:
+        except Exception as e:
             assert True
-            print str(e)
+            print(str(e))
 
         # x-print-testpage-for-pessto-marshall-web-object
 

@@ -34,6 +34,7 @@ Options:
     -r <format>, --render <format>                                  select a format to render your results in
 
 """
+from __future__ import print_function
 ################# GLOBAL IMPORTS ####################
 
 
@@ -65,18 +66,33 @@ def main(arguments=None):
 
     # unpack remaining cl arguments using `exec` to setup the variable names
     # automatically
-    for arg, val in arguments.iteritems():
+    a = {}
+    for arg, val in list(arguments.items()):
         if arg[0] == "-":
             varname = arg.replace("-", "") + "Flag"
         else:
             varname = arg.replace("<", "").replace(">", "")
-        if isinstance(val, str) or isinstance(val, unicode):
-            exec(varname + " = '%s'" % (val,))
-        else:
-            exec(varname + " = %s" % (val,))
+        a[varname] = val
         if arg == "--dbConn":
             dbConn = val
+            a["dbConn"] = val
         log.debug('%s = %s' % (varname, val,))
+
+    hostFlag = a["hostFlag"]
+    userFlag = a["userFlag"]
+    passwdFlag = a["passwdFlag"]
+    dbNameFlag = a["dbNameFlag"]
+    tableName = a["tableName"]
+    index = a["index"]
+    htmid = a["htmid"]
+    primaryIdCol = a["primaryIdCol"]
+    raCol = a["raCol"]
+    decCol = a["decCol"]
+    ra = a["ra"]
+    radius = a["radius"]
+    level = a["level"]
+    forceFlag = a["forceFlag"]
+    renderFlag = a["renderFlag"]
 
     ## START LOGGING ##
     startTime = times.get_now_sql_datetime()
@@ -122,19 +138,19 @@ def main(arguments=None):
         )
         matchIndies, matches = cs.search()
         if not renderFlag:
-            print matches.table()
+            print(matches.table())
         elif renderFlag == "json":
-            print matches.json()
+            print(matches.json())
         elif renderFlag == "csv":
-            print matches.csv()
+            print(matches.csv())
         elif renderFlag == "yaml":
-            print matches.yaml()
+            print(matches.yaml())
         elif renderFlag == "md":
-            print matches.markdown()
+            print(matches.markdown())
         elif renderFlag == "table":
-            print matches.markdown()
+            print(matches.markdown())
         elif renderFlag == "mysql":
-            print matches.mysql(tableName=resultsTable)
+            print(matches.mysql(tableName=resultsTable))
 
     if level:
         from HMpTy import HTM
@@ -144,7 +160,7 @@ def main(arguments=None):
         )
 
         htmids = mesh.lookup_id(ra, dec)
-        print htmids[0]
+        print(htmids[0])
 
     if "dbConn" in locals() and dbConn:
         dbConn.commit()

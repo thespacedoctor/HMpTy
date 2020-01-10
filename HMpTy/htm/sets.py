@@ -10,6 +10,8 @@
     October 12, 2016
 """
 ################# GLOBAL IMPORTS ####################
+from builtins import zip
+from builtins import object
 import sys
 import os
 os.environ['TERM'] = 'vt100'
@@ -17,7 +19,7 @@ from fundamentals import tools
 import numpy as np
 
 
-class sets():
+class sets(object):
     """
     *Given a list of coordinates and a crossmatch radius, split the list up into sets of associated locations*
 

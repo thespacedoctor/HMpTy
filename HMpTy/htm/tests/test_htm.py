@@ -1,7 +1,11 @@
+from __future__ import division
+from builtins import zip
+from builtins import str
+from past.utils import old_div
 import os
-import nose
 import shutil
 import yaml
+import unittest
 from HMpTy import htm, cl_utils
 from HMpTy.utKit import utKit
 
@@ -17,7 +21,7 @@ su = tools(
 arguments, settings, log, dbConn = su.setup()
 
 # # load settings
-# stream = file(
+# stream = open(
 #     "/Users/Dave/.config/HMpTy/HMpTy.yaml", 'r')
 # settings = yaml.load(stream)
 # stream.close()
@@ -29,7 +33,7 @@ log, dbConn, pathToInputDir, pathToOutputDir = utKit.setupModule()
 utKit.tearDownModule()
 
 # load settings
-stream = file(
+stream = open(
     pathToInputDir + "/example_settings.yaml", 'r')
 settings = yaml.load(stream)
 stream.close()
@@ -58,10 +62,10 @@ class test_htm(unittest.TestCase):
             depth=16,
             log=log
         )
-        print "LOOKUP"
+        print("LOOKUP")
         htmids = mesh16.lookup_id(raList1, decList1)
         for h, r, d in zip(htmids, raList1, decList1):
-            print r, d, " --> ", h
+            print(r, d, " --> ", h)
 
     def test_htm_area_function(self):
 
@@ -99,22 +103,22 @@ class test_htm(unittest.TestCase):
             log=log
         )
 
-        print "DEPTH24:", mesh24.depth
-        print "AREA24:", mesh24.area * 60 * 60 * 60 * 60, " arcsec^2"
-        print "DEPTH16:", mesh16.depth
-        print "AREA16:", mesh16.area * 60 * 60 * 60 * 60, " arcsec^2"
-        print "DEPTH15:", mesh15.depth
-        print "AREA15:", mesh15.area * 60 * 60 * 60 * 60, " arcsec^2"
-        print "DEPTH14:", mesh14.depth
-        print "AREA14:", mesh14.area * 60 * 60 * 60 * 60, " arcsec^2"
-        print "DEPTH13:", mesh13.depth
-        print "AREA13:", mesh13.area * 60 * 60 * 60 * 60, " arcsec^2"
-        print "DEPTH12:", mesh12.depth
-        print "AREA12:", mesh12.area * 60 * 60, " arcmin^2"
-        print "DEPTH11:", mesh11.depth
-        print "AREA11:", mesh11.area * 60 * 60, " arcmin^2"
-        print "DEPTH10:", mesh10.depth
-        print "AREA10:", mesh10.area * 60 * 60, " arcmin^2"
+        print("DEPTH24:", mesh24.depth)
+        print("AREA24:", mesh24.area * 60 * 60 * 60 * 60, " arcsec^2")
+        print("DEPTH16:", mesh16.depth)
+        print("AREA16:", mesh16.area * 60 * 60 * 60 * 60, " arcsec^2")
+        print("DEPTH15:", mesh15.depth)
+        print("AREA15:", mesh15.area * 60 * 60 * 60 * 60, " arcsec^2")
+        print("DEPTH14:", mesh14.depth)
+        print("AREA14:", mesh14.area * 60 * 60 * 60 * 60, " arcsec^2")
+        print("DEPTH13:", mesh13.depth)
+        print("AREA13:", mesh13.area * 60 * 60 * 60 * 60, " arcsec^2")
+        print("DEPTH12:", mesh12.depth)
+        print("AREA12:", mesh12.area * 60 * 60, " arcmin^2")
+        print("DEPTH11:", mesh11.depth)
+        print("AREA11:", mesh11.area * 60 * 60, " arcmin^2")
+        print("DEPTH10:", mesh10.depth)
+        print("AREA10:", mesh10.area * 60 * 60, " arcmin^2")
 
     def test_htm_function(self):
 
@@ -131,12 +135,12 @@ class test_htm(unittest.TestCase):
             depth=24,
             log=log
         )
-        print "DEPTH24:", mesh24.depth
-        print "AREA24:", mesh24.area * 60 * 60 * 60 * 60, " arcsec^2"
-        print "DEPTH16:", mesh16.depth
-        print "AREA16:", mesh16.area * 60 * 60 * 60 * 60, " arcsec^2"
-        print "DEPTH20:", mesh20.depth
-        print "AREA20:", mesh20.area * 60 * 60 * 60 * 60, " arcsec^2"
+        print("DEPTH24:", mesh24.depth)
+        print("AREA24:", mesh24.area * 60 * 60 * 60 * 60, " arcsec^2")
+        print("DEPTH16:", mesh16.depth)
+        print("AREA16:", mesh16.area * 60 * 60 * 60 * 60, " arcsec^2")
+        print("DEPTH20:", mesh20.depth)
+        print("AREA20:", mesh20.area * 60 * 60 * 60 * 60, " arcsec^2")
 
         overlappingTrixels = mesh24.intersect(
             ra="23:25:53.56",
@@ -149,7 +153,7 @@ class test_htm(unittest.TestCase):
         overlappingTrixels = mesh24.intersect(
             ra="23:25:53.56",
             dec="+26:54:23.9",
-            radius=10 / (60 * 60),
+            radius=old_div(10, (60 * 60)),
             inclusive=True
         )
         # print overlappingTrixels
@@ -170,7 +174,8 @@ class test_htm(unittest.TestCase):
         )
 
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-            print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2]
+            print(raList1[m1], decList1[m1], " -> ", s * 3600.,
+                  " arcsec -> ", raList2[m2], decList2[m2])
 
     def test_matcher_object(self):
 
@@ -198,9 +203,10 @@ class test_htm(unittest.TestCase):
         )
 
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-            print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2]
+            print(raList1[m1], decList1[m1], " -> ", s * 3600.,
+                  " arcsec -> ", raList2[m2], decList2[m2])
 
-        print "NEARESRT MATCHES ONLY"
+        print("NEARESRT MATCHES ONLY")
         matchIndices1, matchIndices2, seps = coordinateSet.match(
             ra=raList2,
             dec=decList2,
@@ -208,7 +214,8 @@ class test_htm(unittest.TestCase):
             maxmatch=1
         )
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-            print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2]
+            print(raList1[m1], decList1[m1], " -> ", s * 3600.,
+                  " arcsec -> ", raList2[m2], decList2[m2])
 
     def test_lookup(self):
 
@@ -219,10 +226,10 @@ class test_htm(unittest.TestCase):
             depth=16,
             log=log
         )
-        print "LOOKUP"
+        print("LOOKUP")
         htmids = mesh16.lookup_id(raList1, decList1)
         for h, r, d in zip(htmids, raList1, decList1):
-            print r, d, " --> ", h
+            print(r, d, " --> ", h)
 
     def test_htm_function_exception(self):
 
@@ -235,9 +242,9 @@ class test_htm(unittest.TestCase):
             )
             this.get()
             assert False
-        except Exception, e:
+        except Exception as e:
             assert True
-            print str(e)
+            print(str(e))
 
         # x-print-testpage-for-pessto-marshall-web-object
 

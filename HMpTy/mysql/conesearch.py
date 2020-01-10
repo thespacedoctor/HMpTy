@@ -9,7 +9,16 @@
 :Date Created:
     October  5, 2016
 """
+from __future__ import print_function
+from __future__ import division
 ################# GLOBAL IMPORTS ####################
+from future import standard_library
+standard_library.install_aliases()
+from builtins import zip
+from builtins import str
+from builtins import map
+from builtins import object
+from past.utils import old_div
 import sys
 import os
 import re
@@ -18,10 +27,10 @@ from fundamentals import tools
 from HMpTy.htm import HTM
 import numpy as np
 from fundamentals.mysql import readquery
-from StringIO import StringIO
+from io import StringIO
 
 
-class conesearch():
+class conesearch(object):
     """
     *The worker class for the conesearch module*
 
@@ -75,7 +84,7 @@ class conesearch():
 
         .. code-block:: python
 
-            print cs.query
+            print(cs.query)
 
         .. code-block:: text
 
@@ -109,7 +118,7 @@ class conesearch():
             matchIndies, matches = cs.search()
 
             for row in matches.list:
-                print row
+                print(row)
 
         .. code-block:: text
 
@@ -124,7 +133,7 @@ class conesearch():
 
         .. code-block:: python
 
-            print matches.table()
+            print(matches.table())
 
         .. code-block:: text
 
@@ -214,7 +223,7 @@ class conesearch():
         if self.radius < 60.:
             self.htmDepth = 16
         # LESS THAN 1 DEG BUT GREATER THAN 1 ARCMIN
-        elif self.radius / (60 * 60) < 1.:
+        elif old_div(self.radius, (60 * 60)) < 1.:
             self.htmDepth = 13
         # GREATER THAN 1 DEGREE
         else:
@@ -281,7 +290,7 @@ class conesearch():
         raCol = self.raCol
         decCol = self.decCol
         radiusArc = self.radius
-        radius = self.radius / (60. * 60.)
+        radius = old_div(self.radius, (60. * 60.))
 
         # GET ALL THE TRIXELS REQUIRED
         trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
@@ -309,7 +318,7 @@ class conesearch():
             htmWhereClause = "where %(htmLevel)s between %(minID)s and %(maxID)s  " % locals(
             )
         else:
-            thesHtmIds = ",".join(np.array(map(str, trixelArray)))
+            thesHtmIds = ",".join(np.array(list(map(str, trixelArray))))
             htmWhereClause = "where %(htmLevel)s in (%(thesHtmIds)s)" % locals(
             )
 
@@ -348,7 +357,7 @@ class conesearch():
         trixelArray = np.array([], dtype='int16', ndmin=1, copy=False)
         # FOR EACH RA, DEC SET IN THE NUMPY ARRAY, COLLECT THE OVERLAPPING HTM
         # TRIXELS
-        r = self.radius / (60. * 60.)
+        r = old_div(self.radius, (60. * 60.))
 
         trixelArray = []
 
@@ -394,7 +403,7 @@ class conesearch():
                     quiet=True
                 )
             else:
-                print sqlQuery
+                print(sqlQuery)
                 raise e
 
         if self.distinct and (self.columns != "*" and (self.raCol.lower() not in self.columns.lower() or self.decCol.lower() not in self.columns.lower())):
@@ -402,7 +411,7 @@ class conesearch():
             theseKeys = []
             for r in databaseRows:
                 constraintKey = ""
-                for k, v in r.iteritems():
+                for k, v in list(r.items()):
                     if k.lower() != self.raCol.lower() and k.lower() != self.decCol.lower():
                         constraintKey += str(v)
                 if self.raCol.lower() in self.columns.lower():
@@ -453,7 +462,7 @@ class conesearch():
             dec1=self.dec,
             ra2=np.array(dbRas),
             dec2=np.array(dbDecs),
-            radius=float(self.radius / (60. * 60.)),
+            radius=float(old_div(self.radius, (60. * 60.))),
             maxmatch=maxmatch  # 1 = match closest 1, 0 = match all
         )
 

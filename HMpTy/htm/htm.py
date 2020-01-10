@@ -9,13 +9,16 @@
 :Date Created:
     October  6, 2016
 """
+from __future__ import absolute_import
+from __future__ import division
 ################# GLOBAL IMPORTS ####################
+from past.utils import old_div
 import sys
 import os
 os.environ['TERM'] = 'vt100'
 from fundamentals import tools
 from astrocalc.coords import unit_conversion
-import _htmcCode
+from . import _htmcCode
 import numpy
 from sys import stdout
 
@@ -66,7 +69,7 @@ class HTM(_htmcCode.HTMC):
         pi = numpy.pi
         area0 = 4.0 * pi / 8.0
         areadiv = 4.0 ** self.depth
-        area = area0 / areadiv * (180.0 / pi) ** 2
+        area = old_div(area0, areadiv) * (180.0 / pi) ** 2
         return area
 
     def lookup_id(
@@ -93,7 +96,7 @@ class HTM(_htmcCode.HTMC):
 
                 htmids = mesh.lookup_id(raList1, decList1)
                 for h, r, d in zip(htmids, raList1, decList1):
-                    print r, d, " --> ", h
+                    print(r, d, " --> ", h)
 
         """
         self.log.debug('starting the ``lookup_id`` method')
@@ -210,7 +213,7 @@ class HTM(_htmcCode.HTMC):
                 )
 
                 for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-                    print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2]
+                    print(raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2])
 
             Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
         """
@@ -377,7 +380,7 @@ class Matcher(_htmcCode.Matcher):
                 )
 
                 for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-                    print raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2]
+                    print(raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2])
 
             Or to return just the nearest matches:
 

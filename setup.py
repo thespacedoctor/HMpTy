@@ -1,3 +1,4 @@
+from __future__ import print_function
 import sys
 import os
 import time
@@ -53,8 +54,17 @@ else:
 try:
     import numpy
 except:
-    import pip
-    pip.main(['install', 'numpy'])
+    try:
+        import pip
+        if int(pip.__version__.split('.')[0]) > 9:
+            from pip._internal import main
+        else:
+            from pip import main
+        main(['install', 'numpy'])
+    except:
+        print("Please install numpy & pandas before installing HMpTy (conda install numpy pandas)")
+        sys.exit(0)
+
 
 import numpy
 include_dirs = [numpy.get_include(), 'HMpTy/include',
