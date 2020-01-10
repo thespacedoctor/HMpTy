@@ -3,7 +3,7 @@
 
    This is simple wrapper class for 1-d and scalar numpy arrays.  Only
    numerical data are supported at this time.  It should be straightforward
-   to expand this to higher dimensions.  It is *not* easy to support 
+   to expand this to higher dimensions.  It is *not* easy to support
    std::string, but char* type strings may be easier..
 
    This is a header-only template class.  Simply include it and use.
@@ -33,7 +33,7 @@
 
 
 
-      // double vector from an input python object (PyObject*).  
+      // double vector from an input python object (PyObject*).
       // Could be array, python  sequence, or scalar.  The result will only
       // be copied if the obj is not already a double vector in native byte
       // ordering.
@@ -41,7 +41,7 @@
       NumpyVector<double> vec(obj);
 
 
-      // Access data in a way that is aware of strides and is type-safe.  
+      // Access data in a way that is aware of strides and is type-safe.
       // No bounds checking is done
       vec[35] = 22.2;
       double val = vec[35];
@@ -53,7 +53,7 @@
       }
 
       // using an iterator.  This is not faster than the above.
-      for (NumpyVector<npy_double>::iterator it=dvec.begin(); 
+      for (NumpyVector<npy_double>::iterator it=dvec.begin();
               it != dvec.end(); it++) {
           double val=*it;
       }
@@ -103,239 +103,254 @@
 
 
 template <class T> class NumpyVector {
-	public:
+public:
 
-        // simple constructor
-		NumpyVector() throw (const char *);
+    // simple constructor
+    NumpyVector() throw (const char *);
 
-        // destructor.  Always decref the array
-		~NumpyVector() {
-			Py_XDECREF(mArray);
-		};
+    // destructor.  Always decref the array
+    ~NumpyVector()
+    {
+        Py_XDECREF(mArray);
+    };
 
-		// Construct from existing python object.  See init(PyObject* obj)
-		NumpyVector(PyObject* obj) throw (const char *);
+    // Construct from existing python object.  See init(PyObject* obj)
+    NumpyVector(PyObject* obj) throw (const char *);
 
-		// Construct a new array with the given length
-		NumpyVector(npy_intp size) throw (const char *);
-
-
-
-        // Initialize from an input python object, converting to an array of
-        // the right type and native byte order if necessary. If already the
-        // right type, etc. then no copy is made.
-        //
-        // If the data are already an array, must be zero or 1-dimensional.
-        //
-        // This can be called at *any time* and any existing data will
-        // be released
-        
-        void init(PyObject* obj)  throw (const char *);
-
-		// Initialize from scratch based on size and typenum
-        //
-        // This can be called at *any time* and any existing data will
-        // be released
-		
-        void init(npy_intp size)  throw (const char *);
+    // Construct a new array with the given length
+    NumpyVector(npy_intp size) throw (const char *);
 
 
-        // Random access to the underlying data at the specified location.
-        // Returns a writable/readable reference. No bounds checking are 
-        // applied.
-        //   TODO:  deal properly with const correctness...ugh
-        
-        T& operator[] (npy_intp index) {
-            if (mArray == NULL) {
-             throw "Error: attempt to get pointer from an uninitialized array";
-            }
 
-            T& ref= *(T* ) PyArray_GetPtr((PyArrayObject*) mArray, &index);
-            return ref;
-        };
+    // Initialize from an input python object, converting to an array of
+    // the right type and native byte order if necessary. If already the
+    // right type, etc. then no copy is made.
+    //
+    // If the data are already an array, must be zero or 1-dimensional.
+    //
+    // This can be called at *any time* and any existing data will
+    // be released
+
+    void init(PyObject* obj)  throw (const char *);
+
+    // Initialize from scratch based on size and typenum
+    //
+    // This can be called at *any time* and any existing data will
+    // be released
+
+    void init(npy_intp size)  throw (const char *);
 
 
-        // Get a pointer to the data.
-		T* ptr() throw (const char *);
+    // Random access to the underlying data at the specified location.
+    // Returns a writable/readable reference. No bounds checking are
+    // applied.
+    //   TODO:  deal properly with const correctness...ugh
 
-        // Get a pointer to the data at the indicated location
-        // Strides are properly accounted for.  No bounds checking
-        // are performed.
-		T* ptr(npy_intp index) throw (const char *);
-
-        void* void_ptr() throw (const char*) {
-            if (mArray == NULL) {
-                throw "Error: attempt to get pointer from an uninitialized array";
-            }
-
-            npy_intp index=0;
-            return PyArray_GetPtr((PyArrayObject*) mArray, &index);
+    T& operator[](npy_intp index)
+    {
+        if (mArray == NULL) {
+            throw "Error: attempt to get pointer from an uninitialized array";
         }
 
-
-        // Get a reference the underlying python object and incref the object.
-        // This is useful if you want to get a PyObject* that will be returned
-        // to the outside world. The internal version will be decrefed when the
-        // object is destructed or goes out of scope, so reference counting
-        // is correct..
-
-		PyObject* getref() throw (const char *);
+        T& ref = *(T*) PyArray_GetPtr((PyArrayObject*) mArray, &index);
+        return ref;
+    };
 
 
-        // get the type name.  Equivalent to typeid(T).name()
-		const char* type_name() {
-			return mTypeName;
-		}
-        // Return the numpy type number
-		int type_num() {
-			return mTypeNum;
-		}
-        // Return the number of elements in the data.
-		npy_intp size() {
-			return mSize;
-		}
-        // stride of the data.
-        npy_intp stride() {
-            return mStride;
+    // Get a pointer to the data.
+    T* ptr() throw (const char *);
+
+    // Get a pointer to the data at the indicated location
+    // Strides are properly accounted for.  No bounds checking
+    // are performed.
+    T* ptr(npy_intp index) throw (const char *);
+
+    void* void_ptr() throw (const char*)
+    {
+        if (mArray == NULL) {
+            throw "Error: attempt to get pointer from an uninitialized array";
         }
 
+        npy_intp index = 0;
+        return PyArray_GetPtr((PyArrayObject*) mArray, &index);
+    }
 
-        // Interestingly, the iterator is actually slower than just
-        // subscripting using brackets []
-        class iterator : public std::iterator<std::forward_iterator_tag, T> {
-            // use char* to avoid warnings from g++ about void* arithmetic
-            char* _ptr;
-            int _stride;
 
-            public:
-                iterator() : _ptr(NULL), _stride(0) {}
-                iterator(char* x, int stride) :_ptr(x), _stride(stride) {}
+    // Get a reference the underlying python object and incref the object.
+    // This is useful if you want to get a PyObject* that will be returned
+    // to the outside world. The internal version will be decrefed when the
+    // object is destructed or goes out of scope, so reference counting
+    // is correct..
 
-                iterator(const iterator& mit) : _ptr(mit._ptr), _stride(mit._stride) {}
+    PyObject* getref() throw (const char *);
 
-                iterator& operator++() {
-                    _ptr += _stride;
-                    return *this;
-                }
-                iterator operator++(int) {
-                    iterator tmp(*this); 
-                    operator++(); 
-                    return tmp;
-                }
 
-                bool operator==(const iterator& rhs) {return _ptr==rhs._ptr;}
-                bool operator!=(const iterator& rhs) {return _ptr!=rhs._ptr;}
-                T& operator*() {return *(T*) _ptr;}
-        };
+    // get the type name.  Equivalent to typeid(T).name()
+    const char* type_name()
+    {
+        return mTypeName;
+    }
+    // Return the numpy type number
+    int type_num()
+    {
+        return mTypeNum;
+    }
+    // Return the number of elements in the data.
+    npy_intp size()
+    {
+        return mSize;
+    }
+    // stride of the data.
+    npy_intp stride()
+    {
+        return mStride;
+    }
 
-        iterator begin() {
-            char* tptr = (char*) this->void_ptr();
-            iterator tmp(tptr, mStride);
-            return tmp;
+
+    // Interestingly, the iterator is actually slower than just
+    // subscripting using brackets []
+    class iterator : public std::iterator<std::forward_iterator_tag, T> {
+        // use char* to avoid warnings from g++ about void* arithmetic
+        char* _ptr;
+        int _stride;
+
+    public:
+        iterator() : _ptr(NULL), _stride(0) {}
+        iterator(char* x, int stride) : _ptr(x), _stride(stride) {}
+
+        iterator(const iterator& mit) : _ptr(mit._ptr), _stride(mit._stride) {}
+
+        iterator& operator++()
+        {
+            _ptr += _stride;
+            return *this;
         }
-        iterator end() {
-            // point just past last element, accounting for stride
-            char* tptr = (char*) this->void_ptr();
-            iterator tmp(tptr + mSize*mStride, mStride);
+        iterator operator++(int)
+        {
+            iterator tmp(*this);
+            operator++();
             return tmp;
         }
 
+        bool operator==(const iterator& rhs) {return _ptr == rhs._ptr;}
+        bool operator!=(const iterator& rhs) {return _ptr != rhs._ptr;}
+        T& operator*() {return *(T*) _ptr;}
+    };
 
-	
-	private:
+    iterator begin()
+    {
+        char* tptr = (char*) this->void_ptr();
+        iterator tmp(tptr, mStride);
+        return tmp;
+    }
+    iterator end()
+    {
+        // point just past last element, accounting for stride
+        char* tptr = (char*) this->void_ptr();
+        iterator tmp(tptr + mSize * mStride, mStride);
+        return tmp;
+    }
 
-        // This fills in the static type map if it doesn't exist
-        void init_type_info();
 
-        // private method to initialize type number and name
-        void set_type() throw (const char* );
 
-		const char* mTypeName;
-		int mTypeNum;
-		npy_intp mSize;
-        npy_intp mNdim; // should be 1 or 0
-        npy_intp mStride;
+private:
 
-		PyObject* mArray;
+    // This fills in the static type map if it doesn't exist
+    void init_type_info();
 
-		static std::map<const char*,int> mNumpyIdMap;
+    // private method to initialize type number and name
+    void set_type() throw (const char*);
+
+    const char* mTypeName;
+    int mTypeNum;
+    npy_intp mSize;
+    npy_intp mNdim; // should be 1 or 0
+    npy_intp mStride;
+
+    PyObject* mArray;
+
+    static std::map<const char*, int> mNumpyIdMap;
 };
 
 // this static data must be re-declared here
 template <class T>
-std::map<const char*,int> NumpyVector<T>::mNumpyIdMap;
+std::map<const char*, int> NumpyVector<T>::mNumpyIdMap;
 
 
 template <class T>
-NumpyVector<T>::NumpyVector()  throw (const char *) {
-	// DONT FORGET THIS!!!!
-	import_array();
+NumpyVector<T>::NumpyVector()  throw (const char *)
+{
+    // DONT FORGET THIS!!!!
+    _import_array();
 
     init_type_info();
 
-	// don't forget to initialize
-	mArray = NULL;
-	mSize=0;
-    mNdim=0;
-    mStride=0;
+    // don't forget to initialize
+    mArray = NULL;
+    mSize = 0;
+    mNdim = 0;
+    mStride = 0;
 
     // Initialize internal type info
-	set_type();
+    set_type();
 }
 
 
 template <class T>
-NumpyVector<T>::NumpyVector(PyObject* obj)  throw (const char *) {
-	// DONT FORGET THIS!!!!
-	import_array();
+NumpyVector<T>::NumpyVector(PyObject* obj)  throw (const char *)
+{
+    // DONT FORGET THIS!!!!
+    _import_array();
 
     init_type_info();
 
-	// don't forget to initialize
-	mArray = NULL;
-	mSize=0;
-    mNdim=0;
-    mStride=0;
+    // don't forget to initialize
+    mArray = NULL;
+    mSize = 0;
+    mNdim = 0;
+    mStride = 0;
 
     // Initialize internal type info
-	set_type();
-    
-	// Get the data.  This may or may not make a copy.
-	init(obj);
+    set_type();
+
+    // Get the data.  This may or may not make a copy.
+    init(obj);
 }
 
 
 // Create given the length and typenum
 template <class T>
-NumpyVector<T>::NumpyVector(npy_intp size) throw (const char *) {
-	// DONT FORGET THIS!!!!
-	import_array();
+NumpyVector<T>::NumpyVector(npy_intp size) throw (const char *)
+{
+    // DONT FORGET THIS!!!!
+    _import_array();
 
     init_type_info();
 
-	// don't forget to initialize
-	mArray = NULL;
-	mSize=0;
-    mNdim=0;
-    mStride=0;
+    // don't forget to initialize
+    mArray = NULL;
+    mSize = 0;
+    mNdim = 0;
+    mStride = 0;
 
     // Initialize internal type info
     set_type();
 
     // create a new array from the size and type info
-	init(size);
+    init(size);
 }
 
 template <class T>
-void NumpyVector<T>::init(PyObject* obj)  throw (const char *) {
+void NumpyVector<T>::init(PyObject* obj)  throw (const char *)
+{
 
-	// clear any existing array
-	Py_XDECREF(mArray);
-	mSize=0;
+    // clear any existing array
+    Py_XDECREF(mArray);
+    mSize = 0;
 
-	if (obj == NULL || obj == Py_None) {
-		throw "cannot convert the input object to an array: is NULL or None";
-	}
+    if (obj == NULL || obj == Py_None) {
+        throw "cannot convert the input object to an array: is NULL or None";
+    }
 
 
     // Is the input object already an array?
@@ -351,35 +366,37 @@ void NumpyVector<T>::init(PyObject* obj)  throw (const char *) {
         PyArray_Descr* descr = PyArray_DESCR(obj);
 
         if (descr->type_num == mTypeNum && PyArray_ISNOTSWAPPED(obj)) {
-			// We are set!  Just copy the reference.
-			mArray = obj;
-			Py_INCREF(obj);
-        } else {
+            // We are set!  Just copy the reference.
+            mArray = obj;
+            Py_INCREF(obj);
+        }
+        else {
             // Either it is not the right type or it is byteswapped.  So we
             // need to make a copy.
-            mArray = PyArray_Cast((PyArrayObject* ) obj, mTypeNum);
+            mArray = PyArray_Cast((PyArrayObject*) obj, mTypeNum);
 
             if (mArray == NULL) {
                 // this causes a segfault, don't do it
                 //Py_XDECREF(descr);
                 std::stringstream err;
-                err<<"Cold not cast from type "<<descr->type_num
-                    <<" to type "<<mTypeNum;
+                err << "Cold not cast from type " << descr->type_num
+                    << " to type " << mTypeNum;
                 throw err.str().c_str();
             }
         }
-    
-    } else {
+
+    }
+    else {
         // This is not a PyArray, we need to do a more complex conversion
 
         // can be scalar, but not higher dimensional than 1
-        int min_depth=0, max_depth=1;
+        int min_depth = 0, max_depth = 1;
 
         // require the array is in native byte order
         int requirements = NPY_NOTSWAPPED;
 
 
-        PyArray_Descr* descr=NULL;
+        PyArray_Descr* descr = NULL;
         descr = PyArray_DescrNewFromType(mTypeNum);
 
         if (descr == NULL) {
@@ -390,7 +407,7 @@ void NumpyVector<T>::init(PyObject* obj)  throw (const char *) {
         // reference for array.  We don't need to decref descr as long as we
         // decref the array
         mArray = PyArray_CheckFromAny(
-                obj, descr, min_depth, max_depth, requirements, NULL);
+                     obj, descr, min_depth, max_depth, requirements, NULL);
 
         if (mArray == NULL) {
             // this causes a segfault, don't do it
@@ -400,42 +417,44 @@ void NumpyVector<T>::init(PyObject* obj)  throw (const char *) {
     }
 
     // set the size
-	mSize = PyArray_SIZE(mArray);
+    mSize = PyArray_SIZE(mArray);
 
     // dimensions and stride
     mNdim = PyArray_NDIM(mArray);
     if (mNdim == 0) {
         mStride = 0;
-    } else {
+    }
+    else {
         mStride = PyArray_STRIDE(mArray, 0);
     }
 
 }
 
 template <class T>
-void NumpyVector<T>::init(npy_intp size)  throw (const char *) {
+void NumpyVector<T>::init(npy_intp size)  throw (const char *)
+{
 
-	// clear any existing array
-	Py_XDECREF(mArray);
-	mSize=0;
+    // clear any existing array
+    Py_XDECREF(mArray);
+    mSize = 0;
 
-	if (size < 0)  {
-		throw "size must be >= 0";
-	}
+    if (size < 0)  {
+        throw "size must be >= 0";
+    }
 
-	// Create output flags array
-	int ndim=1;
-	mArray = PyArray_ZEROS(
-			ndim, 
-			&size,
-            mTypeNum,
-			NPY_FALSE);
+    // Create output flags array
+    int ndim = 1;
+    mArray = PyArray_ZEROS(
+                 ndim,
+                 &size,
+                 mTypeNum,
+                 NPY_FALSE);
 
-	if (mArray ==NULL) {
-		throw "Could not allocate array";
-	}
+    if (mArray == NULL) {
+        throw "Could not allocate array";
+    }
 
-	mSize = PyArray_SIZE(mArray);
+    mSize = PyArray_SIZE(mArray);
     // dimensions and stride
     mNdim = ndim;
     mStride = PyArray_STRIDE(mArray, 0);
@@ -447,52 +466,58 @@ void NumpyVector<T>::init(npy_intp size)  throw (const char *) {
 // This is useful if you want to get a PyObject* that will be returned
 // to the outside world
 template <class T>
-PyObject* NumpyVector<T>::getref() throw (const char *) {
-	Py_XINCREF(mArray);
-	return mArray;
+PyObject* NumpyVector<T>::getref() throw (const char *)
+{
+    Py_XINCREF(mArray);
+    return mArray;
 }
-
-
-template <class T> 
-T* NumpyVector<T>::ptr() throw (const char *) {
-	if (mArray == NULL) {
-		throw "Error: attempt to get pointer from an uninitialized array";
-	}
-
-	npy_intp index=0;
-	return (T* ) PyArray_GetPtr((PyArrayObject*) mArray, &index);
-}
-
-template <class T>
-T* NumpyVector<T>::ptr(npy_intp index) throw (const char *) {
-	if (mArray == NULL) {
-		throw "Error: attempt to get pointer from an uninitialized array";
-	}
-
-	return (T*) PyArray_GetPtr((PyArrayObject*) mArray, &index);
-}
-
 
 
 template <class T>
-void NumpyVector<T>::set_type() throw (const char *) {
+T* NumpyVector<T>::ptr() throw (const char *)
+{
+    if (mArray == NULL) {
+        throw "Error: attempt to get pointer from an uninitialized array";
+    }
+
+    npy_intp index = 0;
+    return (T*) PyArray_GetPtr((PyArrayObject*) mArray, &index);
+}
+
+template <class T>
+T* NumpyVector<T>::ptr(npy_intp index) throw (const char *)
+{
+    if (mArray == NULL) {
+        throw "Error: attempt to get pointer from an uninitialized array";
+    }
+
+    return (T*) PyArray_GetPtr((PyArrayObject*) mArray, &index);
+}
+
+
+
+template <class T>
+void NumpyVector<T>::set_type() throw (const char *)
+{
 
     const char *name = typeid(T).name();
     if (mNumpyIdMap.count(name) > 0) {
         mTypeNum = mNumpyIdMap[name];
-    } else {
+    }
+    else {
         std::stringstream err;
-        err<<"NumpyArray: unsupported type: '"<<name<<"'\n";
+        err << "NumpyArray: unsupported type: '" << name << "'\n";
         throw err.str().c_str();
     }
 
-	mTypeName = name;
+    mTypeName = name;
 
 }
 
 
 template <class T>
-void NumpyVector<T>::init_type_info() {
+void NumpyVector<T>::init_type_info()
+{
     // static class members, only create once and shared by all
     // instances
     if (mNumpyIdMap.empty()) {
@@ -530,7 +555,7 @@ void NumpyVector<T>::init_type_info() {
         mNumpyIdMap[tname] = NPY_FLOAT64;
 
 
-		// On OS X 10.6 these can have different names than above
+        // On OS X 10.6 these can have different names than above
         tname = typeid(short).name();
         mNumpyIdMap[tname] = NPY_SHORT;
         tname = typeid(unsigned short).name();

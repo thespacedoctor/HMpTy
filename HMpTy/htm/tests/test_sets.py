@@ -1,7 +1,10 @@
+from __future__ import division
+from builtins import str
+from past.utils import old_div
 import os
-import nose
 import shutil
 import yaml
+import unittest
 from HMpTy.utKit import utKit
 
 from fundamentals import tools
@@ -16,7 +19,7 @@ su = tools(
 arguments, settings, log, dbConn = su.setup()
 
 # # load settings
-# stream = file(
+# stream = open(
 #     "/Users/Dave/.config/hmpty/hmpty.yaml", 'r')
 # settings = yaml.load(stream)
 # stream.close()
@@ -28,7 +31,7 @@ log, dbConn, pathToInputDir, pathToOutputDir = utKit.setupModule()
 utKit.tearDownModule()
 
 # load settings
-stream = file(
+stream = open(
     pathToInputDir + "/example_settings.yaml", 'r')
 settings = yaml.load(stream)
 stream.close()
@@ -55,7 +58,7 @@ try:
     readFile = codecs.open(pathToReadFile, encoding='utf-8', mode='r')
     thisData = readFile.read().split("\n")
     readFile.close()
-except IOError, e:
+except IOError as e:
     message = 'could not open the file %s' % (pathToReadFile,)
     log.critical(message)
     raise IOError(message)
@@ -74,27 +77,6 @@ for l in thisData[1:]:
 
 class test_sets(unittest.TestCase):
 
-    def test_sets_single_extract_function(self):
-
-        from HMpTy.htm import sets
-        xmatcher = sets(
-            log=log,
-            ra=raList,
-            dec=decList,
-            radius=10 / (60. * 60.),
-            sourceList=transientList
-        )
-        matches, ra, dec, sourceList = xmatcher._extract_one_set_from_list(
-            ra=raList,
-            dec=decList,
-            radius=10 / (60. * 60.),
-            sourceList=transientList
-        )
-        print matches
-        print len(ra)
-        print len(dec)
-        print len(sourceList)
-
     def test_sets_all_extract_function(self):
 
         from HMpTy.htm import sets
@@ -102,12 +84,13 @@ class test_sets(unittest.TestCase):
             log=log,
             ra=raList,
             dec=decList,
-            radius=10 / (60. * 60.),
+            radius=old_div(10, (60. * 60.)),
             sourceList=transientList
         )
         allMatches = xmatcher._extract_all_sets_from_list()
         for i, m in enumerate(allMatches):
-            print i, m
+            pass
+            #print(i, m)
 
     def test_sets_match_function(self):
 
@@ -116,7 +99,7 @@ class test_sets(unittest.TestCase):
             log=log,
             ra=raList,
             dec=decList,
-            radius=10 / (60. * 60.),
+            radius=old_div(10, (60. * 60.)),
             sourceList=transientList
         )
         allMatches = xmatcher.match
@@ -132,9 +115,9 @@ class test_sets(unittest.TestCase):
             )
             this.get()
             assert False
-        except Exception, e:
+        except Exception as e:
             assert True
-            print str(e)
+            print(str(e))
 
         # x-print-testpage-for-pessto-marshall-web-object
 

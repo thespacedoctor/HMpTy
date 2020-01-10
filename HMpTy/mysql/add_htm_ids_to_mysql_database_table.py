@@ -9,7 +9,13 @@
 :Date Created:
     June 21, 2016
 """
+from __future__ import print_function
+from __future__ import division
 ################# GLOBAL IMPORTS ####################
+from builtins import zip
+from builtins import str
+from builtins import range
+from past.utils import old_div
 import sys
 import os
 import math
@@ -79,7 +85,7 @@ def add_htm_ids_to_mysql_database_table(
         """Checking the table %(tableName)s exists in the database""" % locals())
     tableList = []
     for row in rows:
-        tableList.append(row.values()[0].lower())
+        tableList.append(list(row.values())[0].lower())
     if tableName.lower() not in tableList:
         message = "The %s table does not exist in the database" % (tableName,)
         log.critical(message)
@@ -119,7 +125,7 @@ def add_htm_ids_to_mysql_database_table(
         }
 
     # CHECK IF COLUMNS EXISTS YET - IF NOT CREATE FROM
-    for key in htmCols.keys():
+    for key in list(htmCols.keys()):
         try:
             log.debug(
                 'attempting to check and generate the HTMId columns for the %s db table' %
@@ -139,7 +145,7 @@ def add_htm_ids_to_mysql_database_table(
             switch = 0
             if not colExists:
                 if switch == 0:
-                    print "Adding the HTMCircle columns to %(tableName)s" % locals()
+                    print("Adding the HTMCircle columns to %(tableName)s" % locals())
                     switch = 1
                 sqlQuery = 'ALTER TABLE ' + tableName + ' ADD ' + \
                     key + ' ' + htmCols[key] + ' DEFAULT NULL'
@@ -198,7 +204,7 @@ def add_htm_ids_to_mysql_database_table(
 
     # ADD HTMIDs IN BATCHES
     total = totalCount
-    batches = int(total / batchSize)
+    batches = int(old_div(total, batchSize))
 
     count = 0
     lastId = False
@@ -323,11 +329,11 @@ def add_htm_ids_to_mysql_database_table(
                 'no HTMIds to add to the %s db table' % (tableName, ))
 
         percent = float(count) * 100. / float(totalCount)
-        print "%(count)s / %(totalCount)s htmIds added to %(tableName)s (%(percent)0.5f%% complete)" % locals()
+        print("%(count)s / %(totalCount)s htmIds added to %(tableName)s (%(percent)0.5f%% complete)" % locals())
         end = time.time()
         timediff = end - start
         timediff = timediff * 1000000. / float(batchSize)
-        print "Update speed: %(timediff)0.2fs/1e6 rows\n" % locals()
+        print("Update speed: %(timediff)0.2fs/1e6 rows\n" % locals())
 
     # APPLY INDEXES IF NEEDED
     sqlQuery = ""
@@ -360,7 +366,7 @@ def add_htm_ids_to_mysql_database_table(
     log.debug('finished adding indexes to %(tableName)s' % locals())
 
     if reindex:
-        print "Re-enabling keys within the '%(tableName)s' table" % locals()
+        print("Re-enabling keys within the '%(tableName)s' table" % locals())
         sqlQuery = """ALTER TABLE `%(tableName)s` enable keys""" % locals()
         writequery(
             log=log,
@@ -368,7 +374,7 @@ def add_htm_ids_to_mysql_database_table(
             dbConn=dbConn
         )
 
-    print "All HTMIds added to %(tableName)s" % locals()
+    print("All HTMIds added to %(tableName)s" % locals())
 
     log.debug('completed the ``add_htm_ids_to_mysql_database_table`` function')
     return None
