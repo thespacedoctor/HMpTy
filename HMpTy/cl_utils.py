@@ -93,6 +93,7 @@ def main(arguments=None):
     level = a["level"]
     forceFlag = a["forceFlag"]
     renderFlag = a["renderFlag"]
+    search = a["search"]
 
     ## START LOGGING ##
     startTime = times.get_now_sql_datetime()
