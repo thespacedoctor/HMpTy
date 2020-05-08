@@ -125,7 +125,7 @@ setup(name="HMpTy",
       test_suite='nose2.collector.collector',
       tests_require=['nose2', 'cov-core'],
       entry_points={
-          'console_scripts': ['HMpTy=HMpTy.cl_utils:main'],
+          'console_scripts': ['hmpty=HMpTy.cl_utils:main'],
       },
       include_dirs=include_dirs,
       zip_safe=False)
