@@ -13,7 +13,7 @@ exec(open(moduleDirectory + "/HMpTy/__version__.py").read())
 
 
 def readme():
-    with open(moduleDirectory + '/README.rst') as f:
+    with open(moduleDirectory + '/README.md') as f:
         return f.read()
 
 main_libdir = distutils.sysconfig.get_python_lib()
@@ -37,7 +37,6 @@ envPrepend(PYTHONPATH,${PRODUCT_DIR}/%s)
 """ % pylib_install_subdir
 tablefile.write(tab)
 tablefile.close()
-
 
 # can we build recfile?
 packages = ['HMpTy']
@@ -79,17 +78,40 @@ htm_module = Extension('HMpTy.htm._htmc',
 ext_modules.append(htm_module)
 packages.append('HMpTy.htm')
 
+install_requires = [
+    'pyyaml',
+    'HMpTy',
+    'fundamentals',
+    'docopt',
+    'astrocalc',
+    'multiprocess',
+    'unicodecsv'
+]
+
+# READ THE DOCS SERVERS
+exists = os.path.exists("/home/docs/")
+if exists:
+    c_exclude_list = ['healpy', 'astropy',
+                      'numpy', 'sherlock', 'wcsaxes', 'HMpTy', 'ligo-gracedb']
+    for e in c_exclude_list:
+        try:
+            install_requires.remove(e)
+        except:
+            pass
+
 setup(name="HMpTy",
       version=__version__,
-      description="Tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTM-ids, crossmatch sets of sky-coordinates and more",
+      description="Generate Hierarchical Triangular Mesh (HTM) IDs, crossmatch sets of sky-coordinates and more",
       long_description=readme(),
+      long_description_content_type='text/markdown',
       classifiers=[
           'Development Status :: 4 - Beta',
           'License :: OSI Approved :: MIT License',
+          'Programming Language :: Python :: 3.7',
           'Programming Language :: Python :: 2.7',
           'Topic :: Utilities',
       ],
-      keywords=['astronomy, coordinates, tools'],
+      keywords=['astronomy, crossmatch, htm'],
       url='https://github.com/thespacedoctor/HMpTy',
       download_url='https://github.com/thespacedoctor/HMpTy/archive/v%(__version__)s.zip' % locals(
       ),
@@ -97,21 +119,11 @@ setup(name="HMpTy",
       author_email='davidrobertyoung@gmail.com',
       license='MIT',
       packages=find_packages(),
-      package_data={'HMpTy': [
-          'resources/*/*', 'resources/*.*', 'default_settings.yaml']},
-      # include_package_data=True,
-      install_requires=[
-          'pyyaml',
-          'HMpTy',
-          'fundamentals',
-          'docopt',
-          'astrocalc'
-      ],
+      include_package_data=True,
+      install_requires=install_requires,
       test_suite='nose2.collector.collector',
       tests_require=['nose2', 'cov-core'],
-      ext_modules=ext_modules,
       entry_points={
-          'console_scripts': ['hmpty=HMpTy.cl_utils:main'],
+          'console_scripts': ['HMpTy=HMpTy.cl_utils:main'],
       },
-      zip_safe=False,
-      include_dirs=include_dirs)
+      zip_safe=False)

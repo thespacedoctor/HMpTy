@@ -1,0 +1,10 @@
+include README.md
+include README.rst
+include *.yaml
+include *.txt
+include *.md
+include *.rst
+recursive-include HMpTy *
+recursive-include hmpty *
+global-exclude *.pyo
+global-exclude *.pyc

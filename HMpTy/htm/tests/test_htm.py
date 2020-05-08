@@ -1,54 +1,43 @@
-from __future__ import division
-from builtins import zip
+from __future__ import print_function
 from builtins import str
-from past.utils import old_div
 import os
+import unittest
 import shutil
 import yaml
-import unittest
-from HMpTy import htm, cl_utils
 from HMpTy.utKit import utKit
-
 from fundamentals import tools
+from os.path import expanduser
+from past.utils import old_div
+home = expanduser("~")
+
+packageDirectory = utKit("").get_project_root()
+settingsFile = packageDirectory + "/test_settings.yaml"
 
 su = tools(
-    arguments={"settingsFile": None},
+    arguments={"settingsFile": settingsFile},
     docString=__doc__,
     logLevel="DEBUG",
     options_first=False,
-    projectName="HMpTy"
+    projectName=None,
+    defaultSettingsFile=False
 )
 arguments, settings, log, dbConn = su.setup()
 
-# # load settings
-# stream = open(
-#     "/Users/Dave/.config/HMpTy/HMpTy.yaml", 'r')
-# settings = yaml.load(stream)
-# stream.close()
-
-# SETUP AND TEARDOWN FIXTURE FUNCTIONS FOR THE ENTIRE MODULE
+# SETUP PATHS TO COMMON DIRECTORIES FOR TEST DATA
 moduleDirectory = os.path.dirname(__file__)
-utKit = utKit(moduleDirectory)
-log, dbConn, pathToInputDir, pathToOutputDir = utKit.setupModule()
-utKit.tearDownModule()
+pathToInputDir = moduleDirectory + "/input/"
+pathToOutputDir = moduleDirectory + "/output/"
 
-# load settings
-stream = open(
-    pathToInputDir + "/example_settings.yaml", 'r')
-settings = yaml.load(stream)
-stream.close()
-
-import shutil
 try:
     shutil.rmtree(pathToOutputDir)
 except:
     pass
+# COPY INPUT TO OUTPUT DIR
+shutil.copytree(pathToInputDir, pathToOutputDir)
 
 # Recursively create missing directories
 if not os.path.exists(pathToOutputDir):
     os.makedirs(pathToOutputDir)
-
-# xt-setup-unit-testing-files-and-folders
 
 
 class test_htm(unittest.TestCase):

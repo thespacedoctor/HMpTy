@@ -1,5 +1,22 @@
 version: 1
 
+# database settings:
+#     db: unit_tests
+#     host: localhost
+#     user: utuser
+#     password: utpass
+#     loginPath: unittesting
+#     tunnel: False
+
+# # SSH TUNNEL - if a tunnel is required to connect to the database(s) then add setup here
+# # Note only one tunnel is setup - may need to change this to 2 tunnels in the future if 
+# # code, static catalogue database and transient database are all on seperate machines.
+# ssh tunnel:
+#     remote user: username
+#     remote ip: mydomain.co.uk
+#     remote datbase host: mydatabaseName
+#     port: 9002
+
 logging settings:
     formatters:
         file_style:
@@ -21,11 +38,10 @@ logging settings:
             class: logging.handlers.GroupWriteRotatingFileHandler
             level: WARNING
             formatter: file_style
-            filename: /Users/Dave/.config/HMpTy/HMpTy.log
+            filename: ~/.config/HMpTy/HMpTy.log
             mode: w+
             maxBytes: 102400
             backupCount: 1
     root:
         level: WARNING
         handlers: [file,console]
-
