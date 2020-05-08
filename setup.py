@@ -11,6 +11,7 @@ import distutils.sysconfig
 moduleDirectory = os.path.dirname(os.path.realpath(__file__))
 exec(open(moduleDirectory + "/HMpTy/__version__.py").read())
 
+
 def readme():
     with open(moduleDirectory + '/README.md') as f:
         return f.read()
@@ -116,8 +117,9 @@ setup(name="HMpTy",
       ),
       author='David Young',
       author_email='davidrobertyoung@gmail.com',
-      license='MIT',
+      license='GNU',
       packages=find_packages(),
+      ext_modules=ext_modules,
       include_package_data=True,
       install_requires=install_requires,
       test_suite='nose2.collector.collector',
@@ -125,4 +127,5 @@ setup(name="HMpTy",
       entry_points={
           'console_scripts': ['HMpTy=HMpTy.cl_utils:main'],
       },
+      include_dirs=include_dirs,
       zip_safe=False)
