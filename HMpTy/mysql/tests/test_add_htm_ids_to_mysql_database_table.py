@@ -38,7 +38,6 @@ shutil.copytree(pathToInputDir, pathToOutputDir)
 if not os.path.exists(pathToOutputDir):
     os.makedirs(pathToOutputDir)
 
-
 # RELOAD TEST DATA
 from fundamentals.mysql import directory_script_runner
 directory_script_runner(
@@ -60,7 +59,6 @@ try:
     )
 except:
     pass
-
 
 class test_add_htm_ids_to_mysql_database_table(unittest.TestCase):
 

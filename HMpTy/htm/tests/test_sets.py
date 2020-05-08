@@ -39,7 +39,6 @@ shutil.copytree(pathToInputDir, pathToOutputDir)
 if not os.path.exists(pathToOutputDir):
     os.makedirs(pathToOutputDir)
 
-
 import codecs
 pathToReadFile = pathToInputDir + "test-data-for-sets.csv"
 try:
@@ -52,7 +51,6 @@ except IOError as e:
     log.critical(message)
     raise IOError(message)
 
-
 transientList = []
 raList = []
 decList = []
@@ -62,7 +60,6 @@ for l in thisData[1:]:
         transientList.append(l)
         raList.append(l[1])
         decList.append(l[2])
-
 
 class test_sets(unittest.TestCase):
 

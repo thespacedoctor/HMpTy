@@ -9,6 +9,7 @@
 
    install
    initialisation
+   hmpty_from_the_command_line
    todolist
    changes_link
 ```

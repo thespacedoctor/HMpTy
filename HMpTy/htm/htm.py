@@ -5,13 +5,9 @@
 
 :Author:
     David Young (originally forked from Erin Sheldon's esutil - esheldon)
-
-:Date Created:
-    October  6, 2016
 """
 from __future__ import absolute_import
 from __future__ import division
-################# GLOBAL IMPORTS ####################
 from past.utils import old_div
 import sys
 import os
@@ -22,24 +18,26 @@ from . import _htmcCode
 import numpy
 from sys import stdout
 
-
 class HTM(_htmcCode.HTMC):
     """
     *A Hierarchical Triangular Mesh object*
 
-    **Key Arguments:**
-        - ``depth`` -- the depth of the mesh you wish to create. Default *16*
+    **Key Arguments**
 
-    **Usage:**
+    - ``depth`` -- the depth of the mesh you wish to create. Default *16*
+    
 
-        To generate a mesh object:
+    **Usage**
 
-        .. code-block:: python
+    To generate a mesh object:
 
-            from HMpTy import HTM
-            mesh16 = HTM(
-                depth=16
-            )
+    ```python
+    from HMpTy import HTM
+    mesh16 = HTM(
+        depth=16
+    )
+    ```
+    
     """
 
     @property
@@ -47,11 +45,12 @@ class HTM(_htmcCode.HTMC):
             self):
         """*the depth of the HTM tree*
 
-        **Usage:**
+        **Usage**
 
-            .. code-block:: python
-
-                mesh.depth
+        ```python
+        mesh.depth
+        ```
+        
         """
         return super(HTM, self).depth()
 
@@ -60,11 +59,12 @@ class HTM(_htmcCode.HTMC):
             self):
         """*The mean area of triangles in this mesh in units of square degrees.*
 
-        **Usage:**
+        **Usage**
 
-            .. code-block:: python
-
-                mesh.area
+        ```python
+        mesh.area
+        ```
+        
         """
         pi = numpy.pi
         area0 = 4.0 * pi / 8.0
@@ -78,26 +78,30 @@ class HTM(_htmcCode.HTMC):
             dec):
         """*Lookup the ID of HTM trixel that a coordinate or lists of coordinates lie on*
 
-        **Key Arguments:**
-            - ``ra`` -- list, numpy array or single ra value (first coordinate set)
-            - ``dec`` -- list, numpy array or single dec value (first coordinate set - must match ra1 array length)
+        **Key Arguments**
 
-        **Return:**
-            - ``htmIds`` -- a list of HTM trixel ids the coordinates lie on
+        - ``ra`` -- list, numpy array or single ra value (first coordinate set)
+        - ``dec`` -- list, numpy array or single dec value (first coordinate set - must match ra1 array length)
+        
 
-        **Usage:**
+        **Return**
 
-            To find the trixel IDs that a set of coordinate lie on:
+        - ``htmIds`` -- a list of HTM trixel ids the coordinates lie on
+        
 
-            .. code-block:: python
+        **Usage**
 
-                raList1 = ["13:20:00.00", 200.0, "13:20:00.00", 175.23, 21.36]
-                decList1 = ["+24:18:00.00",  24.3,  "+24:18:00.00",  -28.25, -15.32]
+        To find the trixel IDs that a set of coordinate lie on:
 
-                htmids = mesh.lookup_id(raList1, decList1)
-                for h, r, d in zip(htmids, raList1, decList1):
-                    print(r, d, " --> ", h)
+        ```python
+        raList1 = ["13:20:00.00", 200.0, "13:20:00.00", 175.23, 21.36]
+        decList1 = ["+24:18:00.00",  24.3,  "+24:18:00.00",  -28.25, -15.32]
 
+        htmids = mesh.lookup_id(raList1, decList1)
+        for h, r, d in zip(htmids, raList1, decList1):
+            print(r, d, " --> ", h)
+        ```
+        
         """
         self.log.debug('starting the ``lookup_id`` method')
 
@@ -117,40 +121,45 @@ class HTM(_htmcCode.HTMC):
     def intersect(self, ra, dec, radius, inclusive=True, convertCoordinates=True):
         """*return IDs of all triangles contained within and/or intersecting a circle centered on a given ra and dec*
 
-        **Key Arguments:**
-            - ``ra`` -- RA of central point in decimal degrees or sexagesimal
-            - ``dec`` -- DEC of central point in decimal degrees or sexagesimal
-            - ``radius`` -- radius of circle in degrees
-            - ``inclusive`` -- include IDs of triangles that intersect the circle as well as those completely inclosed by the circle. Default *True*
-            - ``convertCoordinates`` -- convert the corrdinates passed to intersect. Default *True*
-            -
+        **Key Arguments**
 
-        **Return:**
-            - ``trixelArray`` -- a numpy array of the match trixel IDs
+        - ``ra`` -- RA of central point in decimal degrees or sexagesimal
+        - ``dec`` -- DEC of central point in decimal degrees or sexagesimal
+        - ``radius`` -- radius of circle in degrees
+        - ``inclusive`` -- include IDs of triangles that intersect the circle as well as those completely inclosed by the circle. Default *True*
+        - ``convertCoordinates`` -- convert the corrdinates passed to intersect. Default *True*
+        -
+        
 
-        **Usage:**
+        **Return**
 
-            To return the trixels overlapping a circle with a 10 arcsec radius centred at 23:25:53.56, +26:54:23.9
+        - ``trixelArray`` -- a numpy array of the match trixel IDs
+        
 
-            .. code-block:: python
+        **Usage**
 
-                overlappingTrixels = mesh16.intersect(
-                    ra="23:25:53.56",
-                    dec="+26:54:23.9",
-                    radius=10 / (60 * 60),
-                    inclusive=True
-                )
+        To return the trixels overlapping a circle with a 10 arcsec radius centred at 23:25:53.56, +26:54:23.9
 
-            Or to return the trixels completing enclosed by a circle with a 1 degree radius centred at 23:25:53.56, +26:54:23.9
+        ```python
+        overlappingTrixels = mesh16.intersect(
+            ra="23:25:53.56",
+            dec="+26:54:23.9",
+            radius=10 / (60 * 60),
+            inclusive=True
+        )
+        ```
 
-            .. code-block:: python
+        Or to return the trixels completing enclosed by a circle with a 1 degree radius centred at 23:25:53.56, +26:54:23.9
 
-                overlappingTrixels = mesh16.intersect(
-                    ra="23:25:53.56",
-                    dec="+26:54:23.9",
-                    radius=1,
-                    inclusive=False
-                )
+        ```python
+        overlappingTrixels = mesh16.intersect(
+            ra="23:25:53.56",
+            dec="+26:54:23.9",
+            radius=1,
+            inclusive=False
+        )
+        ```
+        
         """
         # CONVERT RA AND DEC DECIMAL DEGREES
 
@@ -176,46 +185,50 @@ class HTM(_htmcCode.HTMC):
 
         This is very efficient for large search angles and large lists. Note, if you need to match against the same points many times, you should use a `Matcher` object
 
-        **Key Arguments:**
-            - ``ra1`` -- list, numpy array or single ra value (first coordinate set)
-            - ``dec1`` -- list, numpy array or single dec value (first coordinate set - must match ra1 array length)
-            - ``ra2`` -- list, numpy array or single ra value (second coordinate set)
-            - ``dec2`` -- list, numpy array or single dec value (second coordinate set - must match ra2 array length)
-            - ``radius`` -- search radius in degrees. Can be list, numpy array or single value. If list or numpy array must be same length as ra1 array length)
-            - ``maxmatch`` -- maximum number of matches to return. Set to `0` to match all points. Default *1* (i.e. closest match)
-            - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
+        **Key Arguments**
 
-        **Return:**
-            - ``matchIndices1`` -- match indices for list1 (ra1, dec1)
-            - ``matchIndices2`` -- match indices for list2 (ra2, dec2)
-            - ``sepDeg`` -- separations between matched corrdinates in degrees. All returned arrays are the same size
+        - ``ra1`` -- list, numpy array or single ra value (first coordinate set)
+        - ``dec1`` -- list, numpy array or single dec value (first coordinate set - must match ra1 array length)
+        - ``ra2`` -- list, numpy array or single ra value (second coordinate set)
+        - ``dec2`` -- list, numpy array or single dec value (second coordinate set - must match ra2 array length)
+        - ``radius`` -- search radius in degrees. Can be list, numpy array or single value. If list or numpy array must be same length as ra1 array length)
+        - ``maxmatch`` -- maximum number of matches to return. Set to `0` to match all points. Default *1* (i.e. closest match)
+        - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
+        
 
+        **Return**
 
-        **Usage:**
+        - ``matchIndices1`` -- match indices for list1 (ra1, dec1)
+        - ``matchIndices2`` -- match indices for list2 (ra2, dec2)
+        - ``sepDeg`` -- separations between matched corrdinates in degrees. All returned arrays are the same size
+        
 
-            To match 2 lists of corrdinates try something like this:
+        **Usage**
 
-            .. code-block:: python
+        To match 2 lists of corrdinates try something like this:
 
-                twoArcsec = 2.0 / 3600.
-                raList1 = [200.0, 200.0, 200.0, 175.23, 21.36]
-                decList1 = [24.3,  24.3,  24.3,  -28.25, -15.32]
-                raList2 = [200.0, 200.0, 200.0, 175.23, 55.25]
-                decList2 = [24.3 + 0.75 * twoArcsec, 24.3 + 0.25 * twoArcsec,
-                            24.3 - 0.33 * twoArcsec, -28.25 + 0.58 * twoArcsec, 75.22]
-                matchIndices1, matchIndices2, seps = mesh.match(
-                    ra1=raList1,
-                    dec1=decList1,
-                    ra2=raList2,
-                    dec2=decList2,
-                    radius=twoArcsec,
-                    maxmatch=0
-                )
+        ```python
+        twoArcsec = 2.0 / 3600.
+        raList1 = [200.0, 200.0, 200.0, 175.23, 21.36]
+        decList1 = [24.3,  24.3,  24.3,  -28.25, -15.32]
+        raList2 = [200.0, 200.0, 200.0, 175.23, 55.25]
+        decList2 = [24.3 + 0.75 * twoArcsec, 24.3 + 0.25 * twoArcsec,
+                    24.3 - 0.33 * twoArcsec, -28.25 + 0.58 * twoArcsec, 75.22]
+        matchIndices1, matchIndices2, seps = mesh.match(
+            ra1=raList1,
+            dec1=decList1,
+            ra2=raList2,
+            dec2=decList2,
+            radius=twoArcsec,
+            maxmatch=0
+        )
 
-                for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-                    print(raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2])
+        for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
+            print(raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2])
+        ```
 
-            Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
+        Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
+        
         """
 
         # CONVERT LISTS AND SINGLE VALUES TO ARRAYS OF FLOATS
@@ -267,42 +280,46 @@ class HTM(_htmcCode.HTMC):
 
         return matchIndices1, matchIndices2, seps
 
-
 class Matcher(_htmcCode.Matcher):
     """*A matcher-array object to match other arrays of ra,dec against*
 
     The Matcher object is initialized with a set of ra,dec coordinates and can then be used and reused to match against other sets of coordinates
 
-    **Key Arguments:**
-        - ``log`` -- logger
-        - ``depth`` -- the depth of the mesh generate the Matcher object at. Default *16*
-        - ``ra`` -- list, numpy array or single ra value
-        - ``dec`` -- --list, numpy array or single dec value (must match ra array length)
-        - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
+    **Key Arguments**
 
-    **Return:**
-        - None
+    - ``log`` -- logger
+    - ``depth`` -- the depth of the mesh generate the Matcher object at. Default *16*
+    - ``ra`` -- list, numpy array or single ra value
+    - ``dec`` -- --list, numpy array or single dec value (must match ra array length)
+    - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
+    
 
-    **Usage:**
+    **Return**
 
-        If we have a set of coordinates such that:
+    - None
+    
 
-        .. code-block:: python
+    **Usage**
 
-            raList1 = [200.0, 200.0, 200.0, 175.23, 21.36]
-            decList1 = [24.3,  24.3,  24.3,  -28.25, -15.32]
+    If we have a set of coordinates such that:
 
-        We can initialise a matcher object like so:
+    ```python
+    raList1 = [200.0, 200.0, 200.0, 175.23, 21.36]
+    decList1 = [24.3,  24.3,  24.3,  -28.25, -15.32]
+    ```
 
-        .. code-block:: python
+    We can initialise a matcher object like so:
 
-            from HMpTy import Matcher
-            coordinateSet = Matcher(
-                log=log,
-                ra=raList1,
-                dec=decList1,
-                depth=16
-            )
+    ```python
+    from HMpTy import Matcher
+    coordinateSet = Matcher(
+        log=log,
+        ra=raList1,
+        dec=decList1,
+        depth=16
+    )
+    ```
+    
     """
 
     def __init__(
@@ -341,59 +358,65 @@ class Matcher(_htmcCode.Matcher):
             self):
         """*the depth of the Matcher object*
 
-        **Usage:**
+        **Usage**
 
-            .. code-block:: python
-
-                coordinateSet.depth
+        ```python
+        coordinateSet.depth
+        ```
+        
         """
         return super(Matcher, self).depth
 
     def match(self, ra, dec, radius, maxmatch=1):
         """*match a corrdinate set against this Matcher object's coordinate set*
 
-        **Key Arguments:**
-            - ``ra`` -- list, numpy array or single ra value
-            - ``dec`` -- --list, numpy array or single dec value (must match ra array length)
-            - ``radius`` -- radius of circle in degrees
-            - ``maxmatch`` -- maximum number of matches to return. Set to `0` to match all points. Default *1* (i.e. closest match)
+        **Key Arguments**
 
-        **Return:**
-            - None
+        - ``ra`` -- list, numpy array or single ra value
+        - ``dec`` -- --list, numpy array or single dec value (must match ra array length)
+        - ``radius`` -- radius of circle in degrees
+        - ``maxmatch`` -- maximum number of matches to return. Set to `0` to match all points. Default *1* (i.e. closest match)
+        
 
-        **Usage:**
+        **Return**
 
-            Once we have initialised a Matcher coordinateSet object we can match other coordinate sets against it:
+        - None
+        
 
-            .. code-block:: python
+        **Usage**
 
-                twoArcsec = 2.0 / 3600.
-                raList2 = [200.0, 200.0, 200.0, 175.23, 55.25]
-                decList2 = [24.3 + 0.75 * twoArcsec, 24.3 + 0.25 * twoArcsec,
-                    24.3 - 0.33 * twoArcsec, -28.25 + 0.58 * twoArcsec, 75.22]
+        Once we have initialised a Matcher coordinateSet object we can match other coordinate sets against it:
 
-                matchIndices1, matchIndices2, seps = coordinateSet.match(
-                    ra=raList2,
-                    dec=decList2,
-                    radius=twoArcsec,
-                    maxmatch=0
-                )
+        ```python
+        twoArcsec = 2.0 / 3600.
+        raList2 = [200.0, 200.0, 200.0, 175.23, 55.25]
+        decList2 = [24.3 + 0.75 * twoArcsec, 24.3 + 0.25 * twoArcsec,
+            24.3 - 0.33 * twoArcsec, -28.25 + 0.58 * twoArcsec, 75.22]
 
-                for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-                    print(raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2])
+        matchIndices1, matchIndices2, seps = coordinateSet.match(
+            ra=raList2,
+            dec=decList2,
+            radius=twoArcsec,
+            maxmatch=0
+        )
 
-            Or to return just the nearest matches:
+        for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
+            print(raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2])
+        ```
 
-            .. code-block:: python
+        Or to return just the nearest matches:
 
-                matchIndices1, matchIndices2, seps = coordinateSet.match(
-                    ra=raList2,
-                    dec=decList2,
-                    radius=twoArcsec,
-                    maxmatch=1
-                )
+        ```python
+        matchIndices1, matchIndices2, seps = coordinateSet.match(
+            ra=raList2,
+            dec=decList2,
+            radius=twoArcsec,
+            maxmatch=1
+        )
+        ```
 
-            Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
+        Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
+        
         """
 
         if self.convertToArray == True:

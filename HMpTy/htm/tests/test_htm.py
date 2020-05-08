@@ -1,4 +1,5 @@
 from __future__ import print_function
+from builtins import zip
 from builtins import str
 import os
 import unittest
@@ -38,7 +39,6 @@ shutil.copytree(pathToInputDir, pathToOutputDir)
 # Recursively create missing directories
 if not os.path.exists(pathToOutputDir):
     os.makedirs(pathToOutputDir)
-
 
 class test_htm(unittest.TestCase):
 

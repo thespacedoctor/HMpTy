@@ -11,7 +11,6 @@ import distutils.sysconfig
 moduleDirectory = os.path.dirname(os.path.realpath(__file__))
 exec(open(moduleDirectory + "/HMpTy/__version__.py").read())
 
-
 def readme():
     with open(moduleDirectory + '/README.md') as f:
         return f.read()
@@ -64,7 +63,6 @@ except:
         print("Please install numpy & pandas before installing HMpTy (conda install numpy pandas)")
         sys.exit(0)
 
-
 import numpy
 include_dirs = [numpy.get_include(), 'HMpTy/include',
                 'HMpTy/htm', 'HMpTy/htm/htm_src']
@@ -85,7 +83,8 @@ install_requires = [
     'docopt',
     'astrocalc',
     'multiprocess',
-    'unicodecsv'
+    'unicodecsv',
+    'pandas'
 ]
 
 # READ THE DOCS SERVERS

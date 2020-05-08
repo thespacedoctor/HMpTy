@@ -5,13 +5,9 @@
 
 :Author:
     David Young
-
-:Date Created:
-    June 21, 2016
 """
 from __future__ import print_function
 from __future__ import division
-################# GLOBAL IMPORTS ####################
 from builtins import zip
 from builtins import str
 from builtins import range
@@ -27,7 +23,6 @@ from datetime import datetime, date
 from fundamentals import times
 import time
 
-
 def add_htm_ids_to_mysql_database_table(
         raColName,
         declColName,
@@ -41,35 +36,40 @@ def add_htm_ids_to_mysql_database_table(
         dbSettings=False):
     """*Given a database connection, a name of a table and the column names for RA and DEC, generates ID for one or more HTM level in the table*
 
-    **Key Arguments:**
-        - ``raColName`` -- ra in sexegesimal
-        - ``declColName`` -- dec in sexegesimal
-        - ``tableName`` -- name of table to add htmid info to
-        - ``dbConn`` -- database hosting the above table
-        - ``log`` -- logger
-        - ``primaryIdColumnName`` -- the primary id for the table
-        - ``cartesian`` -- add cartesian columns. Default *False*
-        - ``batchSize`` -- the size of the batches of rows to add HTMIds to concurrently. Default *2500*
-        - ``reindex`` -- reindex the entire table
-        - ``dbSettings`` -- yaml settings for database
+    **Key Arguments**
 
-    **Return:**
-        - None
+    - ``raColName`` -- ra in sexegesimal
+    - ``declColName`` -- dec in sexegesimal
+    - ``tableName`` -- name of table to add htmid info to
+    - ``dbConn`` -- database hosting the above table
+    - ``log`` -- logger
+    - ``primaryIdColumnName`` -- the primary id for the table
+    - ``cartesian`` -- add cartesian columns. Default *False*
+    - ``batchSize`` -- the size of the batches of rows to add HTMIds to concurrently. Default *2500*
+    - ``reindex`` -- reindex the entire table
+    - ``dbSettings`` -- yaml settings for database
+    
 
-    **Usage:**
+    **Return**
 
-        .. code-block:: python 
+    - None
+    
 
-            from HMpTy.mysql import add_htm_ids_to_mysql_database_table
-            add_htm_ids_to_mysql_database_table(
-                raColName="raDeg",
-                declColName="decDeg",
-                tableName="my_big_star_table",
-                dbConn=dbConn,
-                log=log,
-                primaryIdColumnName="primaryId",
-                reindex=False
-            )
+    **Usage**
+
+    ```python
+    from HMpTy.mysql import add_htm_ids_to_mysql_database_table
+    add_htm_ids_to_mysql_database_table(
+        raColName="raDeg",
+        declColName="decDeg",
+        tableName="my_big_star_table",
+        dbConn=dbConn,
+        log=log,
+        primaryIdColumnName="primaryId",
+        reindex=False
+    )
+    ```
+    
     """
     log.debug('starting the ``add_htm_ids_to_mysql_database_table`` function')
 

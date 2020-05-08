@@ -5,11 +5,7 @@
 
 :Author:
     David Young
-
-:Date Created:
-    October 12, 2016
 """
-################# GLOBAL IMPORTS ####################
 from builtins import zip
 from builtins import object
 import sys
@@ -18,42 +14,43 @@ os.environ['TERM'] = 'vt100'
 from fundamentals import tools
 import numpy as np
 
-
 class sets(object):
     """
     *Given a list of coordinates and a crossmatch radius, split the list up into sets of associated locations*
 
-    **Key Arguments:**
-        - ``log`` -- logger
-        - ``ra`` -- a list of the corrdinate right ascensions
-        - ``dec`` -- a list of the corrdinate declinations (same length as ``ra``)
-        - ``radius`` -- the radius to crossmatch the list of coordinates against itself (degrees)
-        - ``sourceList`` -- the list of source imformation to be divided into associated sets (same length as ``ra`` and ``dec``)
-        - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
+    **Key Arguments**
 
+    - ``log`` -- logger
+    - ``ra`` -- a list of the corrdinate right ascensions
+    - ``dec`` -- a list of the corrdinate declinations (same length as ``ra``)
+    - ``radius`` -- the radius to crossmatch the list of coordinates against itself (degrees)
+    - ``sourceList`` -- the list of source imformation to be divided into associated sets (same length as ``ra`` and ``dec``)
+    - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
+    
 
-    **Usage:**
+    **Usage**
 
-        Given a list of transient metadata (any list, possibly a list of dictionaries) you can divide the list to assoicated sets of transients by running the following code:
+    Given a list of transient metadata (any list, possibly a list of dictionaries) you can divide the list to assoicated sets of transients by running the following code:
 
-        .. code-block:: python 
+    ```python
+    from HMpTy.htm import sets
+    xmatcher = sets(
+        log=log,
+        ra=raList,
+        dec=decList,
+        radius=10 / (60. * 60.),
+        sourceList=transientList
+    )
+    allMatches = xmatcher.match 
+    ```
 
-            from HMpTy.htm import sets
-            xmatcher = sets(
-                log=log,
-                ra=raList,
-                dec=decList,
-                radius=10 / (60. * 60.),
-                sourceList=transientList
-            )
-            allMatches = xmatcher.match 
+    ``raList`` and ``decList`` are the coordinates for the sources found in the ``transientList`` and are therefore the same length as the `transientList`` (it's up to the user to create these lists). 
+    This code will group the sources into set of assocated transients which are within a radius of 10 arcsecs from one-another. ``allMatches`` is a list of lists, each contained list being an associate group of sources.
 
-        ``raList`` and ``decList`` are the coordinates for the sources found in the ``transientList`` and are therefore the same length as the `transientList`` (it's up to the user to create these lists). 
-        This code will group the sources into set of assocated transients which are within a radius of 10 arcsecs from one-another. ``allMatches`` is a list of lists, each contained list being an associate group of sources.
-
-        .. image:: https://i.imgur.com/hHExDqR.png
-            :width: 800px
-            :alt: divide a list of sources into associated sets
+    .. image:: https://i.imgur.com/hHExDqR.png
+        :width: 800px
+        :alt: divide a list of sources into associated sets
+    
     """
     # Initialisation
 
@@ -91,8 +88,10 @@ class sets(object):
             self):
         """*Extract all of the sets from the list of coordinates*
 
-        **Return:**
-            - ``allMatches`` -- a list of lists. All of the assocaited sets of sources
+        **Return**
+
+        - ``allMatches`` -- a list of lists. All of the assocaited sets of sources
+        
         """
         self.log.debug('starting the ``_extract_all_sets_from_list`` method')
 

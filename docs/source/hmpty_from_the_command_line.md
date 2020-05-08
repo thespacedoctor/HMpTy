@@ -1,89 +1,22 @@
-HMpTy
-=====
+## Command-Line Tutorial
 
-*A python package and command-line tools for working with Hierarchical Triangular Meshes (HTMs). Generate HTM-ids, crossmatch sets of sky-coordinates and more*.
-
-<img src="http://i.imgur.com/5GG4979.png" alt="image" width="600" />
-
-Here’s a summary of what’s included in the python package:
-
-Command-Line Usage
-======
-
-``` sourceCode
-Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org/en/stable
+### Indexing Database Tables with HTMids
 
 
-Usage:
-    hmpty index <tableName> <primaryIdCol> <raCol> <decCol> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>)
-    hmpty search <tableName> <raCol> <decCol> <ra> <dec> <radius> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>) [(-r <format>|-r mysql <resultsTable>)]
+HMpTy can be used from the command-line to add Hierarchical Triangular
+Mesh (HTM) IDs to any database table that has populated equatorial
+coordinate columns.
 
-Options:
-    index                 add HTMids to database table
-    search                perform a conesearch on a database table
+To generate and populate the `htm10ID`, `htm13ID` and `htm16ID` columns
+on a table run either:
 
-    tableName                                                       name of the table to add the HTMids to
-    primaryIdCol                                                    the name of the unique primary ID column of the database table
-    raCol                                                           name of the table column containing the right ascension
-    decCol                                                          name of the table column containing the declination
-    ra                                                              the right ascension of the centre of the conesearch circle
-    dec                                                             the declination of the centre of the conesearch circle
-    radius                                                          the radius of the conesearch circle (arcsec)
-    -h, --help                                                      show this help message
-    -v, --version                                                   show version
-    -s <pathToSettingsFile>, --settings <pathToSettingsFile>        path to a settings file containing the database credentials
-    --host <host>                                                   database host address
-    --user <user>                                                   database username
-    --passwd <passwd>                                               database password 
-    --dbName <dbName>                                               database name
-    -r <format>, --render <format>                                  select a format to render your results in
-```
-
-Installation
-============
-
-The easiest way to install HMpTy us to use `pip`:
-
-``` sourceCode
-pip install HMpTy
-```
-
-Or you can clone the [github repo](https://github.com/thespacedoctor/HMpTy) and install from a local version of the code:
-
-``` sourceCode
-git clone git@github.com:thespacedoctor/HMpTy.git
-cd HMpTy
-python setup.py install
-```
-
-To upgrade to the latest version of HMpTy use the command:
-
-``` sourceCode
-pip install HMpTy --upgrade
-```
-
-Documentation
-=============
-
-Documentation for HMpTy is hosted by [Read the Docs](http://HMpTy.readthedocs.org/en/stable/) (last [stable version](http://HMpTy.readthedocs.org/en/stable/) and [latest version](http://HMpTy.readthedocs.org/en/latest/)).
-
-Command-Line Tutorial
-=====================
-
-Indexing Database Tables with HTMids
-------------------------------------
-
-HMpTy can be used from the command-line to add Hierarchical Triangular Mesh (HTM) IDs to any database table that has populated equatorial coordinate columns.
-
-To generate and populate the `htm10ID`, `htm13ID` and `htm16ID` columns on a table run either:
-
-``` sourceCode
+``` bash
 hmpty index transientBucket primaryKeyId raDeg decDeg -s /path/to/my-settings.yaml
 ```
 
-where the settings file contains the database credientials:
+where the settings file contains the database credentials:
 
-``` sourceCode
+``` yaml
 database settings:
     db: mydatabase
     host: localhost
@@ -91,30 +24,33 @@ database settings:
     password: mypass
 ```
 
-Or alternatively you can pass the credientials in directory via the command-line (less secure obviously):
+Or alternatively you can pass the credentials in directory via the
+command-line (less secure obviously):
 
-``` sourceCode
+``` bash
 hmpty index transientBucket primaryKeyId raDeg decDeg --host localhost --user myusername --passwd mypass --dbName mydatabase
 ```
 
-Conesearching Database Tables
------------------------------
+### Conesearching Database Tables
 
-It’s possible to perform a conesearch on a database table (with existing HTMId columns pre-populated) from the command-line.
+It's possible to perform a conesearch on a database table (with existing
+HTMId columns pre-populated) from the command-line.
 
 The syntax for the cl-conesearch is:
 
-``` sourceCode
+``` bash
 hmpty search <tableName> <raCol> <decCol> <ra> <dec> <radius> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>)
 ```
 
-So to perform a 10 arcsec conesearch on a *transientBucket* table with ra and dec columns named *raDeg* and *decDeg* respectively around the coordinates “21:19:41.31”, “+21:57:56.3”:
+So to perform a 10 arcsec conesearch on a *transientBucket* table with
+ra and dec columns named *raDeg* and *decDeg* respectively around the
+coordinates "21:19:41.31", "+21:57:56.3":
 
-``` sourceCode
+``` bash
 hmpty search transientBucket raDeg decDeg 21:19:41.31 +21:57:56.3 10. -s /path/to/my-settings.yaml
 ```
 
-``` sourceCode
+``` text
 +------------+-------------------+----------+---------------+------------+-----------------------+-------------------------+-----------------+-------------------+----------+---------+---------------+---------------------------------+--------------+------------------------------------------------------------------+--------------------------+----------------------------------------------------------------------+-----------+------------------------------------------------------------------------------------------------------------------------------------------+---------------+-----------+-------------+---------------+---------+-----------------+------------+---------------------+--------------------+-----------+--------------+--------------+------------------+----------------------+-----------------+--------------------+-------------+-------------------------+-----------------------+----------+---------+---------------------------------------------------------------------------------------------------------------------------------------+----------+--------------+----------------------+------------+-----------------+-----------------+--------------+------------------+-----------------+---------------+----------------+
 | decDegErr  | hostRedshiftType  | decDeg   | masterIDFlag  | telescope  | lastNonDetectionDate  | sherlockClassification  | discoveryPhase  | dateLastModified  | cy       | cx      | dateLastRead  | transientTypePredicationSource  | dateDeleted  | tripletImageUrl                                                  | transientTypePrediction  | surveyObjectUrl                                                      | htm10ID   | targetImageUrl                                                                                                                           | primaryKeyId  | raDeg     | instrument  | hostRedshift  | filter  | finderImageUrl  | htm13ID    | subtractedImageUrl  | transientRedshift  | raDegErr  | dateCreated  | cmSepArcsec  | observationDate  | classificationPhase  | observationMJD  | transientBucketId  | name        | transientRedshiftNotes  | classificationWRTMax  | tmpFlag  | cz      | referenceImageUrl                                                                                                                     | reducer  | htm16ID      | lastNonDetectionMJD  | magnitude  | survey          | magnitudeError  | limitingMag  | replacedByRowId  | htm20ID         | spectralType  | lightcurveURL  |
 +------------+-------------------+----------+---------------+------------+-----------------------+-------------------------+-----------------+-------------------+----------+---------+---------------+---------------------------------+--------------+------------------------------------------------------------------+--------------------------+----------------------------------------------------------------------+-----------+------------------------------------------------------------------------------------------------------------------------------------------+---------------+-----------+-------------+---------------+---------+-----------------+------------+---------------------+--------------------+-----------+--------------+--------------+------------------+----------------------+-----------------+--------------------+-------------+-------------------------+-----------------------+----------+---------+---------------------------------------------------------------------------------------------------------------------------------------+----------+--------------+----------------------+------------+-----------------+-----------------+--------------+------------------+-----------------+---------------+----------------+
@@ -131,21 +67,24 @@ hmpty search transientBucket raDeg decDeg 21:19:41.31 +21:57:56.3 10. -s /path/t
 
 Note RA and DEC can be in either sexegesiaml or decimal degree formats.
 
-Again, you can instead pass in the database credientials via the command-line instead of a settings file:
+Again, you can instead pass in the database credientials via the
+command-line instead of a settings file:
 
-``` sourceCode
+``` bash
 hmpty search transientBucket raDeg decDeg 319.92212 21.96564 10. --host localhost --user myusername --passwd mypass --dbName mydatabase 
 ```
 
-### Renders
+Renders
+-------
 
-To render the results of the conesearch as json, csv, yaml or markdown use the `-r <format>` flag. For example:
+To render the results of the conesearch as json, csv, yaml or markdown
+use the `-r <format>` flag. For example:
 
-``` sourceCode
+``` bash
 hmpty search transientBucket raDeg decDeg 21:19:41.31 +21:57:56.3 10. -s /path/to/my-settings.yaml -r json
 ```
 
-``` sourceCode
+``` text
 [
     {
         "classificationPhase": null,
@@ -167,13 +106,14 @@ hmpty search transientBucket raDeg decDeg 21:19:41.31 +21:57:56.3 10. -s /path/t
         ....
 ```
 
-It’s possible to also render the results as MySQL insert statements, but the name of the table to insert the result into is also needed.
+It's possible to also render the results as MySQL insert statements, but
+the name of the table to insert the result into is also needed.
 
-``` sourceCode
+``` bash
 hmpty search transientBucket raDeg decDeg 21:19:41.31 +21:57:56.3 10. -s /path/to/my-settings.yaml -r mysql my_results
 ```
 
-``` sourceCode
+``` text
 INSERT INTO `my_results` (classificationPhase,classificationWRTMax,cmSepArcsec,cx,cy,cz,dateCreated,dateDeleted,dateLastModified,dateLastRead,decDeg,decDegErr,discoveryPhase,filter,finderImageUrl,hostRedshift,hostRedshiftType,htm10ID,htm13ID,htm16ID,htm20ID,instrument,lastNonDetectionDate,lastNonDetectionMJD,lightcurveURL,limitingMag,magnitude,magnitudeError,masterIDFlag,name,observationDate,observationMJD,primaryKeyId,raDeg,raDegErr,reducer,referenceImageUrl,replacedByRowId,sherlockClassification,spectralType,subtractedImageUrl,survey,surveyObjectUrl,targetImageUrl,telescope,tmpFlag,transientBucketId,transientRedshift,transientRedshiftNotes,transientTypePredicationSource,transientTypePrediction,tripletImageUrl) VALUES (null ,null ,"0.00434670577101" ,"0.709625112642" ,"-0.597091649225" ,"0.374050480461" ,"2016-09-30 19:23:32" ,null ,"2016-09-30 19:23:32" ,null ,"21.9656388889" ,null ,null ,"Clear-" ,null ,null ,null ,"13458566" ,"861348238" ,"55126287254" ,"14112329537188" ,null ,"2016-09-25 05:16:07" ,null ,null ,"0" ,"18.7" ,null ,"1" ,"AT2016grk" ,"2016-09-30 05:29:57" ,"57661.2291319" ,"1387901" ,"319.922125" ,null ,null ,null ,"0" ,"SN" ,null ,null ,"POSS" ,"http://wis-tns.weizmann.ac.il/object/2016grk" ,null ,null ,null ,"1387901" ,null ,null ,null ,null ,null)  ON DUPLICATE KEY UPDATE  classificationPhase=null, classificationWRTMax=null, cmSepArcsec="0.00434670577101", cx="0.709625112642", cy="-0.597091649225", cz="0.374050480461", dateCreated="2016-09-30 19:23:32", dateDeleted=null, dateLastModified="2016-09-30 19:23:32", dateLastRead=null, decDeg="21.9656388889", decDegErr=null, discoveryPhase=null, filter="Clear-", finderImageUrl=null, hostRedshift=null, hostRedshiftType=null, htm10ID="13458566", htm13ID="861348238", htm16ID="55126287254", htm20ID="14112329537188", instrument=null, lastNonDetectionDate="2016-09-25 05:16:07", lastNonDetectionMJD=null, lightcurveURL=null, limitingMag="0", magnitude="18.7", magnitudeError=null, masterIDFlag="1", name="AT2016grk", observationDate="2016-09-30 05:29:57", observationMJD="57661.2291319", primaryKeyId="1387901", raDeg="319.922125", raDegErr=null, reducer=null, referenceImageUrl=null, replacedByRowId="0", sherlockClassification="SN", spectralType=null, subtractedImageUrl=null, survey="POSS", surveyObjectUrl="http://wis-tns.weizmann.ac.il/object/2016grk", targetImageUrl=null, telescope=null, tmpFlag=null, transientBucketId="1387901", transientRedshift=null, transientRedshiftNotes=null, transientTypePredicationSource=null, transientTypePrediction=null, tripletImageUrl=null, updated=IF( classificationPhase=null AND  classificationWRTMax is null AND  cmSepArcsec="0.00434670577101" AND  cx="0.709625112642" AND  cy="-0.597091649225" AND  cz="0.374050480461" AND  dateCreated="2016-09-30 19:23:32" AND  dateDeleted is null AND  dateLastModified="2016-09-30 19:23:32" AND  dateLastRead is null AND  decDeg="21.9656388889" AND  decDegErr is null AND  discoveryPhase is null AND  filter="Clear-" AND  finderImageUrl is null AND  hostRedshift is null AND  hostRedshiftType is null AND  htm10ID="13458566" AND  htm13ID="861348238" AND  htm16ID="55126287254" AND  htm20ID="14112329537188" AND  instrument is null AND  lastNonDetectionDate="2016-09-25 05:16:07" AND  lastNonDetectionMJD is null AND  lightcurveURL is null AND  limitingMag="0" AND  magnitude="18.7" AND  magnitudeError is null AND  masterIDFlag="1" AND  name="AT2016grk" AND  observationDate="2016-09-30 05:29:57" AND  observationMJD="57661.2291319" AND  primaryKeyId="1387901" AND  raDeg="319.922125" AND  raDegErr is null AND  reducer is null AND  referenceImageUrl is null AND  replacedByRowId="0" AND  sherlockClassification="SN" AND  spectralType is null AND  subtractedImageUrl is null AND  survey="POSS" AND  surveyObjectUrl="http://wis-tns.weizmann.ac.il/object/2016grk" AND  targetImageUrl is null AND  telescope is null AND  tmpFlag is null AND  transientBucketId="1387901" AND  transientRedshift is null AND  transientRedshiftNotes is null AND  transientTypePredicationSource is null AND  transientTypePrediction is null AND  tripletImageUrl=null, 0, 1), dateLastModified=IF( classificationPhase=null AND  classificationWRTMax is null AND  cmSepArcsec="0.00434670577101" AND  cx="0.709625112642" AND  cy="-0.597091649225" AND  cz="0.374050480461" AND  dateCreated="2016-09-30 19:23:32" AND  dateDeleted is null AND  dateLastModified="2016-09-30 19:23:32" AND  dateLastRead is null AND  decDeg="21.9656388889" AND  decDegErr is null AND  discoveryPhase is null AND  filter="Clear-" AND  finderImageUrl is null AND  hostRedshift is null AND  hostRedshiftType is null AND  htm10ID="13458566" AND  htm13ID="861348238" AND  htm16ID="55126287254" AND  htm20ID="14112329537188" AND  instrument is null AND  lastNonDetectionDate="2016-09-25 05:16:07" AND  lastNonDetectionMJD is null AND  lightcurveURL is null AND  limitingMag="0" AND  magnitude="18.7" AND  magnitudeError is null AND  masterIDFlag="1" AND  name="AT2016grk" AND  observationDate="2016-09-30 05:29:57" AND  observationMJD="57661.2291319" AND  primaryKeyId="1387901" AND  raDeg="319.922125" AND  raDegErr is null AND  reducer is null AND  referenceImageUrl is null AND  replacedByRowId="0" AND  sherlockClassification="SN" AND  spectralType is null AND  subtractedImageUrl is null AND  survey="POSS" AND  surveyObjectUrl="http://wis-tns.weizmann.ac.il/object/2016grk" AND  targetImageUrl is null AND  telescope is null AND  tmpFlag is null AND  transientBucketId="1387901" AND  transientRedshift is null AND  transientRedshiftNotes is null AND  transientTypePredicationSource is null AND  transientTypePrediction is null AND  tripletImageUrl=null, dateLastModified, NOW()) ;
 INSERT INTO `my_results` (classificationPhase,classificationWRTMax,cmSepArcsec,cx,cy,cz,dateCreated,dateDeleted,dateLastModified,dateLastRead,decDeg,decDegErr,discoveryPhase,filter,finderImageUrl,hostRedshift,hostRedshiftType,htm10ID,htm13ID,htm16ID,htm20ID,instrument,lastNonDetectionDate,lastNonDetectionMJD,lightcurveURL,limitingMag,magnitude,magnitudeError,masterIDFlag,name,observationDate,observationMJD,primaryKeyId,raDeg,raDegErr,reducer,referenceImageUrl,replacedByRowId,sherlockClassification,spectralType,subtractedImageUrl,survey,surveyObjectUrl,targetImageUrl,telescope,tmpFlag,transientBucketId,transientRedshift,transientRedshiftNotes,transientTypePredicationSource,transientTypePrediction,tripletImageUrl) VALUES (null ,null ,"0.00434670577101" ,"0.709625112642" ,"-0.597091649225" ,"0.374050480461" ,"2016-10-01 06:25:16" ,null ,"2016-10-01 06:25:16" ,null ,"21.9656388889" ,null ,null ,null ,null ,null ,null ,"13458566" ,"861348238" ,"55126287254" ,"14112329537188" ,null ,null ,null ,null ,"0" ,"18.7" ,null ,"0" ,"AT2016grk" ,"2016-09-30 05:29:45" ,"57661.2289931" ,"1392947" ,"319.922125" ,null ,null ,null ,"0" ,null ,null ,null ,"bright sn list" ,"http://www.rochesterastronomy.org/supernova.html#2016grk" ,null ,null ,null ,"1387901" ,null ,null ,null ,"SN" ,"https://c4.staticflickr.com/6/5313/29951445811_cf5c76e8aa_o.jpg")  ON DUPLICATE KEY UPDATE  classificationPhase=null, classificationWRTMax=null, cmSepArcsec="0.00434670577101", cx="0.709625112642", cy="-0.597091649225", cz="0.374050480461", dateCreated="2016-10-01 06:25:16", dateDeleted=null, dateLastModified="2016-10-01 06:25:16", dateLastRead=null, decDeg="21.9656388889", decDegErr=null, discoveryPhase=null, filter=null, finderImageUrl=null, hostRedshift=null, hostRedshiftType=null, htm10ID="13458566", htm13ID="861348238", htm16ID="55126287254", htm20ID="14112329537188", instrument=null, lastNonDetectionDate=null, lastNonDetectionMJD=null, lightcurveURL=null, limitingMag="0", magnitude="18.7", magnitudeError=null, masterIDFlag="0", name="AT2016grk", observationDate="2016-09-30 05:29:45", observationMJD="57661.2289931", primaryKeyId="1392947", raDeg="319.922125", raDegErr=null, reducer=null, referenceImageUrl=null, replacedByRowId="0", sherlockClassification=null, spectralType=null, subtractedImageUrl=null, survey="bright sn list", surveyObjectUrl="http://www.rochesterastronomy.org/supernova.html#2016grk", targetImageUrl=null, telescope=null, tmpFlag=null, transientBucketId="1387901", transientRedshift=null, transientRedshiftNotes=null, transientTypePredicationSource=null, transientTypePrediction="SN", tripletImageUrl="https://c4.staticflickr.com/6/5313/29951445811_cf5c76e8aa_o.jpg", updated=IF( classificationPhase=null AND  classificationWRTMax is null AND  cmSepArcsec="0.00434670577101" AND  cx="0.709625112642" AND  cy="-0.597091649225" AND  cz="0.374050480461" AND  dateCreated="2016-10-01 06:25:16" AND  dateDeleted is null AND  dateLastModified="2016-10-01 06:25:16" AND  dateLastRead is null AND  decDeg="21.9656388889" AND  decDegErr is null AND  discoveryPhase is null AND  filter is null AND  finderImageUrl is null AND  hostRedshift is null AND  hostRedshiftType is null AND  htm10ID="13458566" AND  htm13ID="861348238" AND  htm16ID="55126287254" AND  htm20ID="14112329537188" AND  instrument is null AND  lastNonDetectionDate is null AND  lastNonDetectionMJD is null AND  lightcurveURL is null AND  limitingMag="0" AND  magnitude="18.7" AND  magnitudeError is null AND  masterIDFlag="0" AND  name="AT2016grk" AND  observationDate="2016-09-30 05:29:45" AND  observationMJD="57661.2289931" AND  primaryKeyId="1392947" AND  raDeg="319.922125" AND  raDegErr is null AND  reducer is null AND  referenceImageUrl is null AND  replacedByRowId="0" AND  sherlockClassification is null AND  spectralType is null AND  subtractedImageUrl is null AND  survey="bright sn list" AND  surveyObjectUrl="http://www.rochesterastronomy.org/supernova.html#2016grk" AND  targetImageUrl is null AND  telescope is null AND  tmpFlag is null AND  transientBucketId="1387901" AND  transientRedshift is null AND  transientRedshiftNotes is null AND  transientTypePredicationSource is null AND  transientTypePrediction="SN" AND  tripletImageUrl="https://c4.staticflickr.com/6/5313/29951445811_cf5c76e8aa_o.jpg", 0, 1), dateLastModified=IF( classificationPhase=null AND  classificationWRTMax is null AND  cmSepArcsec="0.00434670577101" AND  cx="0.709625112642" AND  cy="-0.597091649225" AND  cz="0.374050480461" AND  dateCreated="2016-10-01 06:25:16" AND  dateDeleted is null AND  dateLastModified="2016-10-01 06:25:16" AND  dateLastRead is null AND  decDeg="21.9656388889" AND  decDegErr is null AND  discoveryPhase is null AND  filter is null AND  finderImageUrl is null AND  hostRedshift is null AND  hostRedshiftType is null AND  htm10ID="13458566" AND  htm13ID="861348238" AND  htm16ID="55126287254" AND  htm20ID="14112329537188" AND  instrument is null AND  lastNonDetectionDate is null AND  lastNonDetectionMJD is null AND  lightcurveURL is null AND  limitingMag="0" AND  magnitude="18.7" AND  magnitudeError is null AND  masterIDFlag="0" AND  name="AT2016grk" AND  observationDate="2016-09-30 05:29:45" AND  observationMJD="57661.2289931" AND  primaryKeyId="1392947" AND  raDeg="319.922125" AND  raDegErr is null AND  reducer is null AND  referenceImageUrl is null AND  replacedByRowId="0" AND  sherlockClassification is null AND  spectralType is null AND  subtractedImageUrl is null AND  survey="bright sn list" AND  surveyObjectUrl="http://www.rochesterastronomy.org/supernova.html#2016grk" AND  targetImageUrl is null AND  telescope is null AND  tmpFlag is null AND  transientBucketId="1387901" AND  transientRedshift is null AND  transientRedshiftNotes is null AND  transientTypePredicationSource is null AND  transientTypePrediction="SN" AND  tripletImageUrl="https://c4.staticflickr.com/6/5313/29951445811_cf5c76e8aa_o.jpg", dateLastModified, NOW()) ;
 INSERT INTO `my_results` (classificationPhase,classificationWRTMax,cmSepArcsec,cx,cy,cz,dateCreated,dateDeleted,dateLastModified,dateLastRead,decDeg,decDegErr,discoveryPhase,filter,finderImageUrl,hostRedshift,hostRedshiftType,htm10ID,htm13ID,htm16ID,htm20ID,instrument,lastNonDetectionDate,lastNonDetectionMJD,lightcurveURL,limitingMag,magnitude,magnitudeError,masterIDFlag,name,observationDate,observationMJD,primaryKeyId,raDeg,raDegErr,reducer,referenceImageUrl,replacedByRowId,sherlockClassification,spectralType,subtractedImageUrl,survey,surveyObjectUrl,targetImageUrl,telescope,tmpFlag,transientBucketId,transientRedshift,transientRedshiftNotes,transientTypePredicationSource,transientTypePrediction,tripletImageUrl) VALUES (null ,null ,"0.56535588648" ,"0.70962346768" ,"-0.597092274742" ,"0.374052602667" ,"2016-10-01 19:12:26" ,null ,"2016-10-01 19:12:26" ,null ,"21.96577" ,null ,null ,"c" ,null ,null ,null ,"13458566" ,"861348238" ,"55126287254" ,"14112329537190" ,null ,null ,null ,null ,"0" ,"17.75" ,"0.07" ,"0" ,"ATLAS16dbz" ,"2016-09-30 09:05:29" ,"57661.3788134" ,"1398488" ,"319.92203" ,null ,null ,null ,"0" ,null ,null ,null ,"ATLAS" ,"http://psweb.mp.qub.ac.uk/sne/atlas3/candidate/1211941281215756900/" ,null ,null ,null ,"1387901" ,null ,null ,null ,null ,null)  ON DUPLICATE KEY UPDATE  classificationPhase=null, classificationWRTMax=null, cmSepArcsec="0.56535588648", cx="0.70962346768", cy="-0.597092274742", cz="0.374052602667", dateCreated="2016-10-01 19:12:26", dateDeleted=null, dateLastModified="2016-10-01 19:12:26", dateLastRead=null, decDeg="21.96577", decDegErr=null, discoveryPhase=null, filter="c", finderImageUrl=null, hostRedshift=null, hostRedshiftType=null, htm10ID="13458566", htm13ID="861348238", htm16ID="55126287254", htm20ID="14112329537190", instrument=null, lastNonDetectionDate=null, lastNonDetectionMJD=null, lightcurveURL=null, limitingMag="0", magnitude="17.75", magnitudeError="0.07", masterIDFlag="0", name="ATLAS16dbz", observationDate="2016-09-30 09:05:29", observationMJD="57661.3788134", primaryKeyId="1398488", raDeg="319.92203", raDegErr=null, reducer=null, referenceImageUrl=null, replacedByRowId="0", sherlockClassification=null, spectralType=null, subtractedImageUrl=null, survey="ATLAS", surveyObjectUrl="http://psweb.mp.qub.ac.uk/sne/atlas3/candidate/1211941281215756900/", targetImageUrl=null, telescope=null, tmpFlag=null, transientBucketId="1387901", transientRedshift=null, transientRedshiftNotes=null, transientTypePredicationSource=null, transientTypePrediction=null, tripletImageUrl=null, updated=IF( classificationPhase=null AND  classificationWRTMax is null AND  cmSepArcsec="0.56535588648" AND  cx="0.70962346768" AND  cy="-0.597092274742" AND  cz="0.374052602667" AND  dateCreated="2016-10-01 19:12:26" AND  dateDeleted is null AND  dateLastModified="2016-10-01 19:12:26" AND  dateLastRead is null AND  decDeg="21.96577" AND  decDegErr is null AND  discoveryPhase is null AND  filter="c" AND  finderImageUrl is null AND  hostRedshift is null AND  hostRedshiftType is null AND  htm10ID="13458566" AND  htm13ID="861348238" AND  htm16ID="55126287254" AND  htm20ID="14112329537190" AND  instrument is null AND  lastNonDetectionDate is null AND  lastNonDetectionMJD is null AND  lightcurveURL is null AND  limitingMag="0" AND  magnitude="17.75" AND  magnitudeError="0.07" AND  masterIDFlag="0" AND  name="ATLAS16dbz" AND  observationDate="2016-09-30 09:05:29" AND  observationMJD="57661.3788134" AND  primaryKeyId="1398488" AND  raDeg="319.92203" AND  raDegErr is null AND  reducer is null AND  referenceImageUrl is null AND  replacedByRowId="0" AND  sherlockClassification is null AND  spectralType is null AND  subtractedImageUrl is null AND  survey="ATLAS" AND  surveyObjectUrl="http://psweb.mp.qub.ac.uk/sne/atlas3/candidate/1211941281215756900/" AND  targetImageUrl is null AND  telescope is null AND  tmpFlag is null AND  transientBucketId="1387901" AND  transientRedshift is null AND  transientRedshiftNotes is null AND  transientTypePredicationSource is null AND  transientTypePrediction is null AND  tripletImageUrl=null, 0, 1), dateLastModified=IF( classificationPhase=null AND  classificationWRTMax is null AND  cmSepArcsec="0.56535588648" AND  cx="0.70962346768" AND  cy="-0.597092274742" AND  cz="0.374052602667" AND  dateCreated="2016-10-01 19:12:26" AND  dateDeleted is null AND  dateLastModified="2016-10-01 19:12:26" AND  dateLastRead is null AND  decDeg="21.96577" AND  decDegErr is null AND  discoveryPhase is null AND  filter="c" AND  finderImageUrl is null AND  hostRedshift is null AND  hostRedshiftType is null AND  htm10ID="13458566" AND  htm13ID="861348238" AND  htm16ID="55126287254" AND  htm20ID="14112329537190" AND  instrument is null AND  lastNonDetectionDate is null AND  lastNonDetectionMJD is null AND  lightcurveURL is null AND  limitingMag="0" AND  magnitude="17.75" AND  magnitudeError="0.07" AND  masterIDFlag="0" AND  name="ATLAS16dbz" AND  observationDate="2016-09-30 09:05:29" AND  observationMJD="57661.3788134" AND  primaryKeyId="1398488" AND  raDeg="319.92203" AND  raDegErr is null AND  reducer is null AND  referenceImageUrl is null AND  replacedByRowId="0" AND  sherlockClassification is null AND  spectralType is null AND  subtractedImageUrl is null AND  survey="ATLAS" AND  surveyObjectUrl="http://psweb.mp.qub.ac.uk/sne/atlas3/candidate/1211941281215756900/" AND  targetImageUrl is null AND  telescope is null AND  tmpFlag is null AND  transientBucketId="1387901" AND  transientRedshift is null AND  transientRedshiftNotes is null AND  transientTypePredicationSource is null AND  transientTypePrediction is null AND  tripletImageUrl=null, dateLastModified, NOW()) ;

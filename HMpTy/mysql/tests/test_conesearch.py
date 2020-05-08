@@ -38,7 +38,6 @@ shutil.copytree(pathToInputDir, pathToOutputDir)
 if not os.path.exists(pathToOutputDir):
     os.makedirs(pathToOutputDir)
 
-
 class test_conesearch(unittest.TestCase):
 
     def test_get_trixel_ids_that_overlap_conesearch_circles(self):

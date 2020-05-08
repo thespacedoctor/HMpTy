@@ -17,6 +17,8 @@
 
 *Generate Hierarchical Triangular Mesh (HTM) IDs, crossmatch sets of sky-coordinates and more*.
 
+![](http://i.imgur.com/5GG4979.png)
+
 Documentation for HMpTy is hosted by [Read the Docs](https://HMpTy.readthedocs.io/en/master/) (
 [development version](https://HMpTy.readthedocs.io/en/develop/) and [master version](https://HMpTy.readthedocs.io/en/master/)). The code lives on [github](https://github.com/thespacedoctor/HMpTy). Please report any issues you find [here](https://github.com/thespacedoctor/HMpTy/issues).
 

@@ -5,13 +5,9 @@
 
 :Author:
     David Young
-
-:Date Created:
-    October  5, 2016
 """
 from __future__ import print_function
 from __future__ import division
-################# GLOBAL IMPORTS ####################
 from future import standard_library
 standard_library.install_aliases()
 from builtins import zip
@@ -29,150 +25,154 @@ import numpy as np
 from fundamentals.mysql import readquery
 from io import StringIO
 
-
 class conesearch(object):
     """
     *The worker class for the conesearch module*
 
-    **Key Arguments:**
-        - ``log`` -- logger
-        - ``dbConn`` -- a database connection
-        - ``tableName`` -- the name of the database table to perform the conesearch on.
-        - ``columns`` -- the columns requested from the database table
-        - ``ra`` -- the right ascension of the conesearch centre, can be single value or list of values
-        - ``dec`` -- the declination of the conesearch centre, can be single value or list of values
-        - ``radiusArcsec`` -- radius of the conesearch to be performed in arcsecs
-        - ``sqlWhere`` -- clause to add after "where" in the initial sql query of the conesearch. Default *False*
-        - ``raCol`` -- the database table ra column name. Default * raDeg*
-        - ``decCol`` -- the database table dec column name. Default *decDeg*
+    **Key Arguments**
+
+    - ``log`` -- logger
+    - ``dbConn`` -- a database connection
+    - ``tableName`` -- the name of the database table to perform the conesearch on.
+    - ``columns`` -- the columns requested from the database table
+    - ``ra`` -- the right ascension of the conesearch centre, can be single value or list of values
+    - ``dec`` -- the declination of the conesearch centre, can be single value or list of values
+    - ``radiusArcsec`` -- radius of the conesearch to be performed in arcsecs
+    - ``sqlWhere`` -- clause to add after "where" in the initial sql query of the conesearch. Default *False*
+    - ``raCol`` -- the database table ra column name. Default * raDeg*
+    - ``decCol`` -- the database table dec column name. Default *decDeg*
+    
+
         - ``separations`` -- include the separations in the final output. Default *False*
         - ``distinct`` -- request distinct columns from the database table (i.e. *select DISTINCT ...*). Default *False*
         - ``closest`` -- return the closest match only. Default *False*
 
-    **Usage:**
+    **Usage**
 
-        Say we have 5 locations we wish to search a database table called *transientBucket* to see if it contains sources at those locations. Add the coordinates to those locations to RA and DEC lists like so:
+    Say we have 5 locations we wish to search a database table called *transientBucket* to see if it contains sources at those locations. Add the coordinates to those locations to RA and DEC lists like so:
 
-        .. code-block:: python
+    ```python
+    raList = ["23:25:53.56",  "02:10:08.16",
+           "13:20:00.00", 1.47329, 35.34279]
+    decList = ["+26:54:23.9",  "-48:38:24.3",
+            "+24:18:00.00",  8.43016, -42.34428]
+    ```
 
-            raList = ["23:25:53.56",  "02:10:08.16",
-                   "13:20:00.00", 1.47329, 35.34279]
-            decList = ["+26:54:23.9",  "-48:38:24.3",
-                    "+24:18:00.00",  8.43016, -42.34428]
+    Note coorinates can be in decimal degrees or sexegesimal format (or both).
 
-        Note coorinates can be in decimal degrees or sexegesimal format (or both).
+    To initialise a 10 arcsec conesearch to return the *transientBucketId* and *spectralType* values from any resulting match use the code:
 
-        To initialise a 10 arcsec conesearch to return the *transientBucketId* and *spectralType* values from any resulting match use the code:
+    ```python
+    from HMpTy.mysql import conesearch
+    cs = conesearch(
+        log=log,
+        dbConn=dbConn,
+        tableName="transientBucket",
+        columns="transientBucketId, spectralType",
+        ra=raList,
+        dec=decList,
+        radiusArcsec=10,
+        separations=False,
+        distinct=False,
+        sqlWhere=False
+    )
+    ```
 
-        .. code-block:: python
+    Using the ``query`` property of the coneseach object you can inspect the initial sql query to be run on the database:
 
-            from HMpTy.mysql import conesearch
-            cs = conesearch(
-                log=log,
-                dbConn=dbConn,
-                tableName="transientBucket",
-                columns="transientBucketId, spectralType",
-                ra=raList,
-                dec=decList,
-                radiusArcsec=10,
-                separations=False,
-                distinct=False,
-                sqlWhere=False
-            )
+    ```python
+    print(cs.query)
+    ```
 
-        Using the ``query`` property of the coneseach object you can inspect the initial sql query to be run on the database:
+    ```text
+    select transientBucketId, spectralType, raDeg, decDeg from transientBucket where htm16ID in (51985593986,51985593989,51985593993,51985593994,51985593995,51985593996,51985593997,51985593998,51985593999,51985594037, ... ,38488627914,38488627916,38488627918,38488627919,38488627956,38488627957,38488627959)
+    ```
 
-        .. code-block:: python
+    To execute the query and return the results:
 
-            print(cs.query)
+    ```python
+    matchIndies, matches = cs.search()
+    ```
 
-        .. code-block:: text
+    The ``matchIndies`` are the indices of the coordinate in the original ``raList`` and ``decList`` lists and the ``matches`` the matched rows from the database table.
 
-            select transientBucketId, spectralType, raDeg, decDeg from transientBucket where htm16ID in (51985593986,51985593989,51985593993,51985593994,51985593995,51985593996,51985593997,51985593998,51985593999,51985594037, ... ,38488627914,38488627916,38488627918,38488627919,38488627956,38488627957,38488627959)
+    To constrain your results a little more define the ``distinct`` and or ``sqlWhere`` attributes of the conesearch:
 
-        To execute the query and return the results:
+    ```python
+    from HMpTy.mysql import conesearch
+    cs = conesearch(
+        log=log,
+        dbConn=dbConn,
+        tableName="transientBucket",
+        columns="transientBucketId, spectralType",
+        ra=raList1,
+        dec=decList1,
+        radiusArcsec=10,
+        separations=True,
+        distinct=True,
+        sqlWhere="spectralType is not null"
+    )
+    
 
-        .. code-block:: python
+        matchIndies, matches = cs.search()
 
-            matchIndies, matches = cs.search()
+        for row in matches.list:
+            print(row)
+        ```
 
-        The ``matchIndies`` are the indices of the coordinate in the original ``raList`` and ``decList`` lists and the ``matches`` the matched rows from the database table.
-
-        To constrain your results a little more define the ``distinct`` and or ``sqlWhere`` attributes of the conesearch:
-
-        .. code-block:: python
-
-            from HMpTy.mysql import conesearch
-            cs = conesearch(
-                log=log,
-                dbConn=dbConn,
-                tableName="transientBucket",
-                columns="transientBucketId, spectralType",
-                ra=raList1,
-                dec=decList1,
-                radiusArcsec=10,
-                separations=True,
-                distinct=True,
-                sqlWhere="spectralType is not null"
-            )
-            matchIndies, matches = cs.search()
-
-            for row in matches.list:
-                print(row)
-
-        .. code-block:: text
-
-            {'raDeg': 351.473208333, 'cmSepArcsec': 0.13379807128325164, 'decDeg': 26.9066388889, 'spectralType': u'SN Ia', 'transientBucketId': 1375799L}
-            {'raDeg': 32.534, 'cmSepArcsec': 0.031941633602975743, 'decDeg': -48.6400888889, 'spectralType': u'II', 'transientBucketId': 1328883L}
-            {'raDeg': 1.47329166667, 'cmSepArcsec': 0.0068727452774991196, 'decDeg': 8.43016111111, 'spectralType': u'SN Ia', 'transientBucketId': 1321322L}
-            {'raDeg': 35.3427916667, 'cmSepArcsec': 0.0043467057710126393, 'decDeg': -42.3442805556, 'spectralType': u'Ia', 'transientBucketId': 1307226L}
+        ```text
+        {'raDeg': 351.473208333, 'cmSepArcsec': 0.13379807128325164, 'decDeg': 26.9066388889, 'spectralType': u'SN Ia', 'transientBucketId': 1375799L}
+        {'raDeg': 32.534, 'cmSepArcsec': 0.031941633602975743, 'decDeg': -48.6400888889, 'spectralType': u'II', 'transientBucketId': 1328883L}
+        {'raDeg': 1.47329166667, 'cmSepArcsec': 0.0068727452774991196, 'decDeg': 8.43016111111, 'spectralType': u'SN Ia', 'transientBucketId': 1321322L}
+        {'raDeg': 35.3427916667, 'cmSepArcsec': 0.0043467057710126393, 'decDeg': -42.3442805556, 'spectralType': u'Ia', 'transientBucketId': 1307226L}
+        ```
 
         Note that by adding ``separations=True`` the matched source seperations from the original coordinate lists have been injected into the results.
 
         It is possible to render the results in csv, json, markdown, yaml or ascii table format. For example:
 
-        .. code-block:: python
+        ```python
+        print(matches.table())
+        ```
 
-            print(matches.table())
-
-        .. code-block:: text
-
-            +-----------+---------------+-----------+--------------+--------------------+
-            | raDeg     | spectralType  | decDeg    | cmSepArcsec  | transientBucketId  |
-            +-----------+---------------+-----------+--------------+--------------------+
-            | 351.4732  | SN Ia         | 26.9066   | 0.1338       | 1375799            |
-            | 32.5340   | II            | -48.6401  | 0.0319       | 1328883            |
-            | 1.4733    | SN Ia         | 8.4302    | 0.0069       | 1321322            |
-            | 35.3428   | Ia            | -42.3443  | 0.0043       | 1307226            |
-            +-----------+---------------+-----------+--------------+--------------------+
+        ```text
+        +-----------+---------------+-----------+--------------+--------------------+
+        | raDeg     | spectralType  | decDeg    | cmSepArcsec  | transientBucketId  |
+        +-----------+---------------+-----------+--------------+--------------------+
+        | 351.4732  | SN Ia         | 26.9066   | 0.1338       | 1375799            |
+        | 32.5340   | II            | -48.6401  | 0.0319       | 1328883            |
+        | 1.4733    | SN Ia         | 8.4302    | 0.0069       | 1321322            |
+        | 35.3428   | Ia            | -42.3443  | 0.0043       | 1307226            |
+        +-----------+---------------+-----------+--------------+--------------------+
+        ```
 
         To save the results to file:
 
-        .. code-block:: python
-
-            matches.table(filepath="/path/to/my/results.dat")
+        ```python
+        matches.table(filepath="/path/to/my/results.dat")
+        ```
 
         To instead render as csv, json, markdown or yaml use:
 
-        .. code-block:: python
-
-            matches.csv(filepath="/path/to/my/results.csv")
-            matches.json(filepath="/path/to/my/results.json")
-            matches.markdown(filepath="/path/to/my/results.md")
-            matches.markdown(filepath="/path/to/my/results.yaml")
+        ```python
+        matches.csv(filepath="/path/to/my/results.csv")
+        matches.json(filepath="/path/to/my/results.json")
+        matches.markdown(filepath="/path/to/my/results.md")
+        matches.markdown(filepath="/path/to/my/results.yaml")
+        ```
 
         Finally, to render the results as mysql inserts, use the following code:
 
-        .. code-block:: python
+        ```python
+        matches.mysql(tableName="mysql_table", filepath=None, createStatement=False)
+        ```
 
-            matches.mysql(tableName="mysql_table", filepath=None, createStatement=False)
-
-        .. code-block:: text
-
-            INSERT INTO `mysql_table` (cmSepArcsec,decDeg,raDeg,spectralType,transientBucketId) VALUES ("0.133798071283" ,"26.9066388889" ,"351.473208333" ,"SN Ia" ,"1375799")  ON DUPLICATE KEY UPDATE  cmSepArcsec="0.133798071283", decDeg="26.9066388889", raDeg="351.473208333", spectralType="SN Ia", transientBucketId="1375799", updated=IF( cmSepArcsec="0.133798071283" AND  decDeg="26.9066388889" AND  raDeg="351.473208333" AND  spectralType="SN Ia" AND  transientBucketId="1375799", 0, 1), dateLastModified=IF( cmSepArcsec="0.133798071283" AND  decDeg="26.9066388889" AND  raDeg="351.473208333" AND  spectralType="SN Ia" AND  transientBucketId="1375799", dateLastModified, NOW()) ;
-            INSERT INTO `mysql_table` (cmSepArcsec,decDeg,raDeg,spectralType,transientBucketId) VALUES ("0.031941633603" ,"-48.6400888889" ,"32.534" ,"II" ,"1328883")  ON DUPLICATE KEY UPDATE  cmSepArcsec="0.031941633603", decDeg="-48.6400888889", raDeg="32.534", spectralType="II", transientBucketId="1328883", updated=IF( cmSepArcsec="0.031941633603" AND  decDeg="-48.6400888889" AND  raDeg="32.534" AND  spectralType="II" AND  transientBucketId="1328883", 0, 1), dateLastModified=IF( cmSepArcsec="0.031941633603" AND  decDeg="-48.6400888889" AND  raDeg="32.534" AND  spectralType="II" AND  transientBucketId="1328883", dateLastModified, NOW()) ;
-            INSERT INTO `mysql_table` (cmSepArcsec,decDeg,raDeg,spectralType,transientBucketId) VALUES ("0.0068727452775" ,"8.43016111111" ,"1.47329166667" ,"SN Ia" ,"1321322")  ON DUPLICATE KEY UPDATE  cmSepArcsec="0.0068727452775", decDeg="8.43016111111", raDeg="1.47329166667", spectralType="SN Ia", transientBucketId="1321322", updated=IF( cmSepArcsec="0.0068727452775" AND  decDeg="8.43016111111" AND  raDeg="1.47329166667" AND  spectralType="SN Ia" AND  transientBucketId="1321322", 0, 1), dateLastModified=IF( cmSepArcsec="0.0068727452775" AND  decDeg="8.43016111111" AND  raDeg="1.47329166667" AND  spectralType="SN Ia" AND  transientBucketId="1321322", dateLastModified, NOW()) ;
-            INSERT INTO `mysql_table` (cmSepArcsec,decDeg,raDeg,spectralType,transientBucketId) VALUES ("0.00434670577101" ,"-42.3442805556" ,"35.3427916667" ,"Ia" ,"1307226")  ON DUPLICATE KEY UPDATE  cmSepArcsec="0.00434670577101", decDeg="-42.3442805556", raDeg="35.3427916667", spectralType="Ia", transientBucketId="1307226", updated=IF( cmSepArcsec="0.00434670577101" AND  decDeg="-42.3442805556" AND  raDeg="35.3427916667" AND  spectralType="Ia" AND  transientBucketId="1307226", 0, 1), dateLastModified=IF( cmSepArcsec="0.00434670577101" AND  decDeg="-42.3442805556" AND  raDeg="35.3427916667" AND  spectralType="Ia" AND  transientBucketId="1307226", dateLastModified, NOW()) ;
+        ```text
+        INSERT INTO `mysql_table` (cmSepArcsec,decDeg,raDeg,spectralType,transientBucketId) VALUES ("0.133798071283" ,"26.9066388889" ,"351.473208333" ,"SN Ia" ,"1375799")  ON DUPLICATE KEY UPDATE  cmSepArcsec="0.133798071283", decDeg="26.9066388889", raDeg="351.473208333", spectralType="SN Ia", transientBucketId="1375799", updated=IF( cmSepArcsec="0.133798071283" AND  decDeg="26.9066388889" AND  raDeg="351.473208333" AND  spectralType="SN Ia" AND  transientBucketId="1375799", 0, 1), dateLastModified=IF( cmSepArcsec="0.133798071283" AND  decDeg="26.9066388889" AND  raDeg="351.473208333" AND  spectralType="SN Ia" AND  transientBucketId="1375799", dateLastModified, NOW()) ;
+        INSERT INTO `mysql_table` (cmSepArcsec,decDeg,raDeg,spectralType,transientBucketId) VALUES ("0.031941633603" ,"-48.6400888889" ,"32.534" ,"II" ,"1328883")  ON DUPLICATE KEY UPDATE  cmSepArcsec="0.031941633603", decDeg="-48.6400888889", raDeg="32.534", spectralType="II", transientBucketId="1328883", updated=IF( cmSepArcsec="0.031941633603" AND  decDeg="-48.6400888889" AND  raDeg="32.534" AND  spectralType="II" AND  transientBucketId="1328883", 0, 1), dateLastModified=IF( cmSepArcsec="0.031941633603" AND  decDeg="-48.6400888889" AND  raDeg="32.534" AND  spectralType="II" AND  transientBucketId="1328883", dateLastModified, NOW()) ;
+        INSERT INTO `mysql_table` (cmSepArcsec,decDeg,raDeg,spectralType,transientBucketId) VALUES ("0.0068727452775" ,"8.43016111111" ,"1.47329166667" ,"SN Ia" ,"1321322")  ON DUPLICATE KEY UPDATE  cmSepArcsec="0.0068727452775", decDeg="8.43016111111", raDeg="1.47329166667", spectralType="SN Ia", transientBucketId="1321322", updated=IF( cmSepArcsec="0.0068727452775" AND  decDeg="8.43016111111" AND  raDeg="1.47329166667" AND  spectralType="SN Ia" AND  transientBucketId="1321322", 0, 1), dateLastModified=IF( cmSepArcsec="0.0068727452775" AND  decDeg="8.43016111111" AND  raDeg="1.47329166667" AND  spectralType="SN Ia" AND  transientBucketId="1321322", dateLastModified, NOW()) ;
+        INSERT INTO `mysql_table` (cmSepArcsec,decDeg,raDeg,spectralType,transientBucketId) VALUES ("0.00434670577101" ,"-42.3442805556" ,"35.3427916667" ,"Ia" ,"1307226")  ON DUPLICATE KEY UPDATE  cmSepArcsec="0.00434670577101", decDeg="-42.3442805556", raDeg="35.3427916667", spectralType="Ia", transientBucketId="1307226", updated=IF( cmSepArcsec="0.00434670577101" AND  decDeg="-42.3442805556" AND  raDeg="35.3427916667" AND  spectralType="Ia" AND  transientBucketId="1307226", 0, 1), dateLastModified=IF( cmSepArcsec="0.00434670577101" AND  decDeg="-42.3442805556" AND  raDeg="35.3427916667" AND  spectralType="Ia" AND  transientBucketId="1307226", dateLastModified, NOW()) ;
+        ```
     """
     # Initialisation
 
@@ -245,9 +245,10 @@ class conesearch(object):
             self):
         """*return the sql query for the HTM trixel search*
 
-        **Usage:**
+        **Usage**
 
-            cs.query
+        cs.query
+        
         """
         return self._get_on_trixel_sources_from_database_query()
 
@@ -255,12 +256,15 @@ class conesearch(object):
         """
         *Return the results of the database conesearch*
 
-        **Return:**
-            - ``conesearch``
+        **Return**
 
-        **Usage:**
+        - ``conesearch``
+        
 
-            See class usage.
+        **Usage**
+
+        See class usage.
+        
         """
         self.log.debug('starting the ``get`` method')
 
@@ -348,8 +352,10 @@ class conesearch(object):
             self):
         """*Get an array of all of the trixels IDs that overlap the conesearch circles(s)*
 
-        **Return:**
-            - ``trixelArray`` -- an array of all the overlapping trixel ids
+        **Return**
+
+        - ``trixelArray`` -- an array of all the overlapping trixel ids
+        
         """
         self.log.debug(
             'starting the ````_get_trixel_ids_that_overlap_conesearch_circles`` method')
@@ -375,11 +381,15 @@ class conesearch(object):
             sqlQuery):
         """* execute query and trim results*
 
-        **Key Arguments:**
-            - ``sqlQuery`` -- the sql database query to grab low-resolution results.
+        **Key Arguments**
 
-        **Return:**
-            - ``databaseRows`` -- the database rows found on HTM trixles with requested IDs
+        - ``sqlQuery`` -- the sql database query to grab low-resolution results.
+        
+
+        **Return**
+
+        - ``databaseRows`` -- the database rows found on HTM trixles with requested IDs
+        
         """
         self.log.debug(
             'completed the ````_execute_query`` method')
@@ -432,12 +442,16 @@ class conesearch(object):
             dbRows):
         """*to a finer grain crossmatch of the input coordinates and the database results.*
 
-        **Key Arguments:**
-            - ``dbRows`` -- the rows return from the database on first crossmatch pass.
+        **Key Arguments**
 
-        **Return:**
-            - ``matchIndices1`` -- indices of the coordinate in the original ra and dec lists
-            - ``matches`` -- the matched database rows
+        - ``dbRows`` -- the rows return from the database on first crossmatch pass.
+        
+
+        **Return**
+
+        - ``matchIndices1`` -- indices of the coordinate in the original ra and dec lists
+        - ``matches`` -- the matched database rows
+        
         """
         self.log.debug('starting the ``_list_crossmatch`` method')
 
