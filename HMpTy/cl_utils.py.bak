@@ -32,7 +32,6 @@ Options:
     --dbName <dbName>                                               database name
     -r <format>, --render <format>                                  select a format to render your results in
 """
-from __future__ import print_function
 import sys
 import os
 os.environ['TERM'] = 'vt100'
