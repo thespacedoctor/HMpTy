@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=emulateIE7" />
-    <title>Coverage for HMpTy/mysql/conesearch.py: 18%</title>
+    <title>Coverage for HMpTy/mysql/conesearch.py: 0%</title>
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="jquery.min.js"></script>
     <script type="text/javascript" src="jquery.hotkeys.js"></script>
@@ -17,13 +17,13 @@
 <div id="header">
     <div class="content">
         <h1>Coverage for <b>HMpTy/mysql/conesearch.py</b> :
-            <span class="pc_cov">18%</span>
+            <span class="pc_cov">0%</span>
         </h1>
         <img id="keyboard_icon" src="keybd_closed.png" alt="Show keyboard shortcuts" />
         <h2 class="stats">
             150 statements &nbsp;
-            <span class="run shortkey_r button_toggle_run">27 run</span>
-            <span class="mis show_mis shortkey_m button_toggle_mis">123 missing</span>
+            <span class="run shortkey_r button_toggle_run">0 run</span>
+            <span class="mis show_mis shortkey_m button_toggle_mis">150 missing</span>
             <span class="exc show_exc shortkey_x button_toggle_exc">0 excluded</span>
         </h2>
     </div>
@@ -53,32 +53,32 @@
 <div id="source">
     <p id="t1" class="pln"><span class="n"><a href="#t1">1</a></span><span class="t"><span class="com">#!/usr/local/bin/python</span>&nbsp;</span><span class="r"></span></p>
     <p id="t2" class="pln"><span class="n"><a href="#t2">2</a></span><span class="t"><span class="com"># encoding: utf-8</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t3" class="run"><span class="n"><a href="#t3">3</a></span><span class="t"><span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t3" class="mis show_mis"><span class="n"><a href="#t3">3</a></span><span class="t"><span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p id="t4" class="pln"><span class="n"><a href="#t4">4</a></span><span class="t"><span class="str">*Perform a conesearch on a database table with existing HTMId columns pre-populated*</span>&nbsp;</span><span class="r"></span></p>
     <p id="t5" class="pln"><span class="n"><a href="#t5">5</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t6" class="pln"><span class="n"><a href="#t6">6</a></span><span class="t"><span class="str">:Author:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t7" class="pln"><span class="n"><a href="#t7">7</a></span><span class="t"><span class="str">    David Young</span>&nbsp;</span><span class="r"></span></p>
     <p id="t8" class="pln"><span class="n"><a href="#t8">8</a></span><span class="t"><span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t9" class="run"><span class="n"><a href="#t9">9</a></span><span class="t"><span class="key">from</span> <span class="nam">__future__</span> <span class="key">import</span> <span class="nam">print_function</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t10" class="run"><span class="n"><a href="#t10">10</a></span><span class="t"><span class="key">from</span> <span class="nam">__future__</span> <span class="key">import</span> <span class="nam">division</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t11" class="run"><span class="n"><a href="#t11">11</a></span><span class="t"><span class="key">from</span> <span class="nam">future</span> <span class="key">import</span> <span class="nam">standard_library</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t12" class="run"><span class="n"><a href="#t12">12</a></span><span class="t"><span class="nam">standard_library</span><span class="op">.</span><span class="nam">install_aliases</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t13" class="run"><span class="n"><a href="#t13">13</a></span><span class="t"><span class="key">from</span> <span class="nam">builtins</span> <span class="key">import</span> <span class="nam">zip</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t14" class="run"><span class="n"><a href="#t14">14</a></span><span class="t"><span class="key">from</span> <span class="nam">builtins</span> <span class="key">import</span> <span class="nam">str</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t15" class="run"><span class="n"><a href="#t15">15</a></span><span class="t"><span class="key">from</span> <span class="nam">builtins</span> <span class="key">import</span> <span class="nam">map</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t16" class="run"><span class="n"><a href="#t16">16</a></span><span class="t"><span class="key">from</span> <span class="nam">builtins</span> <span class="key">import</span> <span class="nam">object</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t17" class="run"><span class="n"><a href="#t17">17</a></span><span class="t"><span class="key">from</span> <span class="nam">past</span><span class="op">.</span><span class="nam">utils</span> <span class="key">import</span> <span class="nam">old_div</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t18" class="run"><span class="n"><a href="#t18">18</a></span><span class="t"><span class="key">import</span> <span class="nam">sys</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t19" class="run"><span class="n"><a href="#t19">19</a></span><span class="t"><span class="key">import</span> <span class="nam">os</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t20" class="run"><span class="n"><a href="#t20">20</a></span><span class="t"><span class="key">import</span> <span class="nam">re</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t21" class="run"><span class="n"><a href="#t21">21</a></span><span class="t"><span class="nam">os</span><span class="op">.</span><span class="nam">environ</span><span class="op">[</span><span class="str">'TERM'</span><span class="op">]</span> <span class="op">=</span> <span class="str">'vt100'</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t22" class="run"><span class="n"><a href="#t22">22</a></span><span class="t"><span class="key">from</span> <span class="nam">fundamentals</span> <span class="key">import</span> <span class="nam">tools</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t23" class="run"><span class="n"><a href="#t23">23</a></span><span class="t"><span class="key">from</span> <span class="nam">HMpTy</span><span class="op">.</span><span class="nam">htm</span> <span class="key">import</span> <span class="nam">HTM</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t24" class="run"><span class="n"><a href="#t24">24</a></span><span class="t"><span class="key">import</span> <span class="nam">numpy</span> <span class="key">as</span> <span class="nam">np</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t25" class="run"><span class="n"><a href="#t25">25</a></span><span class="t"><span class="key">from</span> <span class="nam">fundamentals</span><span class="op">.</span><span class="nam">mysql</span> <span class="key">import</span> <span class="nam">readquery</span>&nbsp;</span><span class="r"></span></p>
-    <p id="t26" class="run"><span class="n"><a href="#t26">26</a></span><span class="t"><span class="key">from</span> <span class="nam">io</span> <span class="key">import</span> <span class="nam">StringIO</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t9" class="mis show_mis"><span class="n"><a href="#t9">9</a></span><span class="t"><span class="key">from</span> <span class="nam">__future__</span> <span class="key">import</span> <span class="nam">print_function</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t10" class="mis show_mis"><span class="n"><a href="#t10">10</a></span><span class="t"><span class="key">from</span> <span class="nam">__future__</span> <span class="key">import</span> <span class="nam">division</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t11" class="mis show_mis"><span class="n"><a href="#t11">11</a></span><span class="t"><span class="key">from</span> <span class="nam">future</span> <span class="key">import</span> <span class="nam">standard_library</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t12" class="mis show_mis"><span class="n"><a href="#t12">12</a></span><span class="t"><span class="nam">standard_library</span><span class="op">.</span><span class="nam">install_aliases</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t13" class="mis show_mis"><span class="n"><a href="#t13">13</a></span><span class="t"><span class="key">from</span> <span class="nam">builtins</span> <span class="key">import</span> <span class="nam">zip</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t14" class="mis show_mis"><span class="n"><a href="#t14">14</a></span><span class="t"><span class="key">from</span> <span class="nam">builtins</span> <span class="key">import</span> <span class="nam">str</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t15" class="mis show_mis"><span class="n"><a href="#t15">15</a></span><span class="t"><span class="key">from</span> <span class="nam">builtins</span> <span class="key">import</span> <span class="nam">map</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t16" class="mis show_mis"><span class="n"><a href="#t16">16</a></span><span class="t"><span class="key">from</span> <span class="nam">builtins</span> <span class="key">import</span> <span class="nam">object</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t17" class="mis show_mis"><span class="n"><a href="#t17">17</a></span><span class="t"><span class="key">from</span> <span class="nam">past</span><span class="op">.</span><span class="nam">utils</span> <span class="key">import</span> <span class="nam">old_div</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t18" class="mis show_mis"><span class="n"><a href="#t18">18</a></span><span class="t"><span class="key">import</span> <span class="nam">sys</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t19" class="mis show_mis"><span class="n"><a href="#t19">19</a></span><span class="t"><span class="key">import</span> <span class="nam">os</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t20" class="mis show_mis"><span class="n"><a href="#t20">20</a></span><span class="t"><span class="key">import</span> <span class="nam">re</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t21" class="mis show_mis"><span class="n"><a href="#t21">21</a></span><span class="t"><span class="nam">os</span><span class="op">.</span><span class="nam">environ</span><span class="op">[</span><span class="str">'TERM'</span><span class="op">]</span> <span class="op">=</span> <span class="str">'vt100'</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t22" class="mis show_mis"><span class="n"><a href="#t22">22</a></span><span class="t"><span class="key">from</span> <span class="nam">fundamentals</span> <span class="key">import</span> <span class="nam">tools</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t23" class="mis show_mis"><span class="n"><a href="#t23">23</a></span><span class="t"><span class="key">from</span> <span class="nam">HMpTy</span><span class="op">.</span><span class="nam">htm</span> <span class="key">import</span> <span class="nam">HTM</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t24" class="mis show_mis"><span class="n"><a href="#t24">24</a></span><span class="t"><span class="key">import</span> <span class="nam">numpy</span> <span class="key">as</span> <span class="nam">np</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t25" class="mis show_mis"><span class="n"><a href="#t25">25</a></span><span class="t"><span class="key">from</span> <span class="nam">fundamentals</span><span class="op">.</span><span class="nam">mysql</span> <span class="key">import</span> <span class="nam">readquery</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t26" class="mis show_mis"><span class="n"><a href="#t26">26</a></span><span class="t"><span class="key">from</span> <span class="nam">io</span> <span class="key">import</span> <span class="nam">StringIO</span>&nbsp;</span><span class="r"></span></p>
     <p id="t27" class="pln"><span class="n"><a href="#t27">27</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t28" class="run"><span class="n"><a href="#t28">28</a></span><span class="t"><span class="key">class</span> <span class="nam">conesearch</span><span class="op">(</span><span class="nam">object</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t28" class="mis show_mis"><span class="n"><a href="#t28">28</a></span><span class="t"><span class="key">class</span> <span class="nam">conesearch</span><span class="op">(</span><span class="nam">object</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t29" class="pln"><span class="n"><a href="#t29">29</a></span><span class="t">    <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p id="t30" class="pln"><span class="n"><a href="#t30">30</a></span><span class="t"><span class="str">    *The worker class for the conesearch module*</span>&nbsp;</span><span class="r"></span></p>
     <p id="t31" class="pln"><span class="n"><a href="#t31">31</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -229,7 +229,7 @@
     <p id="t176" class="pln"><span class="n"><a href="#t176">176</a></span><span class="t"><span class="str">    """</span>&nbsp;</span><span class="r"></span></p>
     <p id="t177" class="pln"><span class="n"><a href="#t177">177</a></span><span class="t">    <span class="com"># Initialisation</span>&nbsp;</span><span class="r"></span></p>
     <p id="t178" class="pln"><span class="n"><a href="#t178">178</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t179" class="run"><span class="n"><a href="#t179">179</a></span><span class="t">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t179" class="mis show_mis"><span class="n"><a href="#t179">179</a></span><span class="t">    <span class="key">def</span> <span class="nam">__init__</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p id="t180" class="pln"><span class="n"><a href="#t180">180</a></span><span class="t">            <span class="nam">self</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p id="t181" class="pln"><span class="n"><a href="#t181">181</a></span><span class="t">            <span class="nam">log</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p id="t182" class="pln"><span class="n"><a href="#t182">182</a></span><span class="t">            <span class="nam">dbConn</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -293,7 +293,7 @@
     <p id="t240" class="pln"><span class="n"><a href="#t240">240</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t241" class="mis show_mis"><span class="n"><a href="#t241">241</a></span><span class="t">        <span class="key">return</span> <span class="key">None</span>&nbsp;</span><span class="r"></span></p>
     <p id="t242" class="pln"><span class="n"><a href="#t242">242</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t243" class="run"><span class="n"><a href="#t243">243</a></span><span class="t">    <span class="op">@</span><span class="nam">property</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t243" class="mis show_mis"><span class="n"><a href="#t243">243</a></span><span class="t">    <span class="op">@</span><span class="nam">property</span>&nbsp;</span><span class="r"></span></p>
     <p id="t244" class="pln"><span class="n"><a href="#t244">244</a></span><span class="t">    <span class="key">def</span> <span class="nam">query</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p id="t245" class="pln"><span class="n"><a href="#t245">245</a></span><span class="t">            <span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t246" class="pln"><span class="n"><a href="#t246">246</a></span><span class="t">        <span class="str">"""*return the sql query for the HTM trixel search*</span>&nbsp;</span><span class="r"></span></p>
@@ -305,7 +305,7 @@
     <p id="t252" class="pln"><span class="n"><a href="#t252">252</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
     <p id="t253" class="mis show_mis"><span class="n"><a href="#t253">253</a></span><span class="t">        <span class="key">return</span> <span class="nam">self</span><span class="op">.</span><span class="nam">_get_on_trixel_sources_from_database_query</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t254" class="pln"><span class="n"><a href="#t254">254</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t255" class="run"><span class="n"><a href="#t255">255</a></span><span class="t">    <span class="key">def</span> <span class="nam">search</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t255" class="mis show_mis"><span class="n"><a href="#t255">255</a></span><span class="t">    <span class="key">def</span> <span class="nam">search</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t256" class="pln"><span class="n"><a href="#t256">256</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
     <p id="t257" class="pln"><span class="n"><a href="#t257">257</a></span><span class="t"><span class="str">        *Return the results of the database conesearch*</span>&nbsp;</span><span class="r"></span></p>
     <p id="t258" class="pln"><span class="n"><a href="#t258">258</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -336,7 +336,7 @@
     <p id="t283" class="mis show_mis"><span class="n"><a href="#t283">283</a></span><span class="t">        <span class="nam">self</span><span class="op">.</span><span class="nam">log</span><span class="op">.</span><span class="nam">debug</span><span class="op">(</span><span class="str">'completed the ``get`` method'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t284" class="mis show_mis"><span class="n"><a href="#t284">284</a></span><span class="t">        <span class="key">return</span> <span class="nam">matchIndies</span><span class="op">,</span> <span class="nam">matches</span>&nbsp;</span><span class="r"></span></p>
     <p id="t285" class="pln"><span class="n"><a href="#t285">285</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t286" class="run"><span class="n"><a href="#t286">286</a></span><span class="t">    <span class="key">def</span> <span class="nam">_get_on_trixel_sources_from_database_query</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t286" class="mis show_mis"><span class="n"><a href="#t286">286</a></span><span class="t">    <span class="key">def</span> <span class="nam">_get_on_trixel_sources_from_database_query</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p id="t287" class="pln"><span class="n"><a href="#t287">287</a></span><span class="t">            <span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t288" class="pln"><span class="n"><a href="#t288">288</a></span><span class="t">        <span class="str">"""*generate the mysql query before executing it*</span>&nbsp;</span><span class="r"></span></p>
     <p id="t289" class="pln"><span class="n"><a href="#t289">289</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
@@ -401,7 +401,7 @@
     <p id="t348" class="pln"><span class="n"><a href="#t348">348</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p id="t349" class="mis show_mis"><span class="n"><a href="#t349">349</a></span><span class="t">        <span class="key">return</span> <span class="nam">sqlQuery</span>&nbsp;</span><span class="r"></span></p>
     <p id="t350" class="pln"><span class="n"><a href="#t350">350</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t351" class="run"><span class="n"><a href="#t351">351</a></span><span class="t">    <span class="key">def</span> <span class="nam">_get_trixel_ids_that_overlap_conesearch_circles</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t351" class="mis show_mis"><span class="n"><a href="#t351">351</a></span><span class="t">    <span class="key">def</span> <span class="nam">_get_trixel_ids_that_overlap_conesearch_circles</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p id="t352" class="pln"><span class="n"><a href="#t352">352</a></span><span class="t">            <span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t353" class="pln"><span class="n"><a href="#t353">353</a></span><span class="t">        <span class="str">"""*Get an array of all of the trixels IDs that overlap the conesearch circles(s)*</span>&nbsp;</span><span class="r"></span></p>
     <p id="t354" class="pln"><span class="n"><a href="#t354">354</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
@@ -429,7 +429,7 @@
     <p id="t376" class="pln"><span class="n"><a href="#t376">376</a></span><span class="t">            <span class="str">'completed the ``_get_trixel_ids_that_overlap_conesearch_circles`` method'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t377" class="mis show_mis"><span class="n"><a href="#t377">377</a></span><span class="t">        <span class="key">return</span> <span class="nam">trixelArray</span>&nbsp;</span><span class="r"></span></p>
     <p id="t378" class="pln"><span class="n"><a href="#t378">378</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t379" class="run"><span class="n"><a href="#t379">379</a></span><span class="t">    <span class="key">def</span> <span class="nam">_execute_query</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t379" class="mis show_mis"><span class="n"><a href="#t379">379</a></span><span class="t">    <span class="key">def</span> <span class="nam">_execute_query</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p id="t380" class="pln"><span class="n"><a href="#t380">380</a></span><span class="t">            <span class="nam">self</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p id="t381" class="pln"><span class="n"><a href="#t381">381</a></span><span class="t">            <span class="nam">sqlQuery</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t382" class="pln"><span class="n"><a href="#t382">382</a></span><span class="t">        <span class="str">"""* execute query and trim results*</span>&nbsp;</span><span class="r"></span></p>
@@ -490,7 +490,7 @@
     <p id="t437" class="pln"><span class="n"><a href="#t437">437</a></span><span class="t">            <span class="str">'completed the ``_execute_query`` method'</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p id="t438" class="mis show_mis"><span class="n"><a href="#t438">438</a></span><span class="t">        <span class="key">return</span> <span class="nam">databaseRows</span>&nbsp;</span><span class="r"></span></p>
     <p id="t439" class="pln"><span class="n"><a href="#t439">439</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p id="t440" class="run"><span class="n"><a href="#t440">440</a></span><span class="t">    <span class="key">def</span> <span class="nam">_list_crossmatch</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p id="t440" class="mis show_mis"><span class="n"><a href="#t440">440</a></span><span class="t">    <span class="key">def</span> <span class="nam">_list_crossmatch</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p id="t441" class="pln"><span class="n"><a href="#t441">441</a></span><span class="t">            <span class="nam">self</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p id="t442" class="pln"><span class="n"><a href="#t442">442</a></span><span class="t">            <span class="nam">dbRows</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p id="t443" class="pln"><span class="n"><a href="#t443">443</a></span><span class="t">        <span class="str">"""*to a finer grain crossmatch of the input coordinates and the database results.*</span>&nbsp;</span><span class="r"></span></p>
@@ -549,7 +549,7 @@
     <div class="content">
         <p>
             <a class="nav" href="index.html">&#xab; index</a> &nbsp; &nbsp; <a class="nav" href="https://coverage.readthedocs.io">coverage.py v5.1</a>,
-            created at 2020-05-13 11:09
+            created at 2020-05-13 18:49
         </p>
     </div>
 </div>
