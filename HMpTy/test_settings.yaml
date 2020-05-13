@@ -5,7 +5,6 @@ database settings:
     host: localhost
     user: utuser
     password: utpass
-    loginPath: unittesting
     tunnel: False
 
 # # SSH TUNNEL - if a tunnel is required to connect to the database(s) then add setup here

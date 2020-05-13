@@ -39,10 +39,10 @@ if not os.path.exists(pathToOutputDir):
     os.makedirs(pathToOutputDir)
 
 # RELOAD TEST DATA
-from fundamentals.mysql import directory_script_runner
-directory_script_runner(
+from fundamentals.mysql import execute_mysql_script
+exception = execute_mysql_script(
+    pathToScript=pathToInputDir + "/tcs_cat_ned_d_v13_1_0.sql",
     log=log,
-    pathToScriptDirectory=pathToInputDir,
     dbConn=dbConn
 )
 
@@ -56,6 +56,7 @@ try:
     )
 except:
     pass
+
 
 class test_add_htm_ids_to_mysql_database_table(unittest.TestCase):
 

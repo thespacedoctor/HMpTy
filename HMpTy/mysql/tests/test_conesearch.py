@@ -39,10 +39,10 @@ if not os.path.exists(pathToOutputDir):
     os.makedirs(pathToOutputDir)
 
 # RELOAD TEST DATA
-from fundamentals.mysql import directory_script_runner
-directory_script_runner(
+from fundamentals.mysql import execute_mysql_script
+exception = execute_mysql_script(
+    pathToScript=pathToInputDir + "/transientBucket.sql",
     log=log,
-    pathToScriptDirectory=pathToInputDir,
     dbConn=dbConn
 )
 
