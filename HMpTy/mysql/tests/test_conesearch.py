@@ -38,6 +38,15 @@ shutil.copytree(pathToInputDir, pathToOutputDir)
 if not os.path.exists(pathToOutputDir):
     os.makedirs(pathToOutputDir)
 
+# RELOAD TEST DATA
+from fundamentals.mysql import directory_script_runner
+directory_script_runner(
+    log=log,
+    pathToScriptDirectory=pathToInputDir,
+    dbConn=dbConn
+)
+
+
 class test_conesearch(unittest.TestCase):
 
     def test_get_trixel_ids_that_overlap_conesearch_circles(self):

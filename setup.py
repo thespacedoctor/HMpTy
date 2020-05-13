@@ -11,6 +11,7 @@ import distutils.sysconfig
 moduleDirectory = os.path.dirname(os.path.realpath(__file__))
 exec(open(moduleDirectory + "/HMpTy/__version__.py").read())
 
+
 def readme():
     with open(moduleDirectory + '/README.md') as f:
         return f.read()
@@ -72,6 +73,7 @@ htm_module = Extension('HMpTy.htm._htmc',
                        extra_compile_args=extra_compile_args,
                        extra_link_args=extra_link_args,
                        sources=htm_sources)
+
 
 ext_modules.append(htm_module)
 packages.append('HMpTy.htm')
