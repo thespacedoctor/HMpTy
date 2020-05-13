@@ -43,10 +43,7 @@ from fundamentals.mysql import directory_script_runner
 directory_script_runner(
     log=log,
     pathToScriptDirectory=pathToInputDir,
-    databaseName=settings["database settings"]["db"],
-    force=True,
-    loginPath=settings["database settings"]["loginPath"],
-    waitForResult=True
+    dbConn=dbConn
 )
 
 from fundamentals.mysql import writequery

@@ -11,7 +11,6 @@ import distutils.sysconfig
 moduleDirectory = os.path.dirname(os.path.realpath(__file__))
 exec(open(moduleDirectory + "/HMpTy/__version__.py").read())
 
-
 def readme():
     with open(moduleDirectory + '/README.md') as f:
         return f.read()
