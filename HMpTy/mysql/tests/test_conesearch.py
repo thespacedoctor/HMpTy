@@ -1,3 +1,4 @@
+from fundamentals.mysql import execute_mysql_script
 from __future__ import print_function
 from builtins import str
 import os
@@ -39,7 +40,6 @@ if not os.path.exists(pathToOutputDir):
     os.makedirs(pathToOutputDir)
 
 # RELOAD TEST DATA
-from fundamentals.mysql import execute_mysql_script
 exception = execute_mysql_script(
     pathToScript=pathToInputDir + "/transientBucket.sql",
     log=log,
