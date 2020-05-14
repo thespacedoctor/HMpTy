@@ -86,7 +86,8 @@ install_requires = [
     'astrocalc',
     'multiprocess',
     'unicodecsv',
-    'pandas'
+    'pandas',
+    'pymysql'
 ]
 
 # READ THE DOCS SERVERS
