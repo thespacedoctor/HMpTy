@@ -43,11 +43,21 @@ packages = ['HMpTy']
 ext_modules = []
 
 if platform.system() == 'Darwin':
-    extra_compile_args = ['-arch', 'i386', '-arch', 'x86_64']
+    extra_compile_args = ['-arch', 'i386',
+                          '-arch', 'x86_64', '-stdlib=libc++']
     extra_link_args = ['-arch', 'i386', '-arch', 'x86_64']
+    from distutils.sysconfig import get_config_var
+    from distutils.version import LooseVersion
+    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
+        current_system = LooseVersion(platform.mac_ver()[0])
+        python_target = LooseVersion(
+            get_config_var('MACOSX_DEPLOYMENT_TARGET'))
+        if python_target < '10.9' and current_system >= '10.9':
+            os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 else:
     extra_compile_args = []
     extra_link_args = []
+
 
 # HTM
 try:
