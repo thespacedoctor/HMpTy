@@ -10,6 +10,14 @@ from builtins import object
 from sys import version_info
 if version_info >= (2, 6, 0):
     def swig_import_helper():
+
+        try:
+            import importlib
+            _htmc = importlib.import_module('._htmc', package='HMpTy.htm')
+            return _htmc
+        except:
+            pass
+
         from os.path import dirname
         import imp
         fp = None
@@ -18,12 +26,14 @@ if version_info >= (2, 6, 0):
                 '_htmc', [dirname(__file__)])
         except ImportError:
             from . import _htmc
+            print("HERER")
             return _htmc
         if fp is not None:
             try:
                 _mod = imp.load_module('_htmc', fp, pathname, description)
             finally:
                 fp.close()
+            print(_mod)
             return _mod
     _htmc = swig_import_helper()
     del swig_import_helper
