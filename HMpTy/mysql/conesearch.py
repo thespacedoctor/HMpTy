@@ -24,6 +24,8 @@ from HMpTy.htm import HTM
 import numpy as np
 from fundamentals.mysql import readquery
 from io import StringIO
+import copy
+
 
 class conesearch(object):
     """
@@ -41,7 +43,7 @@ class conesearch(object):
     - ``sqlWhere`` -- clause to add after "where" in the initial sql query of the conesearch. Default *False*
     - ``raCol`` -- the database table ra column name. Default * raDeg*
     - ``decCol`` -- the database table dec column name. Default *decDeg*
-    
+
 
         - ``separations`` -- include the separations in the final output. Default *False*
         - ``distinct`` -- request distinct columns from the database table (i.e. *select DISTINCT ...*). Default *False*
@@ -112,7 +114,7 @@ class conesearch(object):
         distinct=True,
         sqlWhere="spectralType is not null"
     )
-    
+
 
         matchIndies, matches = cs.search()
 
@@ -248,7 +250,7 @@ class conesearch(object):
         **Usage**
 
         cs.query
-        
+
         """
         return self._get_on_trixel_sources_from_database_query()
 
@@ -259,12 +261,12 @@ class conesearch(object):
         **Return**
 
         - ``conesearch``
-        
+
 
         **Usage**
 
         See class usage.
-        
+
         """
         self.log.debug('starting the ``get`` method')
 
@@ -355,7 +357,7 @@ class conesearch(object):
         **Return**
 
         - ``trixelArray`` -- an array of all the overlapping trixel ids
-        
+
         """
         self.log.debug(
             'starting the ````_get_trixel_ids_that_overlap_conesearch_circles`` method')
@@ -384,12 +386,12 @@ class conesearch(object):
         **Key Arguments**
 
         - ``sqlQuery`` -- the sql database query to grab low-resolution results.
-        
+
 
         **Return**
 
         - ``databaseRows`` -- the database rows found on HTM trixles with requested IDs
-        
+
         """
         self.log.debug(
             'completed the ````_execute_query`` method')
@@ -445,13 +447,13 @@ class conesearch(object):
         **Key Arguments**
 
         - ``dbRows`` -- the rows return from the database on first crossmatch pass.
-        
+
 
         **Return**
 
         - ``matchIndices1`` -- indices of the coordinate in the original ra and dec lists
         - ``matches`` -- the matched database rows
-        
+
         """
         self.log.debug('starting the ``_list_crossmatch`` method')
 
@@ -483,9 +485,13 @@ class conesearch(object):
         matches = []
 
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
+
             if self.separations:
+
                 dbRows[m2]["cmSepArcsec"] = s * (60. * 60.)
-            matches.append(dbRows[m2])
+            # DEEPCOPY NEEDED IF SAME ELEMENT MATCHED BY 2 SEPERATE
+            # ITEMS IN FIRST LIST
+            matches.append(copy.deepcopy(dbRows[m2]))
 
         self.log.debug('completed the ``_list_crossmatch`` method')
         return matchIndices1, matches
