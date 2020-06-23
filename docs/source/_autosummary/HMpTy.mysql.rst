@@ -1,4 +1,4 @@
-mysql *(module)*
+ *(module)*
 ======================
 
 
@@ -34,22 +34,6 @@ mysql *(module)*
     
     
     
-    
-    
-    
-    
-    
-        
-            ~add_htm_ids_to_mysql_database_table (nice)
-       
-    
-    
-        
-            ~conesearch (nice)
-       
-    
-    
-        
     
     
     

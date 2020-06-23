@@ -1,4 +1,4 @@
-htm *(module)*
+ *(module)*
 ====================
 
 
@@ -29,39 +29,11 @@ htm *(module)*
     .. autosummary::
     
     
-        
-            ~HTM (nice)
-       
-    
-    
-        
-            ~Matcher (nice)
-       
     
     
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-        
-            ~htm (nice)
-       
-    
-    
-        
-            ~sets (nice)
-       
-    
-    
-        
     
     
     

@@ -1,4 +1,4 @@
-htm *(module)*
+ *(module)*
 ========================
 
 
@@ -52,47 +52,8 @@ htm *(module)*
     
     
     
-    
-    
-    
-    
-        
-            ~division (nice)
-       
-    
-    
-        
-            ~numpy (nice)
-       
-    
-    
-        
-            ~old_div (nice)
-       
-    
-    
-        
-            ~os (nice)
-       
-    
-    
         
             ~stdout (nice)
-       
-    
-    
-        
-            ~sys (nice)
-       
-    
-    
-        
-            ~tools (nice)
-       
-    
-    
-        
-            ~unit_conversion (nice)
        
     
     

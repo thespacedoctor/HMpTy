@@ -1,4 +1,4 @@
-commonutils *(module)*
+ *(module)*
 ============================
 
 
@@ -34,13 +34,6 @@ commonutils *(module)*
     
     
     
-    
-    
-    
-    
-        
-            ~getpackagepath (nice)
-       
     
     
     
