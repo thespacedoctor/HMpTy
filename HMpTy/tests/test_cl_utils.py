@@ -4,7 +4,7 @@ import os
 import unittest
 import shutil
 import yaml
-from hmpty.utKit import utKit
+from HMpTy.utKit import utKit
 from fundamentals import tools
 from os.path import expanduser
 from docopt import docopt
