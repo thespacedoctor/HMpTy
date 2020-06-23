@@ -8,7 +8,7 @@ from HMpTy.utKit import utKit
 from fundamentals import tools
 from os.path import expanduser
 from docopt import docopt
-from hmpty import cl_utils
+from HMpTy import cl_utils
 doc = cl_utils.__doc__
 home = expanduser("~")
 
