@@ -14,6 +14,7 @@ import codecs
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.todo',
               'sphinx.ext.mathjax', 'sphinx.ext.autosummary', 'sphinx.ext.coverage', 'sphinx.ext.linkcode', 'sphinxcontrib.mermaid', 'sphinx_search.extension']
 
+
 class Mock(MagicMock):
     """AVOID INSTALLING THESE C-DEPENDENT PACKAGES"""
     @classmethod
@@ -28,7 +29,11 @@ moduleDirectory = os.path.dirname(os.path.realpath(__file__))
 # GET PACKAGE __version__ INTO locals()
 exec(open(moduleDirectory + "/../../HMpTy/__version__.py").read())
 
+sys.path.insert(0, os.path.abspath('../../HMpTy/HMpTy'))
+
+
 autosummary_generate = True
+autosummary_imported_members = True
 autodoc_member_order = 'bysource'
 add_module_names = False
 todo_include_todos = True
@@ -116,7 +121,8 @@ markdown_parser_config = {
         'mdx_include',
         'pymdownx.mark',
         'pymdownx.betterem',
-        'pymdownx.caret'
+        'pymdownx.caret',
+        'legacy_attrs'
     ],
     'extension_configs': {
         'toc': {
@@ -134,6 +140,7 @@ markdown_parser_config = {
         }
     },
 }
+
 
 def updateUsageMd():
     """
@@ -162,6 +169,7 @@ def updateUsageMd():
     writeFile.close()
 
     return None
+
 
 def generateAutosummaryIndex():
 
@@ -320,6 +328,7 @@ Functions
 
     return thisText
 
+
 def findAllSubpackges(
     pathToPackage
 ):
@@ -335,15 +344,25 @@ def findAllSubpackges(
 
     return subPackages
 
+
 def linkcode_resolve(domain, info):
     if domain != 'py':
         return None
     if not info['module']:
         return None
+
     filename = info['module'].replace('.', '/')
-    if info['fullname']:
+    if info['fullname'] and "." not in info['fullname']:
         filename += "/" + info['fullname'] + ".py"
+    else:
+        if "/" in filename:
+            filename = ("/").join(filename.split("/")[0:-1]) + "/"
+        else:
+            filename = ""
+        filename += ("/").join(info['fullname'].split(
+            ".")[0:-1]) + ".py" + "#" + info['fullname'].split(".")[-1]
     return link_resolver_url + "/" + filename
+
 
 def docstring(app, what, name, obj, options, lines):
 
@@ -389,6 +408,10 @@ def docstring(app, what, name, obj, options, lines):
     regex = re.compile(r'\n---')
     md = regex.sub(r"\n\n----------\n\n", md)
 
+    # FIX LINKS
+    regex = re.compile(r'\[(.*?)\]\(\/?(\_autosummary\/)?(\S*?)(\.html)?\)')
+    md = regex.sub(r'[\1](\3.html)', md)
+
     rst = md
     rst = m2r.convert(md)
     rst = rst.replace("6473829123", "  ")
@@ -398,6 +421,7 @@ def docstring(app, what, name, obj, options, lines):
     lines.clear()
     for line in rst.split("\n"):
         lines.append(line)
+
 
 def setup(app):
     app.connect('autodoc-process-docstring', docstring)
