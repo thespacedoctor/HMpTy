@@ -18,8 +18,7 @@
    HMpTy.htm.htm.HTM
    HMpTy.htm.htm.Matcher
    HMpTy.htm.sets
-   HMpTy.mysql.conesearch
- 
+   HMpTy.mysql.conesearch 
 
 **Functions**
 

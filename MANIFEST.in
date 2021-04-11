@@ -8,3 +8,8 @@ recursive-include HMpTy *
 recursive-include hmpty *
 global-exclude *.pyo
 global-exclude *.pyc
+recursive-exclude tests *
+recursive-exclude */tests *
+recursive-exclude */*/tests *
+recursive-exclude */*/*/tests *
+recursive-exclude tests

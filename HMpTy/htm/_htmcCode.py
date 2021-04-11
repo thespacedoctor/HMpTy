@@ -26,7 +26,6 @@ if version_info >= (2, 6, 0):
                 '_htmc', [dirname(__file__)])
         except ImportError:
             from . import _htmc
-            print("HERER")
             return _htmc
         if fp is not None:
             try:

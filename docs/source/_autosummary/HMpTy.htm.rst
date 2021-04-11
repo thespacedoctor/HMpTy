@@ -1,4 +1,4 @@
- *(module)*
+htm *(module)*
 ====================
 
 
@@ -11,6 +11,14 @@
     :member-order: groupwise
     
     
+    
+    .. rubric:: Classes
+
+    .. autosummary::
+    
+      ~HTM
+      ~Matcher
+      ~sets
     
     
 
@@ -29,11 +37,39 @@
     .. autosummary::
     
     
+        
+            ~HTM (nice)
+       
+    
+    
+        
+            ~Matcher (nice)
+       
     
     
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        
+            ~htm (nice)
+       
+    
+    
+        
+            ~sets (nice)
+       
+    
+    
+        
     
     
     

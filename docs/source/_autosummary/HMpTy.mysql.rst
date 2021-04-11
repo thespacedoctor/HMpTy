@@ -1,4 +1,4 @@
- *(module)*
+mysql *(module)*
 ======================
 
 
@@ -12,9 +12,21 @@
     
     
     
+    .. rubric:: Classes
+
+    .. autosummary::
+    
+      ~conesearch
+    
     
 
     
+    
+    .. rubric:: Functions
+
+    .. autosummary::
+    
+      ~add_htm_ids_to_mysql_database_table
     
     
 
@@ -34,6 +46,22 @@
     
     
     
+    
+    
+    
+    
+    
+        
+            ~add_htm_ids_to_mysql_database_table (nice)
+       
+    
+    
+        
+            ~conesearch (nice)
+       
+    
+    
+        
     
     
     

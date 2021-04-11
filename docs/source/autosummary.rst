@@ -23,8 +23,7 @@ Classes
    HMpTy.htm.htm.HTM
    HMpTy.htm.htm.Matcher
    HMpTy.htm.sets
-   HMpTy.mysql.conesearch
-   HMpTy.utKit.utKit 
+   HMpTy.mysql.conesearch 
 
 
 Functions
