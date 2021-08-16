@@ -1,6 +1,10 @@
 
 ## Release Notes
 
+**v1.5.4 - August 16, 2021**
+
+* **FIXED** Command-line tools
+
 **v1.5.3 - June 23, 2020**
 
 * **FIXED** When matching 2 lists of coordinates, if a list location was matched against more than one item in the second match list the angular separation of the first match got over-written by the second match.

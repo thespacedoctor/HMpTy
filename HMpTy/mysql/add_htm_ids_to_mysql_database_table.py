@@ -23,6 +23,7 @@ from datetime import datetime, date
 from fundamentals import times
 import time
 
+
 def add_htm_ids_to_mysql_database_table(
         raColName,
         declColName,
@@ -48,12 +49,12 @@ def add_htm_ids_to_mysql_database_table(
     - ``batchSize`` -- the size of the batches of rows to add HTMIds to concurrently. Default *2500*
     - ``reindex`` -- reindex the entire table
     - ``dbSettings`` -- yaml settings for database
-    
+
 
     **Return**
 
     - None
-    
+
 
     **Usage**
 
@@ -69,7 +70,7 @@ def add_htm_ids_to_mysql_database_table(
         reindex=False
     )
     ```
-    
+
     """
     log.debug('starting the ``add_htm_ids_to_mysql_database_table`` function')
 

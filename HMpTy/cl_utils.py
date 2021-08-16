@@ -4,11 +4,13 @@
 Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org
 
 Usage:
+    hmpty init
     hmpty htmid <level> <ra> <dec>
     hmpty [-f] index <tableName> <primaryIdCol> <raCol> <decCol> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>)
     hmpty search <tableName> <raCol> <decCol> <ra> <dec> <radius> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>) [(-r <format>|-r mysql <resultsTable>)]
 
 Options:
+    init                  setup the sherlock settings file for the first time
     index                 add HTMids to database table
     search                perform a conesearch on a database table
     htmid                 generate the htmID at the given coordinates for the give HTM level
@@ -42,9 +44,12 @@ import pickle
 from docopt import docopt
 from fundamentals import tools, times
 from subprocess import Popen, PIPE, STDOUT
+from HMpTy.mysql import add_htm_ids_to_mysql_database_table, conesearch
+
 
 def tab_complete(text, state):
     return (glob.glob(text + '*') + [None])[state]
+
 
 def main(arguments=None):
     """
@@ -91,11 +96,17 @@ def main(arguments=None):
     raCol = a["raCol"]
     decCol = a["decCol"]
     ra = a["ra"]
+    dec = a["dec"]
     radius = a["radius"]
     level = a["level"]
     forceFlag = a["forceFlag"]
     renderFlag = a["renderFlag"]
     search = a["search"]
+
+    if "database settings" in settings:
+        dbSettings = settings["database settings"]
+    else:
+        dbSettings = False
 
     ## START LOGGING ##
     startTime = times.get_now_sql_datetime()
