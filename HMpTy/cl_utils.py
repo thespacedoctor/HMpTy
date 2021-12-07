@@ -5,7 +5,7 @@ Documentation for HMpTy can be found here: http://HMpTy.readthedocs.org
 
 Usage:
     hmpty init
-    hmpty htmid <level> <ra> <dec>
+    hmpty htmid <level> -- <ra> <dec>
     hmpty [-f] index <tableName> <primaryIdCol> <raCol> <decCol> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>)
     hmpty search <tableName> <raCol> <decCol> <ra> <dec> <radius> (-s <pathToSettingsFile>|--host <host> --user <user> --passwd <passwd> --dbName <dbName>) [(-r <format>|-r mysql <resultsTable>)]
 

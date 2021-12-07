@@ -3,6 +3,7 @@ pymdown-extensions>8.0
 MarkdownSubscript
 mock>4.0
 git+https://github.com/thespacedoctor/sphinx-markdown-parser.git@master#egg=sphinx_markdown_parser
+mistune<2.0.0
 m2r
 mdx_include>1.3
 lxml
