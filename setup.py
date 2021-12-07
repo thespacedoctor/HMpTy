@@ -43,11 +43,21 @@ packages = ['HMpTy']
 ext_modules = []
 
 if platform.system() == 'Darwin':
+    from distutils.sysconfig import get_config_var
+    from distutils.version import LooseVersion
     extra_compile_args = ['-arch', 'i386',
                           '-arch', 'x86_64', '-stdlib=libc++']
     extra_link_args = ['-arch', 'i386', '-arch', 'x86_64']
-    from distutils.sysconfig import get_config_var
-    from distutils.version import LooseVersion
+    current_system = LooseVersion(platform.mac_ver()[0])
+
+    if current_system <= '10.12':
+        extra_compile_args = ['-arch', 'i386',
+                              '-arch', 'x86_64', '-stdlib=libc++']
+        extra_link_args = ['-arch', 'i386', '-arch', 'x86_64']
+    else:
+        extra_compile_args = ['-arch', 'x86_64', '-stdlib=libc++']
+        extra_link_args = ['-arch', 'x86_64']
+
     if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
         current_system = LooseVersion(platform.mac_ver()[0])
         python_target = LooseVersion(
