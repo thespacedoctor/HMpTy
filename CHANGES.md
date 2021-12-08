@@ -1,6 +1,10 @@
 
 ## Release Notes
 
+**v1.5.5 - December 8, 2021**
+
+* **FIXED** Install on macOS monterey
+
 **v1.5.4 - August 16, 2021**
 
 * **FIXED** Command-line tools
