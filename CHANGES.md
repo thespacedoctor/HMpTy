@@ -1,6 +1,10 @@
 
 ## Release Notes
 
+**v1.5.6 - May 10, 2022**
+
+* **FIXED** doc fixes
+
 **v1.5.5 - December 8, 2021**
 
 * **FIXED** Install on macOS monterey
