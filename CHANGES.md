@@ -1,7 +1,6 @@
 
 ## Release Notes
 
-
 **v1.5.6 - May 10, 2022**
 
 * **FIXED** doc fixes
@@ -23,5 +22,6 @@
 * **FIXED** MacOS install was needlessly involved.
 
 **v1.5.0 - May 8, 2020**
+
 
 * Now compatible with python 3.\*
