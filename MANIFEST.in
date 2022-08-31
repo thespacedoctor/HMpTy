@@ -13,3 +13,6 @@ recursive-exclude */tests *
 recursive-exclude */*/tests *
 recursive-exclude */*/*/tests *
 recursive-exclude tests
+prune tests*
+global-exclude *_test.py
+global-exclude tests

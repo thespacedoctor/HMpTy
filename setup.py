@@ -1,4 +1,5 @@
 from __future__ import print_function
+import numpy
 import sys
 import os
 import time
@@ -15,6 +16,7 @@ exec(open(moduleDirectory + "/HMpTy/__version__.py").read())
 def readme():
     with open(moduleDirectory + '/README.md') as f:
         return f.read()
+
 
 main_libdir = distutils.sysconfig.get_python_lib()
 pylib_install_subdir = main_libdir.replace(
@@ -84,7 +86,6 @@ except:
         print("Please install numpy & pandas before installing HMpTy (conda install numpy pandas)")
         sys.exit(0)
 
-import numpy
 include_dirs = [numpy.get_include(), 'HMpTy/include',
                 'HMpTy/htm', 'HMpTy/htm/htm_src']
 htm_sources = glob('HMpTy/htm/htm_src/*.cpp')
@@ -139,9 +140,9 @@ setup(name="HMpTy",
       author='David Young',
       author_email='davidrobertyoung@gmail.com',
       license='GNU',
-      packages=find_packages(),
-      ext_modules=ext_modules,
+      packages=find_packages(exclude=["*tests*"]),
       include_package_data=True,
+      ext_modules=ext_modules,
       install_requires=install_requires,
       test_suite='nose2.collector.collector',
       tests_require=['nose2', 'cov-core'],
