@@ -67,7 +67,7 @@ if platform.system() == 'Darwin':
         if python_target < '10.9' and current_system >= '10.9':
             os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 else:
-    extra_compile_args = []
+    extra_compile_args = ['-std=c++14']
     extra_link_args = []
 
 
