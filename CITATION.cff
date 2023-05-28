@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+title: HMpTy
+message: If you use this software, please cite it as below.
+authors:
+- family-names: "Young"
+  given-names: "David R."
+  orcid: "https://orcid.org/0000-0002-1229-2499"
+doi: 10.5281/zenodo.7970743
+url: "https://github.com/thespacedoctor/HMpTy"
+abstract: Generate Hierarchical Triangular Mesh (HTM) IDs, crossmatch sets of sky-coordinates and more
+keywords: [astronomy, indexing]
+license: GPL-3.0-only

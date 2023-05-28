@@ -1,5 +1,9 @@
 # HMpTy
 
+[![](https://zenodo.org/badge/41427016.svg)](https://zenodo.org/badge/latestdoi/41427016) 
+
+
+
 <!-- INFO BADGES -->  
 
 [![](https://img.shields.io/pypi/pyversions/HMpTy)](https://pypi.org/project/HMpTy/)  
@@ -27,4 +31,16 @@ Documentation for HMpTy is hosted by [Read the Docs](https://HMpTy.readthedocs.i
 * 
 
 
+## How to cite HMpTy
 
+If you use `HMpTy` in your work, please cite using the following BibTeX entry: 
+
+```bibtex
+@software{Young_HMpTy,
+author = {Young, David R.},
+doi = {10.5281/zenodo.7979508},
+license = {GPL-3.0-only},
+title = {{HMpTy}},
+url = {https://github.com/thespacedoctor/HMpTy}
+}
+```
