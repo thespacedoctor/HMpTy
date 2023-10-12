@@ -1,7 +1,7 @@
 
 ## Release Notes
 
-**v1.5.9 - October 12, 2023**
+**v1.5.10 - October 12, 2023**
 
 * **ENHANCEMENT** updating conesearch to work for bespoke HTM database IDs
 
