@@ -1,6 +1,10 @@
 
 ## Release Notes
 
+**v1.5.9 - October 12, 2023**
+
+* **ENHANCEMENT** updating conesearch to work for bespoke HTM database IDs
+
 **v1.5.8 - September 6, 2022**
 
 * **FIXED** fixed issue with ISO C++17 not allow dynamic exception specifications. Install on Ubuntu 22.04 now works.
