@@ -237,15 +237,17 @@ class conesearch(object):
             dec=dec
         )
 
+        self.htmDepth = min(self.htmColumnLevels)
+
         # SETUP THE MESH
         # LESS THAN 1 ARCMIN
-        if self.radius < 60.:
+        if self.radius < 60. and 16 in self.htmColumnLevels:
             self.htmDepth = 16
         # LESS THAN 1 DEG BUT GREATER THAN 1 ARCMIN
-        elif old_div(self.radius, (60 * 60)) < 1.:
+        elif old_div(self.radius, (60 * 60)) < 1. and 13 in self.htmColumnLevels:
             self.htmDepth = 13
         # GREATER THAN 1 DEGREE
-        else:
+        elif old_div(self.radius, (60 * 60)) >= 1. and 10 in self.htmColumnLevels:
             self.htmDepth = 10
 
         # SETUP A MESH AT CHOOSEN DEPTH
@@ -319,14 +321,14 @@ class conesearch(object):
 
         # GET ALL THE TRIXELS REQUIRED
         trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
-        if trixelArray.size > 50000 and self.htmDepth == 16:
+        if trixelArray.size > 50000 and self.htmDepth >= 16 and 13 in self.htmColumnLevels:
             self.htmDepth = 13
             self.mesh = HTM(
                 depth=self.htmDepth,
                 log=self.log
             )
             trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
-        if trixelArray.size > 50000 and self.htmDepth == 13:
+        if trixelArray.size > 50000 and self.htmDepth >= 13 and 10 in self.htmColumnLevels:
             self.htmDepth = 10
             self.mesh = HTM(
                 depth=self.htmDepth,
@@ -334,14 +336,7 @@ class conesearch(object):
             )
             trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
 
-        if self.htmDepth not in self.htmColumnLevels:
-            levelDiffs = np.array(self.htmColumnLevels) - self.htmDepth
-            closestLevelDiff = min(levelDiffs[levelDiffs > 0])
-            closestLevel = self.htmDepth + closestLevelDiff
-            htmLevel = self.htmColumns[self.htmColumnLevels.index(closestLevel)]
-            htmLevel = f"floor({htmLevel}/POW(4,{closestLevelDiff}))"
-        else:
-            htmLevel = self.htmColumns[self.htmColumnLevels.index(self.htmDepth)]
+        htmLevel = self.htmColumns[self.htmColumnLevels.index(self.htmDepth)]
 
         if trixelArray.size > 150000:
             self.log.info(
