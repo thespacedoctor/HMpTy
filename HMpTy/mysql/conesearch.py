@@ -9,22 +9,23 @@
 from __future__ import print_function
 from __future__ import division
 from future import standard_library
-standard_library.install_aliases()
-from builtins import zip
-from builtins import str
-from builtins import map
-from builtins import object
-from past.utils import old_div
-import sys
-import os
-import re
-os.environ['TERM'] = 'vt100'
-from fundamentals import tools
-from HMpTy.htm import HTM
-import numpy as np
-from fundamentals.mysql import readquery
-from io import StringIO
 import copy
+from io import StringIO
+from fundamentals.mysql import readquery
+import numpy as np
+from HMpTy.htm import HTM
+from fundamentals import tools
+import re
+import os
+import sys
+from past.utils import old_div
+from builtins import object
+from builtins import map
+from builtins import str
+from builtins import zip
+
+standard_library.install_aliases()
+os.environ['TERM'] = 'vt100'
 
 
 class conesearch(object):
@@ -43,11 +44,10 @@ class conesearch(object):
     - ``sqlWhere`` -- clause to add after "where" in the initial sql query of the conesearch. Default *False*
     - ``raCol`` -- the database table ra column name. Default * raDeg*
     - ``decCol`` -- the database table dec column name. Default *decDeg*
-
-
-        - ``separations`` -- include the separations in the final output. Default *False*
-        - ``distinct`` -- request distinct columns from the database table (i.e. *select DISTINCT ...*). Default *False*
-        - ``closest`` -- return the closest match only. Default *False*
+    - ``htmColumns`` -- the available HTM columns. Default *[10,13,16]*
+    - ``separations`` -- include the separations in the final output. Default *False*
+    - ``distinct`` -- request distinct columns from the database table (i.e. *select DISTINCT ...*). Default *False*
+    - ``closest`` -- return the closest match only. Default *False*
 
     **Usage**
 
@@ -112,7 +112,8 @@ class conesearch(object):
         radiusArcsec=10,
         separations=True,
         distinct=True,
-        sqlWhere="spectralType is not null"
+        sqlWhere="spectralType is not null",
+        htmColumns=[10, 13, 16]
     )
 
 
@@ -192,7 +193,8 @@ class conesearch(object):
             decCol="decDeg",
             separations=False,
             distinct=False,
-            closest=False
+            closest=False,
+            htmColumns=["htm10ID", "htm13ID", "htm16ID"]
     ):
         self.log = log
         log.debug("instansiating a new 'conesearch' object")
@@ -206,6 +208,21 @@ class conesearch(object):
         self.distinct = distinct
         self.sqlWhere = sqlWhere
         self.closest = closest
+        self.htmColumns = htmColumns
+
+        if isinstance(self.htmColumns, int):
+            self.htmColumns = [self.htmColumns]
+        if isinstance(self.htmColumns, str):
+            self.htmColumns = [self.htmColumns]
+
+        import re
+
+        self.htmColumnLevels = [int(re.search(r'\d+', i).group()) for i in self.htmColumns]
+
+        for i in self.htmColumnLevels:
+            if i not in [10, 13, 16]:
+                self.log.error(f"htmColumns must be in the levels 10, 13 and/or 16. The provided levels in this instance where {htmColumns}")
+                raise AttributeError(f"htmColumns must be in the levels 10, 13 and/or 16. The provided levels in this instance where {htmColumns}")
 
         if not self.columns:
             self.columns = "*"
@@ -292,6 +309,8 @@ class conesearch(object):
         self.log.debug(
             'completed the ````_get_on_trixel_sources_from_database_query`` method')
 
+        import numpy as np
+
         tableName = self.tableName
         raCol = self.raCol
         decCol = self.decCol
@@ -315,7 +334,15 @@ class conesearch(object):
             )
             trixelArray = self._get_trixel_ids_that_overlap_conesearch_circles()
 
-        htmLevel = "htm%sID" % self.htmDepth
+        if self.htmDepth not in self.htmColumnLevels:
+            levelDiffs = np.array(self.htmColumnLevels) - self.htmDepth
+            closestLevelDiff = min(levelDiffs[levelDiffs > 0])
+            closestLevel = self.htmDepth + closestLevelDiff
+            htmLevel = self.htmColumns[self.htmColumnLevels.index(closestLevel)]
+            htmLevel = f"floor({htmLevel}/POW(4,{closestLevelDiff}))"
+        else:
+            htmLevel = self.htmColumns[self.htmColumnLevels.index(self.htmDepth)]
+
         if trixelArray.size > 150000:
             self.log.info(
                 "Your search radius of the `%(tableName)s` table may be too large (%(radiusArc)s arcsec)" % locals())
