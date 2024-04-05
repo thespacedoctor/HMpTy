@@ -36,7 +36,7 @@ Documentation for HMpTy is hosted by [Read the Docs](https://HMpTy.readthedocs.i
 If you use `HMpTy` in your work, please cite using the following BibTeX entry: 
 
 ```bibtex
-@software{Young_HMpTy_Generate_Hierarchical,
+@software{Young_HMpTy,
   author = {Young, David R.},
   doi = {10.5281/zenodo.7979507},
   license = {GPL-3.0-only},
