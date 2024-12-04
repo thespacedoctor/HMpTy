@@ -57,8 +57,8 @@ if platform.system() == 'Darwin':
                               '-arch', 'x86_64', '-stdlib=libc++']
         extra_link_args = ['-arch', 'i386', '-arch', 'x86_64']
     else:
-        extra_compile_args = ['-arch', 'x86_64', '-stdlib=libc++']
-        extra_link_args = ['-arch', 'x86_64']
+        extra_compile_args = ['-arch', 'x86_64', '-arch', 'arm64', '-stdlib=libc++']
+        extra_link_args = ['-arch', 'x86_64', '-arch', 'arm64']
 
     if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
         current_system = LooseVersion(platform.mac_ver()[0])
@@ -69,6 +69,8 @@ if platform.system() == 'Darwin':
 else:
     extra_compile_args = ['-std=c++14']
     extra_link_args = []
+
+print(extra_link_args)
 
 
 # HTM
