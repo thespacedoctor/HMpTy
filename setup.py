@@ -35,8 +35,6 @@ def readme():
 
 # Get all site-packages directories
 site_packages = site.getsitepackages()
-print(site_packages)
-
 
 # can we build recfile?
 packages = ['HMpTy']
@@ -92,16 +90,6 @@ install_requires = [
     'pymysql'
 ]
 
-# READ THE DOCS SERVERS
-exists = os.path.exists("/home/docs/")
-if exists:
-    c_exclude_list = ['healpy', 'astropy',
-                      'numpy', 'sherlock', 'wcsaxes', 'HMpTy', 'ligo-gracedb']
-    for e in c_exclude_list:
-        try:
-            install_requires.remove(e)
-        except:
-            pass
 
 setup(name="HMpTy",
       version=__version__,
