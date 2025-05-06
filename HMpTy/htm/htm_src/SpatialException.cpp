@@ -59,7 +59,7 @@ SpatialException::SpatialException( const char *cstr, int defIndex ) throw()
        strcpy(str_,cstr);
      } else {
        str_ = new char[50];
-       sprintf(str_,"%s : %s",defaultstr[CONTEXT],defaultstr[defIndex]);
+       snprintf(str_,sizeof(str_)*5,"%s : %s",defaultstr[CONTEXT],defaultstr[defIndex]);
      }
    }
    catch (...) {
@@ -75,7 +75,7 @@ SpatialException::SpatialException( const char *context, const char *because,
      tmpc = context ? context : defaultstr[CONTEXT];
      tmpb = because ? because : defaultstr[defIndex];
      str_ = new char[slen(tmpc) + slen(tmpb) + 50]; // allow extensions
-     sprintf(str_,"%s : %s",tmpc,tmpb);
+     snprintf(str_,sizeof(str_)*5,"%s : %s",tmpc,tmpb);
    }
    catch (...) {
      delete[] str_;
@@ -175,21 +175,21 @@ SpatialFailure::SpatialFailure( const char *context, const char *operation
       *str_ = '\0';
       if ( !context )
 	context = defaultstr[CONTEXT];
-      sprintf(str_,"%s: ",context);
+      snprintf(str_,sizeof(str_)*5,"%s: ",context);
       if ( operation ) {
-	 sprintf(str_,"%s %s failed ",str_, operation);
+	 snprintf(str_,sizeof(str_)*5,"%s %s failed ",str_, operation);
       }
       if ( resource ) {
 	 if(operation)
-	   sprintf(str_,"%s on \"%s\"",str_,resource);
+	   snprintf(str_,sizeof(str_)*5,"%s on \"%s\"",str_,resource);
 	 else
-	   sprintf(str_,"%s trouble with \"%s\"",str_,resource);
+	   snprintf(str_,sizeof(str_)*5,"%s trouble with \"%s\"",str_,resource);
       }
       if ( because ) {
 	 if ( operation || resource )
-	   sprintf(str_,"%s because %s",str_,because);
+	   snprintf(str_,sizeof(str_)*5,"%s because %s",str_,because);
 	 else
-	   sprintf(str_,"%s %s",str_,because);
+	   snprintf(str_,sizeof(str_)*5,"%s %s",str_,because);
       }
    }
    catch (...) {
@@ -216,15 +216,15 @@ SpatialBoundsError::SpatialBoundsError( const char *context, const char *array
    try {
      if ( limit != -1 ) {
        if ( array )
-	   sprintf(str_,"%s[%d]",str_,index);
+	   snprintf(str_,sizeof(str_)*5,"%s[%d]",str_,index);
 	 else
-	   sprintf(str_, "%s array index %d ",str_, index );
+	   snprintf(str_,sizeof(str_)*5, "%s array index %d ",str_, index );
 
 	 if ( index > limit ) {
-	   sprintf( str_, "%s over upper bound by %d",str_, index - limit );
+	   snprintf(str_,sizeof(str_)*5, "%s over upper bound by %d",str_, index - limit );
 	 }
 	 else {
-	   sprintf( str_, "%s under lower bound by %d",str_, limit - index );
+	   snprintf(str_,sizeof(str_)*5, "%s under lower bound by %d",str_, limit - index );
 	 }
       }
    }
@@ -259,22 +259,23 @@ SpatialInterfaceError::SpatialInterfaceError( const char *context, const char *a
       str_ = new char[slen(context) + slen(argument) + slen(because) + 128];
       *str_ = '\0';
       if ( !context )
-	context = defaultstr[CONTEXT];
-      sprintf(str_,"%s: ",context);
+	       context = defaultstr[CONTEXT];
+      snprintf(str_,sizeof(str_)*5,"%s: ",context);
       if ( argument && because ) {
-	 sprintf(str_,"%s argument \"%s\" is invalid because %s ",str_,
-		 argument, because);
+      	 snprintf(str_,sizeof(str_)*5,"%s argument \"%s\" is invalid because %s ",str_,
+      		 argument, because);
       }
       else if ( argument && !because ) {
-	 sprintf(str_,"%s invalid argument \"%s\" ",str_,
-		 argument);
+      	 snprintf(str_,sizeof(str_)*5,"%s invalid argument \"%s\" ",str_,
+      		 argument);
       }
-      else if ( !argument )
-	if(because)
-	  sprintf(str_,"%s %s",str_,because);
-	else
-	  sprintf(str_,"%s interface violation",str_);
-   }
+      else if ( !argument ) {
+      	if(because)
+      	  snprintf(str_,sizeof(str_)*5,"%s %s",str_,because);
+      	else
+      	  snprintf(str_,sizeof(str_)*5,"%s interface violation",str_);
+         }
+      }
    catch (...) {
      delete[] str_;
    }
