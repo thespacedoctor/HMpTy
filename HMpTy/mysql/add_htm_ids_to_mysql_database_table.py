@@ -8,6 +8,12 @@
 """
 from __future__ import print_function
 from __future__ import division
+import time
+from fundamentals import times
+from datetime import datetime, date
+from fundamentals.mysql import readquery, writequery, insert_list_of_dictionaries_into_database_tables
+import pymysql as ms
+from fundamentals import tools
 from builtins import zip
 from builtins import str
 from builtins import range
@@ -16,12 +22,6 @@ import sys
 import os
 import math
 os.environ['TERM'] = 'vt100'
-from fundamentals import tools
-import pymysql as ms
-from fundamentals.mysql import readquery, writequery, insert_list_of_dictionaries_into_database_tables
-from datetime import datetime, date
-from fundamentals import times
-import time
 
 
 def add_htm_ids_to_mysql_database_table(
@@ -228,7 +228,7 @@ def add_htm_ids_to_mysql_database_table(
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
             if lastId:
                 sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` > '%s' order by `%s` limit %s""" % (
-                    primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName,  lastId, primaryIdColumnName, batchSize)
+                    primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName, lastId, primaryIdColumnName, batchSize)
             else:
                 sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` order by `%s` limit %s""" % (
                     primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName, batchSize)

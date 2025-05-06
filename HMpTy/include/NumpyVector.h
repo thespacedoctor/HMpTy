@@ -90,6 +90,7 @@
 
 #ifndef _numpy_vector_h
 #define _numpy_vector_h
+#define NPY_NOTSWAPPED     NPY_ARRAY_NOTSWAPPED
 
 #include <Python.h>
 #include <iostream>
@@ -278,6 +279,38 @@ std::map<const char*, int> NumpyVector<T>::mNumpyIdMap;
 
 
 template <class T>
+void NumpyVector<T>::init(npy_intp size)  throw (const char *)
+{
+
+    // clear any existing array
+    Py_XDECREF(mArray);
+    mSize = 0;
+
+    if (size < 0)  {
+        throw "size must be >= 0";
+    }
+
+    // Create output flags array
+    int ndim = 1;
+    mArray = PyArray_ZEROS(
+                 ndim,
+                 &size,
+                 mTypeNum,
+                 NPY_FALSE);
+
+    if (mArray == NULL) {
+        throw "Could not allocate array";
+    }
+
+    PyArrayObject* array = (PyArrayObject*)mArray;
+    mSize = PyArray_SIZE(array);
+    // dimensions and stride
+    mNdim = ndim;
+    mStride = PyArray_STRIDE(array, 0);
+
+}
+
+template <class T>
 NumpyVector<T>::NumpyVector()  throw (const char *)
 {
     // DONT FORGET THIS!!!!
@@ -356,24 +389,27 @@ void NumpyVector<T>::init(PyObject* obj)  throw (const char *)
     // Is the input object already an array?
     if (PyArray_Check(obj)) {
 
+        // Safely cast the PyObject pointer to a PyArrayObject pointer
+        PyArrayObject* array = (PyArrayObject*)obj;
+
         // If it is the right type, then just check it is not byteswapped
         // we will have to decref tmp if a copy is made.
 
-        if (1 < PyArray_NDIM(obj)) {
+        if (1 < PyArray_NDIM(array)) {
             throw "Input array dimensions must be <= 1";
         }
 
-        PyArray_Descr* descr = PyArray_DESCR(obj);
+        PyArray_Descr* descr = PyArray_DESCR(array);
 
-        if (descr->type_num == mTypeNum && PyArray_ISNOTSWAPPED(obj)) {
+        if (descr->type_num == mTypeNum && PyArray_ISNOTSWAPPED(array)) {
             // We are set!  Just copy the reference.
-            mArray = obj;
-            Py_INCREF(obj);
+            mArray = array;
+            Py_INCREF(array);
         }
         else {
             // Either it is not the right type or it is byteswapped.  So we
             // need to make a copy.
-            mArray = PyArray_Cast((PyArrayObject*) obj, mTypeNum);
+            mArray = PyArray_Cast((PyArrayObject*) array, mTypeNum);
 
             if (mArray == NULL) {
                 // this causes a segfault, don't do it
@@ -430,36 +466,7 @@ void NumpyVector<T>::init(PyObject* obj)  throw (const char *)
 
 }
 
-template <class T>
-void NumpyVector<T>::init(npy_intp size)  throw (const char *)
-{
 
-    // clear any existing array
-    Py_XDECREF(mArray);
-    mSize = 0;
-
-    if (size < 0)  {
-        throw "size must be >= 0";
-    }
-
-    // Create output flags array
-    int ndim = 1;
-    mArray = PyArray_ZEROS(
-                 ndim,
-                 &size,
-                 mTypeNum,
-                 NPY_FALSE);
-
-    if (mArray == NULL) {
-        throw "Could not allocate array";
-    }
-
-    mSize = PyArray_SIZE(mArray);
-    // dimensions and stride
-    mNdim = ndim;
-    mStride = PyArray_STRIDE(mArray, 0);
-
-}
 
 
 // Get a reference the object.  incref the object.

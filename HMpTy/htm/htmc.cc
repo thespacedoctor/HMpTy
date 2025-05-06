@@ -8,6 +8,7 @@
 #include <algorithm> // for transform
 
 
+
 // A couple of utility functions
 // raturn great circle distance in degrees
 double gcirc(
@@ -316,7 +317,7 @@ PyObject* HTMC::cmatch(
             }
             for (npy_intp ci = 0; ci < nkeep; ci++) {
                 if (fptr) {
-                    fprintf(fptr, "%ld %ld %.16g\n",
+                    fprintf(fptr, "%lld %lld %.16g\n",
                             pair_info[ci].i1,
                             pair_info[ci].i2,
                             pair_info[ci].d12);
@@ -744,7 +745,7 @@ PyObject* Matcher::match(
             }
             for (npy_intp ci = 0; ci < nkeep; ci++) {
                 if (fptr) {
-                    fprintf(fptr, "%ld %ld %.16g\n",
+                    fprintf(fptr, "%lld %lld %.16g\n",
                             pair_info[ci].i1,
                             pair_info[ci].i2,
                             pair_info[ci].d12);
