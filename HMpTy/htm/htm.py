@@ -8,15 +8,16 @@
 """
 from __future__ import absolute_import
 from __future__ import division
+from sys import stdout
+import numpy
+from . import _htmcCode
+from astrocalc.coords import unit_conversion
+from fundamentals import tools
 from past.utils import old_div
 import sys
 import os
 os.environ['TERM'] = 'vt100'
-from fundamentals import tools
-from astrocalc.coords import unit_conversion
-from . import _htmcCode
-import numpy
-from sys import stdout
+
 
 class HTM(_htmcCode.HTMC):
     """
@@ -25,7 +26,7 @@ class HTM(_htmcCode.HTMC):
     **Key Arguments**
 
     - ``depth`` -- the depth of the mesh you wish to create. Default *16*
-    
+
 
     **Usage**
 
@@ -37,7 +38,7 @@ class HTM(_htmcCode.HTMC):
         depth=16
     )
     ```
-    
+
     """
 
     @property
@@ -50,7 +51,7 @@ class HTM(_htmcCode.HTMC):
         ```python
         mesh.depth
         ```
-        
+
         """
         return super(HTM, self).depth()
 
@@ -64,7 +65,7 @@ class HTM(_htmcCode.HTMC):
         ```python
         mesh.area
         ```
-        
+
         """
         pi = numpy.pi
         area0 = 4.0 * pi / 8.0
@@ -82,12 +83,12 @@ class HTM(_htmcCode.HTMC):
 
         - ``ra`` -- list, numpy array or single ra value (first coordinate set)
         - ``dec`` -- list, numpy array or single dec value (first coordinate set - must match ra1 array length)
-        
+
 
         **Return**
 
         - ``htmIds`` -- a list of HTM trixel ids the coordinates lie on
-        
+
 
         **Usage**
 
@@ -101,7 +102,7 @@ class HTM(_htmcCode.HTMC):
         for h, r, d in zip(htmids, raList1, decList1):
             print(r, d, " --> ", h)
         ```
-        
+
         """
         self.log.debug('starting the ``lookup_id`` method')
 
@@ -129,12 +130,12 @@ class HTM(_htmcCode.HTMC):
         - ``inclusive`` -- include IDs of triangles that intersect the circle as well as those completely inclosed by the circle. Default *True*
         - ``convertCoordinates`` -- convert the corrdinates passed to intersect. Default *True*
         -
-        
+
 
         **Return**
 
         - ``trixelArray`` -- a numpy array of the match trixel IDs
-        
+
 
         **Usage**
 
@@ -159,7 +160,7 @@ class HTM(_htmcCode.HTMC):
             inclusive=False
         )
         ```
-        
+
         """
         # CONVERT RA AND DEC DECIMAL DEGREES
 
@@ -194,14 +195,14 @@ class HTM(_htmcCode.HTMC):
         - ``radius`` -- search radius in degrees. Can be list, numpy array or single value. If list or numpy array must be same length as ra1 array length)
         - ``maxmatch`` -- maximum number of matches to return. Set to `0` to match all points. Default *1* (i.e. closest match)
         - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
-        
+
 
         **Return**
 
         - ``matchIndices1`` -- match indices for list1 (ra1, dec1)
         - ``matchIndices2`` -- match indices for list2 (ra2, dec2)
         - ``sepDeg`` -- separations between matched corrdinates in degrees. All returned arrays are the same size
-        
+
 
         **Usage**
 
@@ -228,7 +229,7 @@ class HTM(_htmcCode.HTMC):
         ```
 
         Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
-        
+
         """
 
         # CONVERT LISTS AND SINGLE VALUES TO ARRAYS OF FLOATS
@@ -280,6 +281,7 @@ class HTM(_htmcCode.HTMC):
 
         return matchIndices1, matchIndices2, seps
 
+
 class Matcher(_htmcCode.Matcher):
     """*A matcher-array object to match other arrays of ra,dec against*
 
@@ -292,12 +294,12 @@ class Matcher(_htmcCode.Matcher):
     - ``ra`` -- list, numpy array or single ra value
     - ``dec`` -- --list, numpy array or single dec value (must match ra array length)
     - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
-    
+
 
     **Return**
 
     - None
-    
+
 
     **Usage**
 
@@ -319,7 +321,7 @@ class Matcher(_htmcCode.Matcher):
         depth=16
     )
     ```
-    
+
     """
 
     def __init__(
@@ -363,7 +365,7 @@ class Matcher(_htmcCode.Matcher):
         ```python
         coordinateSet.depth
         ```
-        
+
         """
         return super(Matcher, self).depth
 
@@ -376,12 +378,12 @@ class Matcher(_htmcCode.Matcher):
         - ``dec`` -- --list, numpy array or single dec value (must match ra array length)
         - ``radius`` -- radius of circle in degrees
         - ``maxmatch`` -- maximum number of matches to return. Set to `0` to match all points. Default *1* (i.e. closest match)
-        
+
 
         **Return**
 
         - None
-        
+
 
         **Usage**
 
@@ -416,7 +418,7 @@ class Matcher(_htmcCode.Matcher):
         ```
 
         Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
-        
+
         """
 
         if self.convertToArray == True:
