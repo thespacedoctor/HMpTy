@@ -1,12 +1,77 @@
 from __future__ import print_function
+import numpy
 import sys
 import os
+import time
+from sys import stdout, stderr
 from glob import glob
 import platform
 from setuptools import setup, Extension, find_packages
-from packaging import version
-import site
-import sysconfig
+import distutils.sysconfig
+
+moduleDirectory = os.path.dirname(os.path.realpath(__file__))
+exec(open(moduleDirectory + "/HMpTy/__version__.py").read())
+
+
+def readme():
+    with open(moduleDirectory + '/README.md') as f:
+        return f.read()
+
+
+main_libdir = distutils.sysconfig.get_python_lib()
+pylib_install_subdir = main_libdir.replace(
+    distutils.sysconfig.PREFIX + os.sep, '')
+pylib_install_subdir = pylib_install_subdir.replace(
+    'dist-packages', 'site-packages')
+
+if not os.path.exists('ups'):
+    os.mkdir('ups')
+tablefile = open('ups/HMpTy.table', 'w')
+tab = """
+# The default version of this file will be overwritten on setup to include
+# paths determined from the python version.  This is useful to have in place
+# though so that dependencies can be checked *before* installation.  Currently
+# there are no required dependencies, so this is somewhat moot.
+
+setupOptional("python")
+setupOptional("cjson")
+envPrepend(PYTHONPATH,${PRODUCT_DIR}/%s)
+""" % pylib_install_subdir
+tablefile.write(tab)
+tablefile.close()
+
+# can we build recfile?
+packages = ['HMpTy']
+ext_modules = []
+
+if platform.system() == 'Darwin':
+    from distutils.sysconfig import get_config_var
+    from distutils.version import LooseVersion
+    extra_compile_args = ['-arch', 'i386',
+                          '-arch', 'x86_64', '-stdlib=libc++']
+    extra_link_args = ['-arch', 'i386', '-arch', 'x86_64']
+    current_system = LooseVersion(platform.mac_ver()[0])
+
+    if current_system <= '10.12':
+        extra_compile_args = ['-arch', 'i386',
+                              '-arch', 'x86_64', '-stdlib=libc++']
+        extra_link_args = ['-arch', 'i386', '-arch', 'x86_64']
+    else:
+        extra_compile_args = ['-arch', 'x86_64', '-arch', 'arm64', '-stdlib=libc++']
+        extra_link_args = ['-arch', 'x86_64', '-arch', 'arm64']
+
+    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
+        current_system = LooseVersion(platform.mac_ver()[0])
+        python_target = LooseVersion(
+            get_config_var('MACOSX_DEPLOYMENT_TARGET'))
+        if python_target < '10.9' and current_system >= '10.9':
+            os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
+else:
+    extra_compile_args = ['-std=c++14']
+    extra_link_args = []
+
+print(extra_link_args)
+
 
 # HTM
 try:
@@ -19,53 +84,9 @@ except:
         else:
             from pip import main
         main(['install', 'numpy'])
-        import numpy
     except:
         print("Please install numpy & pandas before installing HMpTy (conda install numpy pandas)")
         sys.exit(0)
-
-moduleDirectory = os.path.dirname(os.path.realpath(__file__))
-exec(open(moduleDirectory + "/HMpTy/__version__.py").read())
-
-
-def readme():
-    with open(moduleDirectory + '/README.md') as f:
-        return f.read()
-
-
-# Get all site-packages directories
-site_packages = site.getsitepackages()
-print(site_packages)
-
-
-# can we build recfile?
-packages = ['HMpTy']
-ext_modules = []
-
-if platform.system() == 'Darwin':
-    from sysconfig import get_config_var
-    extra_compile_args = ['-arch', 'i386',
-                          '-arch', 'x86_64', '-stdlib=libc++']
-    extra_link_args = ['-arch', 'i386', '-arch', 'x86_64']
-    current_system = version.parse(platform.mac_ver()[0])
-
-    if current_system <= version.parse('10.12'):
-        extra_compile_args = ['-arch', 'i386',
-                              '-arch', 'x86_64', '-stdlib=libc++', "-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION"]
-        extra_link_args = ['-arch', 'i386', '-arch', 'x86_64']
-    else:
-        extra_compile_args = ['-arch', 'x86_64', '-arch', 'arm64', '-stdlib=libc++', "-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION"]
-        extra_link_args = ['-arch', 'x86_64', '-arch', 'arm64']
-
-    if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
-        current_system = version.parse(platform.mac_ver()[0])
-        python_target = version.parse(
-            get_config_var('MACOSX_DEPLOYMENT_TARGET'))
-        if python_target < version.parse('10.9') and current_system >= version.parse('10.9'):
-            os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
-else:
-    extra_compile_args = ['-std=c++14', "-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION"]
-    extra_link_args = []
 
 include_dirs = [numpy.get_include(), 'HMpTy/include',
                 'HMpTy/htm', 'HMpTy/htm/htm_src']
