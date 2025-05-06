@@ -1,6 +1,10 @@
 
 ## Release Notes
 
+**v1.6.0 - May 6, 2025**
+
+* **FIXED** compatibility with Python=3.12
+
 **v1.5.10 - October 12, 2023**
 
 * **ENHANCEMENT** updating conesearch to work for bespoke HTM database IDs
