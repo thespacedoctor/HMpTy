@@ -403,7 +403,7 @@ void NumpyVector<T>::init(PyObject* obj)  throw (const char *)
 
         if (descr->type_num == mTypeNum && PyArray_ISNOTSWAPPED(array)) {
             // We are set!  Just copy the reference.
-            mArray = array;
+            mArray = PyArray_Cast((PyArrayObject*) array, mTypeNum);
             Py_INCREF(array);
         }
         else {
@@ -452,16 +452,18 @@ void NumpyVector<T>::init(PyObject* obj)  throw (const char *)
         }
     }
 
+    PyArrayObject* array = (PyArrayObject*)mArray;
+
     // set the size
-    mSize = PyArray_SIZE(mArray);
+    mSize = PyArray_SIZE(array);
 
     // dimensions and stride
-    mNdim = PyArray_NDIM(mArray);
+    mNdim = PyArray_NDIM(array);
     if (mNdim == 0) {
         mStride = 0;
     }
     else {
-        mStride = PyArray_STRIDE(mArray, 0);
+        mStride = PyArray_STRIDE(array, 0);
     }
 
 }
