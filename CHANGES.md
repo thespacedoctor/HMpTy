@@ -1,6 +1,10 @@
 
 ## Release Notes
 
+**v1.6.1 - July 17, 2025**
+
+* **FIXED** small hmpty fix for finding intersecting trixels 
+
 **v1.6.0 - May 6, 2025**
 
 * **FIXED** compatibility with Python=3.12
