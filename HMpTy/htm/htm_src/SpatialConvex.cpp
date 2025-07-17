@@ -922,8 +922,8 @@ SpatialConvex::testTriangle(const SpatialVector & v0,
 	  if ( testEdgeConstraint(v0,v1,v2,0) ) {
 		  // Is there another positive constraint that does NOT intersect with
 		  // the edges?
-		  size_t cIndex = 0;
-		  if ( cIndex == testOtherPosNone(v0,v1,v2) ) {
+		  size_t cIndex;
+      if ( cIndex = testOtherPosNone(v0,v1,v2) ) {
 			  // Does that constraint lie inside or outside of the triangle?
 			  if ( testConstraintInside(v0,v1,v2, cIndex) ) {
 				  return pARTIAL;
