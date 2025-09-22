@@ -52,7 +52,8 @@ if platform.system() == 'Darwin':
                               '-arch', 'x86_64', '-stdlib=libc++', "-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION"]
         extra_link_args = ['-arch', 'i386', '-arch', 'x86_64']
     else:
-        extra_compile_args = ['-arch', 'x86_64', '-arch', 'arm64', '-stdlib=libc++', "-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION"]
+        extra_compile_args = ['-arch', 'x86_64', '-arch', 'arm64',
+                              '-stdlib=libc++', "-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION"]
         extra_link_args = ['-arch', 'x86_64', '-arch', 'arm64']
 
     if 'MACOSX_DEPLOYMENT_TARGET' not in os.environ:
@@ -62,7 +63,8 @@ if platform.system() == 'Darwin':
         if python_target < version.parse('10.9') and current_system >= version.parse('10.9'):
             os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
 else:
-    extra_compile_args = ['-std=c++14', "-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION"]
+    extra_compile_args = ['-std=c++14',
+                          "-DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION"]
     extra_link_args = []
 
 include_dirs = [numpy.get_include(), 'HMpTy/include',
