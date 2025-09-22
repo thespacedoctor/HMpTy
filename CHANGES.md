@@ -1,6 +1,10 @@
 
 ## Release Notes
 
+**v1.7.1 - September 22, 2025**
+
+* **FIXED** small fix to Numpy 2.* compatibility
+
 **v1.7.0 - September 22, 2025**
 
 * **REFACTOR** defaulting to htmid mesh 7 for matching 2 lists of coordinates together (faster than the original 12)
