@@ -233,11 +233,11 @@ class HTM(_htmcCode.HTMC):
         """
 
         # CONVERT LISTS AND SINGLE VALUES TO ARRAYS OF FLOATS
-        ra1 = numpy.array(ra1, dtype='f8', ndmin=1, copy=False)
-        dec1 = numpy.array(dec1, dtype='f8', ndmin=1, copy=False)
-        ra2 = numpy.array(ra2, dtype='f8', ndmin=1, copy=False)
-        dec2 = numpy.array(dec2, dtype='f8', ndmin=1, copy=False)
-        radius = numpy.array(radius, dtype='f8', ndmin=1, copy=False)
+        ra1 = numpy.array(ra1, dtype='f8', ndmin=1)
+        dec1 = numpy.array(dec1, dtype='f8', ndmin=1)
+        ra2 = numpy.array(ra2, dtype='f8', ndmin=1)
+        dec2 = numpy.array(dec2, dtype='f8', ndmin=1)
+        radius = numpy.array(radius, dtype='f8', ndmin=1)
 
         # CHECK ARRAY SIZES MATCH
         if (ra1.size != dec1.size
@@ -435,7 +435,7 @@ class Matcher(_htmcCode.Matcher):
                 dec=dec
             )
 
-        radius = numpy.array(radius, dtype='f8', ndmin=1, copy=False)
+        radius = numpy.array(radius, dtype='f8', ndmin=1)
 
         if ra.size != dec.size:
             raise ValueError("ra size (%d) != "
