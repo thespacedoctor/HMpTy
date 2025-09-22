@@ -522,14 +522,17 @@ class conesearch(object):
 
         matches = []
 
-        for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-
-            if self.separations:
-
-                dbRows[m2]["cmSepArcsec"] = s * (60. * 60.)
-            # DEEPCOPY NEEDED IF SAME ELEMENT MATCHED BY 2 SEPERATE
-            # ITEMS IN FIRST LIST
-            matches.append(copy.deepcopy(dbRows[m2]))
+        arcsec_scale = 3600.0
+        if self.separations:
+            matches = [
+                {**dbRows[m2], "cmSepArcsec": s * arcsec_scale}
+                for m1, m2, s in zip(matchIndices1, matchIndices2, seps)
+            ]
+        else:
+            matches = [
+                dbRows[m2].copy()
+                for m1, m2, s in zip(matchIndices1, matchIndices2, seps)
+            ]
 
         self.log.debug('completed the ``_list_crossmatch`` method')
         return matchIndices1, matches
