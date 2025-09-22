@@ -1,6 +1,13 @@
 
 ## Release Notes
 
+**v1.7.0 - September 22, 2025**
+
+* **REFACTOR** defaulting to htmid mesh 7 for matching 2 lists of coordinates together (faster than the original 12)
+* **REFACTOR** optimising the HTM level targets for various conesearch radius sizes
+* **REFACTOR** speed optimisations for DB queries
+* **ENHANCEMENT** HTMID07 add to 10, 13 and 16 when adding indexes to db tables
+
 **v1.6.1 - July 17, 2025**
 
 * **FIXED** small hmpty fix for finding intersecting trixels 
@@ -11,7 +18,7 @@
 
 **v1.5.10 - October 12, 2023**
 
-* **ENHANCEMENT** updating conesearch to work for bespoke HTM database IDs
+updating conesearch to work for bespoke HTM database IDs
 
 **v1.5.8 - September 6, 2022**
 
