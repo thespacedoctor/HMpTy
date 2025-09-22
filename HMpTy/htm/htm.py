@@ -7,7 +7,6 @@
     David Young (originally forked from Erin Sheldon's esutil - esheldon)
 """
 from __future__ import absolute_import
-from __future__ import division
 from sys import stdout
 import numpy
 from . import _htmcCode
@@ -225,7 +224,8 @@ class HTM(_htmcCode.HTMC):
         )
 
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-            print(raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2])
+            print(raList1[m1], decList1[m1], " -> ", s * 3600.,
+                  " arcsec -> ", raList2[m2], decList2[m2])
         ```
 
         Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
@@ -252,15 +252,20 @@ class HTM(_htmcCode.HTMC):
                              " != ra2,dec2 size (%d)" % (radius.size, ra2.size))
 
         # QUICK TRIMMING IN DEC SPACE OF BOTH SETS OF ARRAYS
-        decMatchIndices2 = (numpy.abs(dec1[:, None] - dec2) < radius).any(0)
-        decMatchIndices2 = numpy.where(decMatchIndices2)[0]
+        decMask2 = (numpy.abs(dec1[:, None] - dec2) <
+                    radius)
+        decMatchIndices2 = numpy.where(decMask2.any(axis=0))[0]
         ra2a = ra2[decMatchIndices2]
         dec2a = dec2[decMatchIndices2]
 
-        decMatchIndices1 = (numpy.abs(dec2[:, None] - dec1) < radius).any(0)
-        decMatchIndices1 = numpy.where(decMatchIndices1)[0]
+        decMask1 = (numpy.abs(dec2[:, None] - dec1) <
+                    radius)
+        decMatchIndices1 = numpy.where(decMask1.any(axis=0))[0]
         ra1a = ra1[decMatchIndices1]
         dec1a = dec1[decMatchIndices1]
+
+        if len(ra1a) == 0 or len(ra2a) == 0:
+            return numpy.array([], dtype='i8'), numpy.array([], dtype='i8'), numpy.array([], dtype='f8')
 
         # new way using a Matcher
         depth = self.depth
@@ -403,7 +408,8 @@ class Matcher(_htmcCode.Matcher):
         )
 
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
-            print(raList1[m1], decList1[m1], " -> ", s * 3600., " arcsec -> ", raList2[m2], decList2[m2])
+            print(raList1[m1], decList1[m1], " -> ", s * 3600.,
+                  " arcsec -> ", raList2[m2], decList2[m2])
         ```
 
         Or to return just the nearest matches:

@@ -114,6 +114,7 @@ def add_htm_ids_to_mysql_database_table(
             'htm16ID': 'BIGINT(20)',
             'htm13ID': 'INT',
             'htm10ID': 'INT',
+            'htm07ID': 'INT',
             'cx': 'DOUBLE',
             'cy': 'DOUBLE',
             'cz': 'DOUBLE'
@@ -122,7 +123,8 @@ def add_htm_ids_to_mysql_database_table(
         htmCols = {
             'htm16ID': 'BIGINT(20)',
             'htm13ID': 'INT',
-            'htm10ID': 'INT'
+            'htm10ID': 'INT',
+            'htm07ID': 'INT'
         }
 
     # CHECK IF COLUMNS EXISTS YET - IF NOT CREATE FROM
@@ -187,11 +189,11 @@ def add_htm_ids_to_mysql_database_table(
         )
     elif cartesian:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
-        sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm10ID is NULL or cx is null and %(raColName)s is not null""" % locals(
+        sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm07ID is NULL or cx is null and %(raColName)s is not null""" % locals(
         )
     else:
         # COUNT ROWS WHERE HTMIDs ARE NOT SET
-        sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm10ID is NULL and %(raColName)s is not null""" % locals(
+        sqlQuery = """SELECT count(*) as count from `%(tableName)s` where htm07ID is NULL and %(raColName)s is not null""" % locals(
         )
     log.debug(
         """SQLQUERY:\n\n%(sqlQuery)s\n\n""" % locals())
@@ -227,19 +229,15 @@ def add_htm_ids_to_mysql_database_table(
         if reindex:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
             if lastId:
-                sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` > '%s' order by `%s` limit %s""" % (
-                    primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName, lastId, primaryIdColumnName, batchSize)
+                sqlQuery = f"""SELECT {primaryIdColumnName}, `{raColName}`, `{declColName}` from `{tableName}` where `{primaryIdColumnName}` > '{lastId}' and `{raColName}` is not null and `{raColName}` >= 0 order by `{primaryIdColumnName}` limit {batchSize}"""
             else:
-                sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` order by `%s` limit %s""" % (
-                    primaryIdColumnName, raColName, declColName, tableName, primaryIdColumnName, batchSize)
+                sqlQuery = f"""SELECT {primaryIdColumnName}, `{raColName}`, `{declColName}` from `{tableName}` where `{raColName}` is not null and `{raColName}` >= 0  order by `{primaryIdColumnName}` limit {batchSize}"""
         elif cartesian:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` >= 0 and ((htm10ID is NULL or cx is null)) limit %s""" % (
-                primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
+            sqlQuery = f"""SELECT {primaryIdColumnName}, `{raColName}`, `{declColName}` from `{tableName}` where `{raColName}` is not null and `{raColName}` >= 0 and ((htm07ID is NULL or cx is null)) limit {batchSize}"""
         else:
             # SELECT THE ROWS WHERE THE HTMIds ARE NOT SET
-            sqlQuery = """SELECT `%s`, `%s`, `%s` from `%s` where `%s` is not null and `%s` >= 0 and htm10ID is NULL limit %s""" % (
-                primaryIdColumnName, raColName, declColName, tableName, raColName, raColName, batchSize)
+            sqlQuery = f"""SELECT {primaryIdColumnName}, `{raColName}`, `{declColName}` from `{tableName}` where `{raColName}` is not null and `{raColName}` >= 0 and htm07ID is NULL limit {batchSize}"""
         batch = readquery(
             log=log,
             sqlQuery=sqlQuery,
@@ -261,12 +259,14 @@ def add_htm_ids_to_mysql_database_table(
         mesh16 = htm.HTM(16)
         mesh13 = htm.HTM(13)
         mesh10 = htm.HTM(10)
+        mesh07 = htm.HTM(7)
 
         log.debug(
             'calculating htmIds for batch of %s rows in %s db table' % (batchSize, tableName, ))
         htm16Ids = mesh16.lookup_id(raList, decList)
         htm13Ids = mesh13.lookup_id(raList, decList)
         htm10Ids = mesh10.lookup_id(raList, decList)
+        htm07Ids = mesh07.lookup_id(raList, decList)
         log.debug(
             'finshed calculating htmIds for batch of %s rows in %s db table' % (batchSize, tableName, ))
 
@@ -285,8 +285,8 @@ def add_htm_ids_to_mysql_database_table(
                 cz.append(math.sin(d))
 
             updates = []
-            updates[:] = [{"htm16ID": int(h16), "htm13ID": int(h13), "htm10ID": int(h10), primaryIdColumnName: pid, "cx": float(ccx), "cy": float(ccy), "cz": float(ccz)} for h16,
-                          h13, h10, pid, ccx, ccy, ccz in zip(htm16Ids, htm13Ids, htm10Ids, pIdList, cx, cy, cz)]
+            updates[:] = [{"htm16ID": int(h16), "htm13ID": int(h13), "htm10ID": int(h10), "htm07ID": int(h07), primaryIdColumnName: pid, "cx": float(ccx), "cy": float(ccy), "cz": float(ccz)} for h16,
+                          h13, h10, h07, pid, ccx, ccy, ccz in zip(htm16Ids, htm13Ids, htm10Ids, htm07Ids, pIdList, cx, cy, cz)]
 
             log.debug(
                 'finished calculating cartesian coordinates for batch of %s rows in %s db table' % (
@@ -296,8 +296,8 @@ def add_htm_ids_to_mysql_database_table(
             updates = []
             # updates[:] = ["UPDATE `%(tableName)s` SET htm16ID=%(h16)s, htm13ID=%(h13)s, htm10ID=%(h10)s where %(primaryIdColumnName)s = '%(pid)s';" % locals() for h16,
             # h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
-            updates[:] = [{"htm16ID": int(h16), "htm13ID": int(h13), "htm10ID": int(h10), primaryIdColumnName: pid} for h16,
-                          h13, h10, pid in zip(htm16Ids, htm13Ids, htm10Ids, pIdList)]
+            updates[:] = [{"htm16ID": int(h16), "htm13ID": int(h13), "htm10ID": int(h10), "htm07ID": int(h07), primaryIdColumnName: pid} for h16,
+                          h13, h10, h07, pid in zip(htm16Ids, htm13Ids, htm10Ids, htm07Ids, pIdList)]
             log.debug('finshed building the sqlquery')
 
         if len(updates):
@@ -338,7 +338,7 @@ def add_htm_ids_to_mysql_database_table(
 
     # APPLY INDEXES IF NEEDED
     sqlQuery = ""
-    for index in ["htm10ID", "htm13ID", "htm16ID"]:
+    for index in ["htm07ID", "htm10ID", "htm13ID", "htm16ID"]:
         log.debug('adding %(index)s index to %(tableName)s' % locals())
         iname = "idx_" + index
         asqlQuery = u"""

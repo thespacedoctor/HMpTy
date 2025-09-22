@@ -23,7 +23,6 @@ from builtins import object
 from builtins import map
 from builtins import str
 from builtins import zip
-
 standard_library.install_aliases()
 os.environ['TERM'] = 'vt100'
 
@@ -40,7 +39,7 @@ class conesearch(object):
     - ``columns`` -- the columns requested from the database table
     - ``ra`` -- the right ascension of the conesearch centre, can be single value or list of values
     - ``dec`` -- the declination of the conesearch centre, can be single value or list of values
-    - ``radiusArcsec`` -- radius of the conesearch to be performed in arcsecs
+    - ``radiusArcsec`` -- radius of the conesearch to be performed in arcsec
     - ``sqlWhere`` -- clause to add after "where" in the initial sql query of the conesearch. Default *False*
     - ``raCol`` -- the database table ra column name. Default * raDeg*
     - ``decCol`` -- the database table dec column name. Default *decDeg*
@@ -60,7 +59,7 @@ class conesearch(object):
             "+24:18:00.00",  8.43016, -42.34428]
     ```
 
-    Note coorinates can be in decimal degrees or sexegesimal format (or both).
+    Note coordinates can be in decimal degrees or sexagesimal format (or both).
 
     To initialise a 10 arcsec conesearch to return the *transientBucketId* and *spectralType* values from any resulting match use the code:
 
@@ -113,7 +112,7 @@ class conesearch(object):
         separations=True,
         distinct=True,
         sqlWhere="spectralType is not null",
-        htmColumns=[10, 13, 16]
+        htmColumns=["htm10ID", "htm13ID", "htm16ID"]
     )
 
 
@@ -217,12 +216,15 @@ class conesearch(object):
 
         import re
 
-        self.htmColumnLevels = [int(re.search(r'\d+', i).group()) for i in self.htmColumns]
+        self.htmColumnLevels = [int(re.search(r'\d+', i).group())
+                                for i in self.htmColumns]
 
         for i in self.htmColumnLevels:
-            if i not in [10, 13, 16]:
-                self.log.error(f"htmColumns must be in the levels 10, 13 and/or 16. The provided levels in this instance where {htmColumns}")
-                raise AttributeError(f"htmColumns must be in the levels 10, 13 and/or 16. The provided levels in this instance where {htmColumns}")
+            if i not in [7, 10, 13, 16]:
+                self.log.error(
+                    f"htmColumns must be in the levels 7, 10, 13 and/or 16. The provided levels in this instance where {htmColumns}")
+                raise AttributeError(
+                    f"htmColumns must be in the levels 7, 10, 13 and/or 16. The provided levels in this instance where {htmColumns}")
 
         if not self.columns:
             self.columns = "*"
@@ -240,17 +242,22 @@ class conesearch(object):
         self.htmDepth = min(self.htmColumnLevels)
 
         # SETUP THE MESH
-        # LESS THAN 1 ARCMIN
-        if self.radius < 60. and 16 in self.htmColumnLevels:
+        # LESS THAN 10 ARCSEC (side 16 = 6 arcsec)
+        if self.radius < 10. and 16 in self.htmColumnLevels:
             self.htmDepth = 16
-        # LESS THAN 1 DEG BUT GREATER THAN 1 ARCMIN
-        elif old_div(self.radius, (60 * 60)) < 1. and 13 in self.htmColumnLevels:
+        # LESS THAN 1 ARCMIN (side 13 = 48 arcsec)
+        elif self.radius / 60 < 1. and 13 in self.htmColumnLevels:
             self.htmDepth = 13
-        # GREATER THAN 1 DEGREE
-        elif old_div(self.radius, (60 * 60)) >= 1. and 10 in self.htmColumnLevels:
+        # LESS THAN 10 arcmin (side 10 = 6.4 arcmin)
+        elif self.radius / 60 < 10. and 10 in self.htmColumnLevels:
+            self.htmDepth = 10
+        # GREATER THAN 0.5 DEG (side 7 = 0.8 DEG)
+        elif 7 in self.htmColumnLevels:
+            self.htmDepth = 7
+        else:
             self.htmDepth = 10
 
-        # SETUP A MESH AT CHOOSEN DEPTH
+        # SETUP A MESH AT CHOSEN DEPTH
         self.mesh = HTM(
             depth=self.htmDepth,
             log=self.log
@@ -384,17 +391,21 @@ class conesearch(object):
         self.log.debug(
             'starting the ````_get_trixel_ids_that_overlap_conesearch_circles`` method')
 
-        trixelArray = np.array([], dtype='int16', ndmin=1, copy=False)
-        # FOR EACH RA, DEC SET IN THE NUMPY ARRAY, COLLECT THE OVERLAPPING HTM
-        # TRIXELS
-        r = old_div(self.radius, (60. * 60.))
+        # CONVERT RADIUS TO DEGREES
+        r = self.radius/(60. * 60.)
 
-        trixelArray = []
+        # VECTORIZED COMPUTATION OF TRIXELS FOR ALL RA, DEC PAIRS
+        trixelArray = np.concatenate([
+            self.mesh.intersect(
+                ra1, dec1, r, inclusive=True, convertCoordinates=False
+            ) for ra1, dec1 in zip(self.ra, self.dec)
+        ])
 
-        trixelArray[:] = [self.mesh.intersect(
-            ra1, dec1, r, inclusive=True, convertCoordinates=False) for ra1, dec1 in zip(self.ra, self.dec)]
-
-        trixelArray = np.unique(np.concatenate(trixelArray))
+        # GET UNIQUE TRIXELS
+        if trixelArray.size < 10000:
+            trixelArray = np.array(list(set(trixelArray)))
+        else:
+            trixelArray = np.unique(trixelArray)
 
         self.log.debug(
             'completed the ``_get_trixel_ids_that_overlap_conesearch_circles`` method')
@@ -479,15 +490,17 @@ class conesearch(object):
         """
         self.log.debug('starting the ``_list_crossmatch`` method')
 
+        import time
+
         dbRas = []
         dbRas[:] = [d[self.raCol] for d in dbRows]
         dbDecs = []
         dbDecs[:] = [d[self.decCol] for d in dbRows]
 
-        # 12 SEEMS TO BE GIVING OPTIMAL SPEED FOR MATCHES (VERY ROUGH SPEED
+        # 7 SEEMS TO BE GIVING OPTIMAL SPEED FOR MATCHES (VERY ROUGH SPEED
         # TESTS)
         mesh = HTM(
-            depth=12,
+            depth=7,
             log=self.log
         )
 
@@ -495,14 +508,17 @@ class conesearch(object):
             maxmatch = 1
         else:
             maxmatch = 0
+
+        start_time = time.time()
         matchIndices1, matchIndices2, seps = mesh.match(
             ra1=self.ra,
             dec1=self.dec,
             ra2=np.array(dbRas),
             dec2=np.array(dbDecs),
-            radius=float(old_div(self.radius, (60. * 60.))),
+            radius=float(self.radius/(60. * 60.)),
             maxmatch=maxmatch  # 1 = match closest 1, 0 = match all
         )
+        end_time = time.time()
 
         matches = []
 

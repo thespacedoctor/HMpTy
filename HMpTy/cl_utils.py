@@ -35,9 +35,8 @@ Options:
     -r <format>, --render <format>                                  select a format to render your results in
 """
 from __future__ import print_function
-import sys
 import os
-os.environ['TERM'] = 'vt100'
+import sys
 import readline
 import glob
 import pickle
@@ -45,6 +44,7 @@ from docopt import docopt
 from fundamentals import tools, times
 from subprocess import Popen, PIPE, STDOUT
 from HMpTy.mysql import add_htm_ids_to_mysql_database_table, conesearch
+os.environ['TERM'] = 'vt100'
 
 
 def tab_complete(text, state):
@@ -56,6 +56,7 @@ def main(arguments=None):
     *The main function used when `cl_utils.py` is run as a single script from the cl, or when installed as a cl command*
     """
     # setup the command-line util settings
+
     su = tools(
         arguments=arguments,
         docString=__doc__,
@@ -220,6 +221,7 @@ def main(arguments=None):
              (endTime, runningTime, ))
 
     return
+
 
 if __name__ == '__main__':
     main()
