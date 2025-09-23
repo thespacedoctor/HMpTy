@@ -117,7 +117,6 @@ class HTM(_htmcCode.HTMC):
 
     # use the tab-trigger below for new method
     # xt-class-method
-
     def intersect(self, ra, dec, radius, inclusive=True, convertCoordinates=True):
         """*return IDs of all triangles contained within and/or intersecting a circle centered on a given ra and dec*
 
@@ -231,6 +230,7 @@ class HTM(_htmcCode.HTMC):
         Note from the print statement, you can index the arrays ``raList1``, ``decList1`` with the ``matchIndices1`` array values and  ``raList2``, ``decList2`` with the ``matchIndices2`` values.
 
         """
+        from scipy.spatial import cKDTree
 
         # CONVERT LISTS AND SINGLE VALUES TO ARRAYS OF FLOATS
         ra1 = numpy.array(ra1, dtype='f8', ndmin=1)
@@ -251,16 +251,29 @@ class HTM(_htmcCode.HTMC):
             raise ValueError("radius size (%d) != 1 and"
                              " != ra2,dec2 size (%d)" % (radius.size, ra2.size))
 
-        # QUICK TRIMMING IN DEC SPACE OF BOTH SETS OF ARRAYS
-        decMask2 = (numpy.abs(dec1[:, None] - dec2) <
-                    radius)
-        decMatchIndices2 = numpy.where(decMask2.any(axis=0))[0]
+        # QUICK TRIMMING IN DEC SPACE OF BOTH SETS OF ARRAYS (FAST VERSION)
+        tree2 = cKDTree(dec2[:, None])
+        idxs2 = tree2.query_ball_point(
+            dec1[:, None], r=radius if numpy.isscalar(radius) else radius[0])
+        # idxs2 is a list of arrays: for each dec1, indices in dec2 within radius
+
+        # Flatten and get unique indices in dec2 that are close to any dec1
+        if len(idxs2) > 0:
+            decMatchIndices2 = numpy.unique(
+                numpy.concatenate(idxs2)).astype(int)
+        else:
+            decMatchIndices2 = numpy.array([], dtype=int)
         ra2a = ra2[decMatchIndices2]
         dec2a = dec2[decMatchIndices2]
 
-        decMask1 = (numpy.abs(dec2[:, None] - dec1) <
-                    radius)
-        decMatchIndices1 = numpy.where(decMask1.any(axis=0))[0]
+        tree1 = cKDTree(dec1[:, None])
+        idxs1 = tree1.query_ball_point(
+            dec2[:, None], r=radius if numpy.isscalar(radius) else radius[0])
+        if len(idxs1) > 0:
+            decMatchIndices1 = numpy.unique(
+                numpy.concatenate(idxs1)).astype(int)
+        else:
+            decMatchIndices1 = numpy.array([], dtype=int)
         ra1a = ra1[decMatchIndices1]
         dec1a = dec1[decMatchIndices1]
 

@@ -1,6 +1,10 @@
 
 ## Release Notes
 
+**v1.7.2 - September 22, 2025**
+
+* **REFACTOR** more optimisations
+
 **v1.7.1 - September 22, 2025**
 
 * **FIXED** small fix to Numpy 2.* compatibility
