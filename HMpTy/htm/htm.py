@@ -7,7 +7,6 @@
     David Young (originally forked from Erin Sheldon's esutil - esheldon)
 """
 from __future__ import absolute_import
-from line_profiler import profile
 from sys import stdout
 import numpy
 from . import _htmcCode
@@ -118,8 +117,6 @@ class HTM(_htmcCode.HTMC):
 
     # use the tab-trigger below for new method
     # xt-class-method
-
-    @profile
     def intersect(self, ra, dec, radius, inclusive=True, convertCoordinates=True):
         """*return IDs of all triangles contained within and/or intersecting a circle centered on a given ra and dec*
 
@@ -182,7 +179,6 @@ class HTM(_htmcCode.HTMC):
             inc = 0
         return super(HTM, self).intersect(ra, dec, radius, inc)
 
-    @profile
     def match(self, ra1, dec1, ra2, dec2, radius, maxmatch=1, convertToArray=True):
         """*Crossmatch two lists of ra/dec points*
 
@@ -345,7 +341,7 @@ class Matcher(_htmcCode.Matcher):
     ```
 
     """
-    @profile
+
     def __init__(
             self,
             ra,
@@ -391,7 +387,6 @@ class Matcher(_htmcCode.Matcher):
         """
         return super(Matcher, self).depth
 
-    @profile
     def match(self, ra, dec, radius, maxmatch=1):
         """*match a corrdinate set against this Matcher object's coordinate set*
 
