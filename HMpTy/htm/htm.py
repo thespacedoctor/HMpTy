@@ -255,15 +255,17 @@ class HTM(_htmcCode.HTMC):
                              " != ra2,dec2 size (%d)" % (radius.size, ra2.size))
 
         # QUICK TRIMMING IN DEC SPACE OF BOTH SETS OF ARRAYS
-        decMask2 = (numpy.abs(dec1[:, None] - dec2) <
-                    radius)
-        decMatchIndices2 = numpy.where(decMask2.any(axis=0))[0]
+        from scipy.spatial import cKDTree
+        tree = cKDTree(dec2[:, None])
+        idxs = tree.query_ball_point(dec1, r=radius)
+        decMatchIndices2 = numpy.unique(numpy.concatenate(idxs))
         ra2a = ra2[decMatchIndices2]
         dec2a = dec2[decMatchIndices2]
 
-        decMask1 = (numpy.abs(dec2[:, None] - dec1) <
-                    radius)
-        decMatchIndices1 = numpy.where(decMask1.any(axis=0))[0]
+        tree = cKDTree(dec1[:, None])
+        idxs = tree.query_ball_point(
+            dec2, r=radius if numpy.isscalar(radius) else radius[0])
+        decMatchIndices1 = numpy.unique(numpy.concatenate(idxs))
         ra1a = ra1[decMatchIndices1]
         dec1a = dec1[decMatchIndices1]
 

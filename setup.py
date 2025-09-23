@@ -89,7 +89,8 @@ install_requires = [
     'multiprocess',
     'unicodecsv',
     'pandas',
-    'pymysql'
+    'pymysql',
+    'scipy'
 ]
 
 
