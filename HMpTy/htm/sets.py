@@ -100,7 +100,7 @@ class sets(object):
 
         from HMpTy import HTM
         mesh = HTM(
-            depth=12,
+            depth=7,
             log=self.log
         )
 
@@ -114,8 +114,8 @@ class sets(object):
             convertToArray=self.convertToArray
         )
 
-        anchorIndicies = []
-        childIndicies = []
+        anchorIndicies = set()
+        childIndicies = set()
         allMatches = []
         thisMatch = None
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
@@ -123,9 +123,9 @@ class sets(object):
                 if thisMatch:
                     allMatches.append(thisMatch)
                 thisMatch = [self.sourceList[m1]]
-                anchorIndicies.append(m1)
+                anchorIndicies.add(m1)
             if m2 not in anchorIndicies and m2 not in childIndicies:
-                childIndicies.append(m2)
+                childIndicies.add(m2)
                 thisMatch.append(self.sourceList[m2])
         if thisMatch:
             allMatches.append(thisMatch)

@@ -254,8 +254,6 @@ class conesearch(object):
         # GREATER THAN 0.5 DEG (side 7 = 0.8 DEG)
         elif 7 in self.htmColumnLevels:
             self.htmDepth = 7
-        else:
-            self.htmDepth = 10
 
         # SETUP A MESH AT CHOSEN DEPTH
         self.mesh = HTM(
