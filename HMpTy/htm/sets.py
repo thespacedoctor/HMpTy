@@ -74,6 +74,24 @@ class sets(object):
         self.convertToArray = convertToArray
         # Initial Actions
 
+        if self.radius < 10.:
+            self.htmDepth = 16
+        # LESS THAN 1 ARCMIN (side 13 = 48 arcsec)
+        elif self.radius / 60 < 1.:
+            self.htmDepth = 13
+        # LESS THAN 10 arcmin (side 10 = 6.4 arcmin)
+        elif self.radius / 60 < 10.:
+            self.htmDepth = 10
+        # GREATER THAN 0.5 DEG (side 7 = 0.8 DEG)
+        elif 7 in self.htmColumnLevels:
+            self.htmDepth = 7
+
+        from HMpTy import HTM
+        self.mesh = HTM(
+            depth=self.htmDepth,
+            log=self.log
+        )
+
         return None
 
     @property
@@ -98,13 +116,7 @@ class sets(object):
         """
         self.log.debug('starting the ``_extract_all_sets_from_list`` method')
 
-        from HMpTy import HTM
-        mesh = HTM(
-            depth=7,
-            log=self.log
-        )
-
-        matchIndices1, matchIndices2, seps = mesh.match(
+        matchIndices1, matchIndices2, seps = self.mesh.match(
             ra1=self.ra,
             dec1=self.dec,
             ra2=self.ra,
