@@ -6,13 +6,15 @@
 :Author:
     David Young
 """
+from line_profiler import profile
+import numpy as np
+from fundamentals import tools
 from builtins import zip
 from builtins import object
 import sys
 import os
 os.environ['TERM'] = 'vt100'
-from fundamentals import tools
-import numpy as np
+
 
 class sets(object):
     """
@@ -26,7 +28,7 @@ class sets(object):
     - ``radius`` -- the radius to crossmatch the list of coordinates against itself (degrees)
     - ``sourceList`` -- the list of source imformation to be divided into associated sets (same length as ``ra`` and ``dec``)
     - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
-    
+
 
     **Usage**
 
@@ -50,7 +52,7 @@ class sets(object):
     .. image:: https://i.imgur.com/hHExDqR.png
         :width: 800px
         :alt: divide a list of sources into associated sets
-    
+
     """
     # Initialisation
 
@@ -84,6 +86,7 @@ class sets(object):
 
         return self._extract_all_sets_from_list()
 
+    @profile
     def _extract_all_sets_from_list(
             self):
         """*Extract all of the sets from the list of coordinates*
@@ -91,7 +94,7 @@ class sets(object):
         **Return**
 
         - ``allMatches`` -- a list of lists. All of the assocaited sets of sources
-        
+
         """
         self.log.debug('starting the ``_extract_all_sets_from_list`` method')
 
