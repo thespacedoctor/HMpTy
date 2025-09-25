@@ -103,11 +103,9 @@ class sets(object):
 
         self.htmDepth = None
         for k, v in htmLevelSideLenDeg.items():
-            if self.radius < v:
+            if self.radius > v:
                 self.htmDepth = k
                 break
-
-        print(self.htmDepth, self.radius)
 
         from HMpTy import HTM
         self.mesh = HTM(
