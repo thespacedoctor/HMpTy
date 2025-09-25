@@ -107,17 +107,17 @@ class sets(object):
                 self.htmDepth = k
                 break
 
-        print(self.htmDepth, self.radius))
+        print(self.htmDepth, self.radius)
 
         from HMpTy import HTM
-        self.mesh= HTM(
-            depth = self.htmDepth,
-            log = self.log
+        self.mesh = HTM(
+            depth=self.htmDepth,
+            log=self.log
         )
 
         return None
 
-    @ property
+    @property
     def match(
             self):
         """*all of the assocaited sets of sources*
@@ -127,7 +127,7 @@ class sets(object):
 
         return self._extract_all_sets_from_list()
 
-    @ profile
+    @profile
     def _extract_all_sets_from_list(
             self):
         """*Extract all of the sets from the list of coordinates*
@@ -139,25 +139,25 @@ class sets(object):
         """
         self.log.debug('starting the ``_extract_all_sets_from_list`` method')
 
-        matchIndices1, matchIndices2, seps= self.mesh.match(
-            ra1 = self.ra,
-            dec1 = self.dec,
-            ra2 = self.ra,
-            dec2 = self.dec,
-            radius = self.radius,
-            maxmatch = 0,  # 1 = match closest 1, 0 = match all,
-            convertToArray = self.convertToArray
+        matchIndices1, matchIndices2, seps = self.mesh.match(
+            ra1=self.ra,
+            dec1=self.dec,
+            ra2=self.ra,
+            dec2=self.dec,
+            radius=self.radius,
+            maxmatch=0,  # 1 = match closest 1, 0 = match all,
+            convertToArray=self.convertToArray
         )
 
-        anchorIndicies= set()
-        childIndicies= set()
-        allMatches= []
-        thisMatch= None
+        anchorIndicies = set()
+        childIndicies = set()
+        allMatches = []
+        thisMatch = None
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
             if m1 not in anchorIndicies and m1 not in childIndicies:
                 if thisMatch:
                     allMatches.append(thisMatch)
-                thisMatch= [self.sourceList[m1]]
+                thisMatch = [self.sourceList[m1]]
                 anchorIndicies.add(m1)
             if m2 not in anchorIndicies and m2 not in childIndicies:
                 childIndicies.add(m2)
