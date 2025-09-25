@@ -23,16 +23,16 @@ class sets(object):
     **Key Arguments**
 
     - ``log`` -- logger
-    - ``ra`` -- a list of the corrdinate right ascensions
-    - ``dec`` -- a list of the corrdinate declinations (same length as ``ra``)
+    - ``ra`` -- a list of the coordinate right ascensions
+    - ``dec`` -- a list of the coordinate declinations (same length as ``ra``)
     - ``radius`` -- the radius to crossmatch the list of coordinates against itself (degrees)
-    - ``sourceList`` -- the list of source imformation to be divided into associated sets (same length as ``ra`` and ``dec``)
+    - ``sourceList`` -- the list of source information to be divided into associated sets (same length as ``ra`` and ``dec``)
     - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
 
 
     **Usage**
 
-    Given a list of transient metadata (any list, possibly a list of dictionaries) you can divide the list to assoicated sets of transients by running the following code:
+    Given a list of transient metadata (any list, possibly a list of dictionaries) you can divide the list to associated sets of transients by running the following code:
 
     ```python
     from HMpTy.htm import sets
@@ -47,7 +47,7 @@ class sets(object):
     ```
 
     ``raList`` and ``decList`` are the coordinates for the sources found in the ``transientList`` and are therefore the same length as the `transientList`` (it's up to the user to create these lists). 
-    This code will group the sources into set of assocated transients which are within a radius of 10 arcsecs from one-another. ``allMatches`` is a list of lists, each contained list being an associate group of sources.
+    This code will group the sources into set of associated transients which are within a radius of 10 arcsec from one-another. ``allMatches`` is a list of lists, each contained list being an associate group of sources.
 
     .. image:: https://i.imgur.com/hHExDqR.png
         :width: 800px
@@ -73,18 +73,38 @@ class sets(object):
         self.sourceList = sourceList
         self.convertToArray = convertToArray
         # Initial Actions
+        htmLevelSideLenDeg = {0: 109.127009219124,
+                              1: 54.563504609562,
+                              2: 27.281752304781,
+                              3: 13.640876152391,
+                              4: 6.820438076195,
+                              5: 3.410219038098,
+                              6: 1.705109519049,
+                              7: 0.852554759524,
+                              8: 0.426277379762,
+                              9: 0.213138689881,
+                              10: 0.106569344941,
+                              11: 0.053284672470,
+                              12: 0.026642336235,
+                              13: 0.013321168118,
+                              14: 0.006660584059,
+                              15: 0.003330292029,
+                              16: 0.001665146015,
+                              17: 0.000832573007,
+                              18: 0.000416286504,
+                              19: 0.000208143252,
+                              20: 0.000104071626,
+                              21: 0.000052035813,
+                              22: 0.000026017906,
+                              23: 0.000013008953,
+                              24: 0.000006504477,
+                              25: 0.000003252238}
 
-        if self.radius < 10.:
-            self.htmDepth = 16
-        # LESS THAN 1 ARCMIN (side 13 = 48 arcsec)
-        elif self.radius / 60 < 1.:
-            self.htmDepth = 13
-        # LESS THAN 10 arcmin (side 10 = 6.4 arcmin)
-        elif self.radius / 60 < 10.:
-            self.htmDepth = 10
-        # GREATER THAN 0.5 DEG (side 7 = 0.8 DEG)
-        elif 7 in self.htmColumnLevels:
-            self.htmDepth = 7
+        bestHtmLevel = None
+        for k, v in htmLevelSideLenDeg.items():
+            if self.radius < v:
+                self.htmDepth = k
+                break
 
         from HMpTy import HTM
         self.mesh = HTM(
