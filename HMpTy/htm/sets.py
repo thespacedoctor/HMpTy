@@ -123,7 +123,6 @@ class sets(object):
 
         return self._extract_all_sets_from_list()
 
-    @profile
     def _extract_all_sets_from_list(
             self):
         """*Extract all of the sets from the list of coordinates*
