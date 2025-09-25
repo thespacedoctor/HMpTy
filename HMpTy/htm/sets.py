@@ -6,7 +6,6 @@
 :Author:
     David Young
 """
-from line_profiler import profile
 import numpy as np
 from fundamentals import tools
 from builtins import zip
@@ -56,7 +55,6 @@ class sets(object):
     """
     # Initialisation
 
-    @profile
     def __init__(
             self,
             log,
@@ -104,7 +102,7 @@ class sets(object):
         self.htmDepth = None
         for k, v in htmLevelSideLenDeg.items():
             if self.radius > v:
-                self.htmDepth = k
+                self.htmDepth = k - 1
                 break
 
         from HMpTy import HTM

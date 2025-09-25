@@ -7,7 +7,6 @@
     David Young (originally forked from Erin Sheldon's esutil - esheldon)
 """
 from __future__ import absolute_import
-from line_profiler import profile
 from sys import stdout
 import numpy
 from . import _htmcCode
@@ -180,7 +179,6 @@ class HTM(_htmcCode.HTMC):
             inc = 0
         return super(HTM, self).intersect(ra, dec, radius, inc)
 
-    @profile
     def match(self, ra1, dec1, ra2, dec2, radius, maxmatch=1, convertToArray=True):
         """*Crossmatch two lists of ra/dec points*
 
