@@ -242,20 +242,18 @@ class conesearch(object):
         self.htmDepth = min(self.htmColumnLevels)
 
         # SETUP THE MESH
-        # LESS THAN 10 ARCSEC (side 16 = 6 arcsec)
-        if self.radius < 10. and 16 in self.htmColumnLevels:
+        # LESS THAN 2 ARCSEC (side 16 = 6 arcsec)
+        if self.radius < 2 and 16 in self.htmColumnLevels:
             self.htmDepth = 16
-        # LESS THAN 1 ARCMIN (side 13 = 48 arcsec)
-        elif self.radius / 60 < 1. and 13 in self.htmColumnLevels:
+        # LESS THAN 30 ARCSEC (side 13 = 48 arcsec)
+        elif self.radius / 60 < 0.4999 and 13 in self.htmColumnLevels:
             self.htmDepth = 13
-        # LESS THAN 10 arcmin (side 10 = 6.4 arcmin)
-        elif self.radius / 60 < 10. and 10 in self.htmColumnLevels:
+        # LESS THAN 3 ARCMIM (side 10 = 6.4 arcmin)
+        elif self.radius / 60 < 3. and 10 in self.htmColumnLevels:
             self.htmDepth = 10
         # GREATER THAN 0.5 DEG (side 7 = 0.8 DEG)
         elif 7 in self.htmColumnLevels:
             self.htmDepth = 7
-        else:
-            self.htmDepth = 10
 
         # SETUP A MESH AT CHOSEN DEPTH
         self.mesh = HTM(

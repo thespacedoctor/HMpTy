@@ -6,7 +6,6 @@
 :Author:
     David Young
 """
-from line_profiler import profile
 import numpy as np
 from fundamentals import tools
 from builtins import zip
@@ -23,16 +22,16 @@ class sets(object):
     **Key Arguments**
 
     - ``log`` -- logger
-    - ``ra`` -- a list of the corrdinate right ascensions
-    - ``dec`` -- a list of the corrdinate declinations (same length as ``ra``)
+    - ``ra`` -- a list of the coordinate right ascensions
+    - ``dec`` -- a list of the coordinate declinations (same length as ``ra``)
     - ``radius`` -- the radius to crossmatch the list of coordinates against itself (degrees)
-    - ``sourceList`` -- the list of source imformation to be divided into associated sets (same length as ``ra`` and ``dec``)
+    - ``sourceList`` -- the list of source information to be divided into associated sets (same length as ``ra`` and ``dec``)
     - ``convertToArray`` -- convert the coordinates into an array. Default *True*. Can bypass the conversion check if you are sure coordinates in numpy array
 
 
     **Usage**
 
-    Given a list of transient metadata (any list, possibly a list of dictionaries) you can divide the list to assoicated sets of transients by running the following code:
+    Given a list of transient metadata (any list, possibly a list of dictionaries) you can divide the list to associated sets of transients by running the following code:
 
     ```python
     from HMpTy.htm import sets
@@ -43,11 +42,11 @@ class sets(object):
         radius=10 / (60. * 60.),
         sourceList=transientList
     )
-    allMatches = xmatcher.match 
+    allMatches = xmatcher.match
     ```
 
-    ``raList`` and ``decList`` are the coordinates for the sources found in the ``transientList`` and are therefore the same length as the `transientList`` (it's up to the user to create these lists). 
-    This code will group the sources into set of assocated transients which are within a radius of 10 arcsecs from one-another. ``allMatches`` is a list of lists, each contained list being an associate group of sources.
+    ``raList`` and ``decList`` are the coordinates for the sources found in the ``transientList`` and are therefore the same length as the `transientList`` (it's up to the user to create these lists).
+    This code will group the sources into set of associated transients which are within a radius of 10 arcsec from one-another. ``allMatches`` is a list of lists, each contained list being an associate group of sources.
 
     .. image:: https://i.imgur.com/hHExDqR.png
         :width: 800px
@@ -73,6 +72,44 @@ class sets(object):
         self.sourceList = sourceList
         self.convertToArray = convertToArray
         # Initial Actions
+        htmLevelSideLenDeg = {0: 109.127009219124,
+                              1: 54.563504609562,
+                              2: 27.281752304781,
+                              3: 13.640876152391,
+                              4: 6.820438076195,
+                              5: 3.410219038098,
+                              6: 1.705109519049,
+                              7: 0.852554759524,
+                              8: 0.426277379762,
+                              9: 0.213138689881,
+                              10: 0.106569344941,
+                              11: 0.053284672470,
+                              12: 0.026642336235,
+                              13: 0.013321168118,
+                              14: 0.006660584059,
+                              15: 0.003330292029,
+                              16: 0.001665146015,
+                              17: 0.000832573007,
+                              18: 0.000416286504,
+                              19: 0.000208143252,
+                              20: 0.000104071626,
+                              21: 0.000052035813,
+                              22: 0.000026017906,
+                              23: 0.000013008953,
+                              24: 0.000006504477,
+                              25: 0.000003252238}
+
+        self.htmDepth = None
+        for k, v in htmLevelSideLenDeg.items():
+            if self.radius > v:
+                self.htmDepth = k - 1
+                break
+
+        from HMpTy import HTM
+        self.mesh = HTM(
+            depth=self.htmDepth,
+            log=self.log
+        )
 
         return None
 
@@ -86,7 +123,6 @@ class sets(object):
 
         return self._extract_all_sets_from_list()
 
-    @profile
     def _extract_all_sets_from_list(
             self):
         """*Extract all of the sets from the list of coordinates*
@@ -98,13 +134,7 @@ class sets(object):
         """
         self.log.debug('starting the ``_extract_all_sets_from_list`` method')
 
-        from HMpTy import HTM
-        mesh = HTM(
-            depth=12,
-            log=self.log
-        )
-
-        matchIndices1, matchIndices2, seps = mesh.match(
+        matchIndices1, matchIndices2, seps = self.mesh.match(
             ra1=self.ra,
             dec1=self.dec,
             ra2=self.ra,
@@ -114,8 +144,8 @@ class sets(object):
             convertToArray=self.convertToArray
         )
 
-        anchorIndicies = []
-        childIndicies = []
+        anchorIndicies = set()
+        childIndicies = set()
         allMatches = []
         thisMatch = None
         for m1, m2, s in zip(matchIndices1, matchIndices2, seps):
@@ -123,9 +153,9 @@ class sets(object):
                 if thisMatch:
                     allMatches.append(thisMatch)
                 thisMatch = [self.sourceList[m1]]
-                anchorIndicies.append(m1)
+                anchorIndicies.add(m1)
             if m2 not in anchorIndicies and m2 not in childIndicies:
-                childIndicies.append(m2)
+                childIndicies.add(m2)
                 thisMatch.append(self.sourceList[m2])
         if thisMatch:
             allMatches.append(thisMatch)
